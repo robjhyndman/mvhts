@@ -1,152 +1,109 @@
-\documentclass[a4paper, 12pt]{book}
-\usepackage[a4paper,left=3cm,right=2.0cm,top=3.0cm,bottom=3.0cm]{geometry}
-\usepackage[avantgarde]{quotchap}
-%\usepackage[utf8]{inputenc}
-\usepackage[latin1]{inputenc}
-\usepackage{amssymb}
+\documentclass[a4paper, 12pt]{article}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{color}
 \usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{amsfonts}
 \usepackage{graphicx}
-\usepackage{setspace}
-\usepackage[]{subfigure}
-\usepackage{fancyhdr}
-\usepackage{arydshln}
 \usepackage{booktabs}
 \usepackage{adjustbox}
-
-\usepackage{multirow} %para poder usar o multilinhas nas tabelas
-\usepackage{rotating} %para poder rodar texto dentro das tabelas
-\usepackage{float}    %para poder usar \clearpage p limpar memoria do excesso de graficos e tabelas
-
-
-\pagestyle{fancy}
-
-\usepackage{placeins}
+\usepackage{multirow}
+\usepackage{float}
 \usepackage{caption}
+\usepackage{authblk}
+
 \captionsetup[figure]{labelformat = empty}
 
-\usepackage{epstopdf}
-\usepackage{morefloats}
-
-\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
-
-\DeclareMathOperator{\diag}{diag}
-\DeclareMathOperator{\Var}{Var}
-\DeclareMathOperator{\vetor}{vec}
-\DeclareMathOperator{\seno}{sin}
-\DeclareMathOperator{\RMSE}{RMSE}
-\DeclareMathOperator{\MASE}{MASE}
-\DeclareMathOperator{\RMSSE}{RMSSE}
 \DeclareMathOperator{\RelRMSE}{RelRMSE}
-\DeclareMathOperator{\AvgRelRMSE}{AvgRelRMSE}
 \DeclareMathOperator{\Base}{Base}
-\DeclareMathOperator{\Rec}{Rec}
 \DeclareMathOperator{\Uni}{Uni}
 
-
-
-\pagestyle{plain}
-\let\cleardoublepage\clearpage
-
-\usepackage{authblk}
 \title{Multivariate reconciliation for hierarchical time series}
-\author[1,2]{Ana Caroline Pinheiro} %% Author name
+
+\author[1,2]{Ana Caroline Pinheiro}
 \author[1]{Rodrigo de Souza Bulh{\~o}es}
 \author[3]{Rob J. Hyndman}
 \author[1,4]{Paulo Canas Rodrigues}
-%\author[label1]{Paulo Canas Rodrigues}
 
-%% Author affiliation
+%% Author affiliations
 \affil[1]{Department of Statistics, Federal University of Bahia, Salvador, Brazil}
-
 \affil[2]{Secretary of Health of the State of Bahia, Salvador, Brazil}
-
-%% Author affiliation
 \affil[3]{Department of Econometrics \& Business Statistics, Monash University, Melbourne, Victoria, Australia}
-
 \affil[4]{Department of Business Management, University of Pretoria, Pretoria, South Africa}
-
 
 \begin{document}
 
 \maketitle
+\newpage
 
 %%%% APENAS MATERIAL SUPLEMENTAR(IMGS, FIGURAS, ETC) %%%%
 
-
-\chapter{Figures}
-\newpage 
-
+\section*{Figures}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/1.pdf}
-    \caption{Figure S1: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 1.}
-    \label{fig:sim1}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/1.pdf}
+  \caption{Figure S1: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 1.}
+  \label{fig:sim1}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/2.pdf}
-    \caption{Figure S2: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 2.}
-    \label{fig:sim2}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/2.pdf}
+  \caption{Figure S2: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 2.}
+  \label{fig:sim2}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/3.pdf}
-    \caption{Figure S3: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 3.}
-    \label{fig:sim3}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/3.pdf}
+  \caption{Figure S3: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 3.}
+  \label{fig:sim3}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/4.pdf}
-    \caption{Figure S4: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 4.}
-    \label{fig:sim4}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/4.pdf}
+  \caption{Figure S4: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 4.}
+  \label{fig:sim4}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/5.pdf}
-    \caption{Figure S5: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 5.}
-    \label{fig:sim5}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/5.pdf}
+  \caption{Figure S5: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 5.}
+  \label{fig:sim5}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/6.pdf}
-    \caption{Figure S6: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 6.}
-    \label{fig:sim6}
-\end{figure}
-
-
-\begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/7.pdf}
-    \caption{Figure S7: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 7.}
-    \label{fig:sim7}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/6.pdf}
+  \caption{Figure S6: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 6.}
+  \label{fig:sim6}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/8.pdf}
-    \caption{Figure S8: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 8.}
-    \label{fig:sim8}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/7.pdf}
+  \caption{Figure S7: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 7.}
+  \label{fig:sim7}
 \end{figure}
 
 \begin{figure}[H]
-    \centering  
-    \includegraphics[width=\textwidth]{Imagens/9.pdf}
-    \caption{Figure S9: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 9.}
-    \label{fig:sim9}
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/8.pdf}
+  \caption{Figure S8: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 8.}
+  \label{fig:sim8}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Imagens/9.pdf}
+  \caption{Figure S9: Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 9.}
+  \label{fig:sim9}
 \end{figure}
 
 \newpage
 
-\chapter{Tables}
-\newpage
+\section*{Tables}
 
 \input{Tabs_sh}
 
@@ -157,197 +114,194 @@
 \input{Tabs_uni}
 
 \begin{table}[H]
-\caption*{Table S28: $\RelRMSE_{\Base}$ of admission series. VAR model for base forecasts and sample covariance to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
-    \centering
-    \resizebox{1\textwidth}{!}{%
+  \caption*{Table S28: $\RelRMSE_{\Base}$ of admission series. VAR model for base forecasts and sample covariance to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
+  \centering
+  \resizebox{1\textwidth}{!}{%
     \begin{tabular}{lcccccccccccc}
-\hline
-\multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13} 
-& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\  \hline
+      \hline
+      \multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
+      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\  \hline
 
-
-Total & 0.002 & \textcolor{red}{-0.026} & \textcolor{red}{-0.021} & \textcolor{red}{-0.043} & \textcolor{red}{-0.078} & \textcolor{red}{-0.104} & \textcolor{red}{-0.068} & \textcolor{red}{-0.031} & \textcolor{red}{-0.003} & \textcolor{red}{-0.039} & \textcolor{red}{-0.095} & \textcolor{red}{-0.191}\\
-Midwest & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.002} & 0.001 & \textcolor{red}{-0.020} & \textcolor{red}{-0.026} & \textcolor{red}{-0.016} & \textcolor{red}{-0.013} & 0.007 & \textcolor{red}{-0.006} & 0.005 & \textcolor{red}{-0.012}\\
-Northeast & 0.074 & 0.023 & 0.030 & \textcolor{red}{-0.046} & \textcolor{red}{-0.096} & \textcolor{red}{-0.137} & \textcolor{red}{-0.122} & \textcolor{red}{-0.120} & \textcolor{red}{-0.089} & \textcolor{red}{-0.119} & \textcolor{red}{-0.197} & \textcolor{red}{-0.285}\\
-North & 0.026 & \textcolor{red}{-0.022} & \textcolor{red}{-0.038} & \textcolor{red}{-0.079} & \textcolor{red}{-0.144} & \textcolor{red}{-0.167} & \textcolor{red}{-0.129} & \textcolor{red}{-0.109} & \textcolor{red}{-0.067} & \textcolor{red}{-0.159} & \textcolor{red}{-0.188} & \textcolor{red}{-0.184}\\
-Southeast & 0.015 & 0.007 & 0.010 & \textcolor{red}{-0.002} & \textcolor{red}{-0.045} & \textcolor{red}{-0.071} & \textcolor{red}{-0.048} & \textcolor{red}{-0.046} & \textcolor{red}{-0.011} & \textcolor{red}{-0.061} & \textcolor{red}{-0.099} & \textcolor{red}{-0.151}\\
-South & \textcolor{red}{-0.037} & \textcolor{red}{-0.061} & \textcolor{red}{-0.051} & \textcolor{red}{-0.022} & \textcolor{red}{-0.038} & \textcolor{red}{-0.067} & \textcolor{red}{-0.054} & \textcolor{red}{-0.068} & \textcolor{red}{-0.050} & \textcolor{red}{-0.079} & \textcolor{red}{-0.105} & \textcolor{red}{-0.072}\\
-AC & \textcolor{red}{-0.564} & \textcolor{red}{-0.573} & \textcolor{red}{-0.547} & \textcolor{red}{-0.632} & \textcolor{red}{-0.772} & \textcolor{red}{-0.924} & \textcolor{red}{-1.153} & \textcolor{red}{-1.473} & \textcolor{red}{-1.614} & \textcolor{red}{-2.194} & \textcolor{red}{-2.449} & \textcolor{red}{-3.332}\\
-AL & \textcolor{red}{-0.034} & \textcolor{red}{-0.098} & \textcolor{red}{-0.125} & \textcolor{red}{-0.109} & \textcolor{red}{-0.144} & \textcolor{red}{-0.257} & \textcolor{red}{-0.225} & \textcolor{red}{-0.191} & \textcolor{red}{-0.082} & \textcolor{red}{-0.044} & \textcolor{red}{-0.114} & \textcolor{red}{-0.185}\\
-AM & \textcolor{red}{-0.143} & \textcolor{red}{-0.083} & \textcolor{red}{-0.081} & \textcolor{red}{-0.035} & 0.001 & 0.008 & \textcolor{red}{-0.008} & \textcolor{red}{-0.032} & \textcolor{red}{-0.089} & \textcolor{red}{-0.037} & \textcolor{red}{-0.010} & 0.022\\
-AP & \textcolor{red}{-1.845} & \textcolor{red}{-1.530} & \textcolor{red}{-1.622} & \textcolor{red}{-1.026} & \textcolor{red}{-0.890} & \textcolor{red}{-1.093} & \textcolor{red}{-1.161} & \textcolor{red}{-1.640} & \textcolor{red}{-1.740} & \textcolor{red}{-1.927} & \textcolor{red}{-2.169} & \textcolor{red}{-2.000}\\
-BA & 0.013 & \textcolor{red}{-0.001} & 0.001 & \textcolor{red}{-0.017} & \textcolor{red}{-0.048} & \textcolor{red}{-0.058} & \textcolor{red}{-0.055} & \textcolor{red}{-0.034} & \textcolor{red}{-0.013} & \textcolor{red}{-0.027} & \textcolor{red}{-0.043} & \textcolor{red}{-0.074}\\
-CE & 0.005 & 0.005 & 0.002 & \textcolor{red}{-0.009} & \textcolor{red}{-0.028} & \textcolor{red}{-0.032} & \textcolor{red}{-0.017} & \textcolor{red}{-0.004} & 0.013 & 0.001 & \textcolor{red}{-0.020} & \textcolor{red}{-0.022}\\
-DF & \textcolor{red}{-0.012} & \textcolor{red}{-0.014} & \textcolor{red}{-0.013} & \textcolor{red}{-0.005} & \textcolor{red}{-0.008} & \textcolor{red}{-0.011} & \textcolor{red}{-0.012} & \textcolor{red}{-0.018} & \textcolor{red}{-0.016} & \textcolor{red}{-0.020} & \textcolor{red}{-0.023} & \textcolor{red}{-0.012}\\
-ES & 0.013 & 0.000 & 0.003 & 0.000 & 0.002 & 0.003 & 0.003 & 0.009 & 0.015 & 0.015 & 0.014 & 0.004\\
-GO & 0.074 & 0.048 & 0.026 & 0.011 & 0.036 & 0.032 & 0.018 & \textcolor{red}{-0.001} & \textcolor{red}{-0.036} & 0.043 & 0.033 & 0.174\\
-MA & 0.011 & 0.109 & 0.049 & 0.077 & 0.040 & 0.086 & 0.104 & 0.132 & 0.183 & 0.249 & 0.248 & 0.259\\
-MG & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003}\\
-MS & 0.004 & \textcolor{red}{-0.038} & \textcolor{red}{-0.047} & \textcolor{red}{-0.064} & \textcolor{red}{-0.093} & \textcolor{red}{-0.107} & \textcolor{red}{-0.079} & \textcolor{red}{-0.073} & \textcolor{red}{-0.060} & \textcolor{red}{-0.120} & \textcolor{red}{-0.173} & \textcolor{red}{-0.169}\\
-MT & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & \textcolor{red}{-0.005} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.006} & \textcolor{red}{-0.006}\\
-PA & \textcolor{red}{-0.017} & \textcolor{red}{-0.017} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & \textcolor{red}{-0.038} & \textcolor{red}{-0.049} & \textcolor{red}{-0.037} & \textcolor{red}{-0.056} & \textcolor{red}{-0.055} & \textcolor{red}{-0.057} & \textcolor{red}{-0.055} & \textcolor{red}{-0.037}\\
-PB & \textcolor{red}{-0.184} & \textcolor{red}{-0.214} & \textcolor{red}{-0.313} & \textcolor{red}{-0.285} & \textcolor{red}{-0.291} & \textcolor{red}{-0.213} & \textcolor{red}{-0.270} & \textcolor{red}{-0.121} & 0.033 & 0.033 & 0.104 & 0.018\\
-PE & \textcolor{red}{-0.011} & \textcolor{red}{-0.022} & \textcolor{red}{-0.021} & \textcolor{red}{-0.029} & \textcolor{red}{-0.040} & \textcolor{red}{-0.043} & \textcolor{red}{-0.026} & \textcolor{red}{-0.058} & \textcolor{red}{-0.057} & \textcolor{red}{-0.058} & \textcolor{red}{-0.079} & \textcolor{red}{-0.077}\\
-PI & \textcolor{red}{-1.491} & \textcolor{red}{-2.112} & \textcolor{red}{-1.702} & \textcolor{red}{-1.476} & \textcolor{red}{-1.315} & \textcolor{red}{-1.124} & \textcolor{red}{-0.718} & \textcolor{red}{-0.492} & \textcolor{red}{-0.336} & \textcolor{red}{-0.103} & \textcolor{red}{-0.148} & 0.307\\
-PR & 0.000 & \textcolor{red}{-0.002} & 0.000 & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & 0.001 & 0.002 & 0.004 & \textcolor{red}{-0.002} & \textcolor{red}{-0.015} & \textcolor{red}{-0.025}\\
-RJ & \textcolor{red}{-0.059} & \textcolor{red}{-0.074} & \textcolor{red}{-0.064} & \textcolor{red}{-0.067} & \textcolor{red}{-0.119} & \textcolor{red}{-0.171} & \textcolor{red}{-0.147} & \textcolor{red}{-0.122} & \textcolor{red}{-0.125} & \textcolor{red}{-0.140} & \textcolor{red}{-0.174} & \textcolor{red}{-0.193}\\
-RN & \textcolor{red}{-0.058} & \textcolor{red}{-0.072} & \textcolor{red}{-0.104} & \textcolor{red}{-0.101} & \textcolor{red}{-0.113} & \textcolor{red}{-0.127} & \textcolor{red}{-0.122} & \textcolor{red}{-0.040} & \textcolor{red}{-0.009} & \textcolor{red}{-0.017} & \textcolor{red}{-0.031} & \textcolor{red}{-0.073}\\
-RO & \textcolor{red}{-1.040} & \textcolor{red}{-0.829} & \textcolor{red}{-0.768} & \textcolor{red}{-0.876} & \textcolor{red}{-0.947} & \textcolor{red}{-0.986} & \textcolor{red}{-0.941} & \textcolor{red}{-0.858} & \textcolor{red}{-0.842} & \textcolor{red}{-0.843} & \textcolor{red}{-0.833} & \textcolor{red}{-0.822}\\
-RR & \textcolor{red}{-2.196} & \textcolor{red}{-4.442} & \textcolor{red}{-3.675} & \textcolor{red}{-4.274} & \textcolor{red}{-4.731} & \textcolor{red}{-4.127} & \textcolor{red}{-3.848} & \textcolor{red}{-3.589} & \textcolor{red}{-4.512} & \textcolor{red}{-4.754} & \textcolor{red}{-5.606} & \textcolor{red}{-4.820}\\
-RS & \textcolor{red}{-0.216} & \textcolor{red}{-0.276} & \textcolor{red}{-0.269} & \textcolor{red}{-0.184} & \textcolor{red}{-0.256} & \textcolor{red}{-0.360} & \textcolor{red}{-0.349} & \textcolor{red}{-0.394} & \textcolor{red}{-0.297} & \textcolor{red}{-0.477} & \textcolor{red}{-0.527} & \textcolor{red}{-0.349}\\
-SC & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.001 & 0.001 & 0.001 & 0.002 & 0.002\\
-SE & \textcolor{red}{-0.346} & \textcolor{red}{-0.390} & \textcolor{red}{-0.271} & \textcolor{red}{-0.138} & \textcolor{red}{-0.099} & 0.097 & 0.008 & \textcolor{red}{-0.231} & \textcolor{red}{-0.374} & \textcolor{red}{-0.325} & \textcolor{red}{-0.277} & \textcolor{red}{-0.088}\\
-SP & \textcolor{red}{-0.014} & \textcolor{red}{-0.013} & \textcolor{red}{-0.017} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.010} & \textcolor{red}{-0.010} & \textcolor{red}{-0.025} & \textcolor{red}{-0.026} & \textcolor{red}{-0.037} & \textcolor{red}{-0.040} & \textcolor{red}{-0.014}\\
-TO & \textcolor{red}{-0.022} & \textcolor{red}{-0.057} & \textcolor{red}{-0.069} & \textcolor{red}{-0.070} & \textcolor{red}{-0.060} & \textcolor{red}{-0.070} & \textcolor{red}{-0.048} & \textcolor{red}{-0.052} & \textcolor{red}{-0.053} & \textcolor{red}{-0.014} & \textcolor{red}{-0.029} & \textcolor{red}{-0.078}\\
-\hline
+      Total & 0.002 & \textcolor{red}{-0.026} & \textcolor{red}{-0.021} & \textcolor{red}{-0.043} & \textcolor{red}{-0.078} & \textcolor{red}{-0.104} & \textcolor{red}{-0.068} & \textcolor{red}{-0.031} & \textcolor{red}{-0.003} & \textcolor{red}{-0.039} & \textcolor{red}{-0.095} & \textcolor{red}{-0.191}\\
+      Midwest & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.002} & 0.001 & \textcolor{red}{-0.020} & \textcolor{red}{-0.026} & \textcolor{red}{-0.016} & \textcolor{red}{-0.013} & 0.007 & \textcolor{red}{-0.006} & 0.005 & \textcolor{red}{-0.012}\\
+      Northeast & 0.074 & 0.023 & 0.030 & \textcolor{red}{-0.046} & \textcolor{red}{-0.096} & \textcolor{red}{-0.137} & \textcolor{red}{-0.122} & \textcolor{red}{-0.120} & \textcolor{red}{-0.089} & \textcolor{red}{-0.119} & \textcolor{red}{-0.197} & \textcolor{red}{-0.285}\\
+      North & 0.026 & \textcolor{red}{-0.022} & \textcolor{red}{-0.038} & \textcolor{red}{-0.079} & \textcolor{red}{-0.144} & \textcolor{red}{-0.167} & \textcolor{red}{-0.129} & \textcolor{red}{-0.109} & \textcolor{red}{-0.067} & \textcolor{red}{-0.159} & \textcolor{red}{-0.188} & \textcolor{red}{-0.184}\\
+      Southeast & 0.015 & 0.007 & 0.010 & \textcolor{red}{-0.002} & \textcolor{red}{-0.045} & \textcolor{red}{-0.071} & \textcolor{red}{-0.048} & \textcolor{red}{-0.046} & \textcolor{red}{-0.011} & \textcolor{red}{-0.061} & \textcolor{red}{-0.099} & \textcolor{red}{-0.151}\\
+      South & \textcolor{red}{-0.037} & \textcolor{red}{-0.061} & \textcolor{red}{-0.051} & \textcolor{red}{-0.022} & \textcolor{red}{-0.038} & \textcolor{red}{-0.067} & \textcolor{red}{-0.054} & \textcolor{red}{-0.068} & \textcolor{red}{-0.050} & \textcolor{red}{-0.079} & \textcolor{red}{-0.105} & \textcolor{red}{-0.072}\\
+      AC & \textcolor{red}{-0.564} & \textcolor{red}{-0.573} & \textcolor{red}{-0.547} & \textcolor{red}{-0.632} & \textcolor{red}{-0.772} & \textcolor{red}{-0.924} & \textcolor{red}{-1.153} & \textcolor{red}{-1.473} & \textcolor{red}{-1.614} & \textcolor{red}{-2.194} & \textcolor{red}{-2.449} & \textcolor{red}{-3.332}\\
+      AL & \textcolor{red}{-0.034} & \textcolor{red}{-0.098} & \textcolor{red}{-0.125} & \textcolor{red}{-0.109} & \textcolor{red}{-0.144} & \textcolor{red}{-0.257} & \textcolor{red}{-0.225} & \textcolor{red}{-0.191} & \textcolor{red}{-0.082} & \textcolor{red}{-0.044} & \textcolor{red}{-0.114} & \textcolor{red}{-0.185}\\
+      AM & \textcolor{red}{-0.143} & \textcolor{red}{-0.083} & \textcolor{red}{-0.081} & \textcolor{red}{-0.035} & 0.001 & 0.008 & \textcolor{red}{-0.008} & \textcolor{red}{-0.032} & \textcolor{red}{-0.089} & \textcolor{red}{-0.037} & \textcolor{red}{-0.010} & 0.022\\
+      AP & \textcolor{red}{-1.845} & \textcolor{red}{-1.530} & \textcolor{red}{-1.622} & \textcolor{red}{-1.026} & \textcolor{red}{-0.890} & \textcolor{red}{-1.093} & \textcolor{red}{-1.161} & \textcolor{red}{-1.640} & \textcolor{red}{-1.740} & \textcolor{red}{-1.927} & \textcolor{red}{-2.169} & \textcolor{red}{-2.000}\\
+      BA & 0.013 & \textcolor{red}{-0.001} & 0.001 & \textcolor{red}{-0.017} & \textcolor{red}{-0.048} & \textcolor{red}{-0.058} & \textcolor{red}{-0.055} & \textcolor{red}{-0.034} & \textcolor{red}{-0.013} & \textcolor{red}{-0.027} & \textcolor{red}{-0.043} & \textcolor{red}{-0.074}\\
+      CE & 0.005 & 0.005 & 0.002 & \textcolor{red}{-0.009} & \textcolor{red}{-0.028} & \textcolor{red}{-0.032} & \textcolor{red}{-0.017} & \textcolor{red}{-0.004} & 0.013 & 0.001 & \textcolor{red}{-0.020} & \textcolor{red}{-0.022}\\
+      DF & \textcolor{red}{-0.012} & \textcolor{red}{-0.014} & \textcolor{red}{-0.013} & \textcolor{red}{-0.005} & \textcolor{red}{-0.008} & \textcolor{red}{-0.011} & \textcolor{red}{-0.012} & \textcolor{red}{-0.018} & \textcolor{red}{-0.016} & \textcolor{red}{-0.020} & \textcolor{red}{-0.023} & \textcolor{red}{-0.012}\\
+      ES & 0.013 & 0.000 & 0.003 & 0.000 & 0.002 & 0.003 & 0.003 & 0.009 & 0.015 & 0.015 & 0.014 & 0.004\\
+      GO & 0.074 & 0.048 & 0.026 & 0.011 & 0.036 & 0.032 & 0.018 & \textcolor{red}{-0.001} & \textcolor{red}{-0.036} & 0.043 & 0.033 & 0.174\\
+      MA & 0.011 & 0.109 & 0.049 & 0.077 & 0.040 & 0.086 & 0.104 & 0.132 & 0.183 & 0.249 & 0.248 & 0.259\\
+      MG & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003}\\
+      MS & 0.004 & \textcolor{red}{-0.038} & \textcolor{red}{-0.047} & \textcolor{red}{-0.064} & \textcolor{red}{-0.093} & \textcolor{red}{-0.107} & \textcolor{red}{-0.079} & \textcolor{red}{-0.073} & \textcolor{red}{-0.060} & \textcolor{red}{-0.120} & \textcolor{red}{-0.173} & \textcolor{red}{-0.169}\\
+      MT & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & \textcolor{red}{-0.005} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.006} & \textcolor{red}{-0.006}\\
+      PA & \textcolor{red}{-0.017} & \textcolor{red}{-0.017} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & \textcolor{red}{-0.038} & \textcolor{red}{-0.049} & \textcolor{red}{-0.037} & \textcolor{red}{-0.056} & \textcolor{red}{-0.055} & \textcolor{red}{-0.057} & \textcolor{red}{-0.055} & \textcolor{red}{-0.037}\\
+      PB & \textcolor{red}{-0.184} & \textcolor{red}{-0.214} & \textcolor{red}{-0.313} & \textcolor{red}{-0.285} & \textcolor{red}{-0.291} & \textcolor{red}{-0.213} & \textcolor{red}{-0.270} & \textcolor{red}{-0.121} & 0.033 & 0.033 & 0.104 & 0.018\\
+      PE & \textcolor{red}{-0.011} & \textcolor{red}{-0.022} & \textcolor{red}{-0.021} & \textcolor{red}{-0.029} & \textcolor{red}{-0.040} & \textcolor{red}{-0.043} & \textcolor{red}{-0.026} & \textcolor{red}{-0.058} & \textcolor{red}{-0.057} & \textcolor{red}{-0.058} & \textcolor{red}{-0.079} & \textcolor{red}{-0.077}\\
+      PI & \textcolor{red}{-1.491} & \textcolor{red}{-2.112} & \textcolor{red}{-1.702} & \textcolor{red}{-1.476} & \textcolor{red}{-1.315} & \textcolor{red}{-1.124} & \textcolor{red}{-0.718} & \textcolor{red}{-0.492} & \textcolor{red}{-0.336} & \textcolor{red}{-0.103} & \textcolor{red}{-0.148} & 0.307\\
+      PR & 0.000 & \textcolor{red}{-0.002} & 0.000 & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & 0.001 & 0.002 & 0.004 & \textcolor{red}{-0.002} & \textcolor{red}{-0.015} & \textcolor{red}{-0.025}\\
+      RJ & \textcolor{red}{-0.059} & \textcolor{red}{-0.074} & \textcolor{red}{-0.064} & \textcolor{red}{-0.067} & \textcolor{red}{-0.119} & \textcolor{red}{-0.171} & \textcolor{red}{-0.147} & \textcolor{red}{-0.122} & \textcolor{red}{-0.125} & \textcolor{red}{-0.140} & \textcolor{red}{-0.174} & \textcolor{red}{-0.193}\\
+      RN & \textcolor{red}{-0.058} & \textcolor{red}{-0.072} & \textcolor{red}{-0.104} & \textcolor{red}{-0.101} & \textcolor{red}{-0.113} & \textcolor{red}{-0.127} & \textcolor{red}{-0.122} & \textcolor{red}{-0.040} & \textcolor{red}{-0.009} & \textcolor{red}{-0.017} & \textcolor{red}{-0.031} & \textcolor{red}{-0.073}\\
+      RO & \textcolor{red}{-1.040} & \textcolor{red}{-0.829} & \textcolor{red}{-0.768} & \textcolor{red}{-0.876} & \textcolor{red}{-0.947} & \textcolor{red}{-0.986} & \textcolor{red}{-0.941} & \textcolor{red}{-0.858} & \textcolor{red}{-0.842} & \textcolor{red}{-0.843} & \textcolor{red}{-0.833} & \textcolor{red}{-0.822}\\
+      RR & \textcolor{red}{-2.196} & \textcolor{red}{-4.442} & \textcolor{red}{-3.675} & \textcolor{red}{-4.274} & \textcolor{red}{-4.731} & \textcolor{red}{-4.127} & \textcolor{red}{-3.848} & \textcolor{red}{-3.589} & \textcolor{red}{-4.512} & \textcolor{red}{-4.754} & \textcolor{red}{-5.606} & \textcolor{red}{-4.820}\\
+      RS & \textcolor{red}{-0.216} & \textcolor{red}{-0.276} & \textcolor{red}{-0.269} & \textcolor{red}{-0.184} & \textcolor{red}{-0.256} & \textcolor{red}{-0.360} & \textcolor{red}{-0.349} & \textcolor{red}{-0.394} & \textcolor{red}{-0.297} & \textcolor{red}{-0.477} & \textcolor{red}{-0.527} & \textcolor{red}{-0.349}\\
+      SC & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.001 & 0.001 & 0.001 & 0.002 & 0.002\\
+      SE & \textcolor{red}{-0.346} & \textcolor{red}{-0.390} & \textcolor{red}{-0.271} & \textcolor{red}{-0.138} & \textcolor{red}{-0.099} & 0.097 & 0.008 & \textcolor{red}{-0.231} & \textcolor{red}{-0.374} & \textcolor{red}{-0.325} & \textcolor{red}{-0.277} & \textcolor{red}{-0.088}\\
+      SP & \textcolor{red}{-0.014} & \textcolor{red}{-0.013} & \textcolor{red}{-0.017} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.010} & \textcolor{red}{-0.010} & \textcolor{red}{-0.025} & \textcolor{red}{-0.026} & \textcolor{red}{-0.037} & \textcolor{red}{-0.040} & \textcolor{red}{-0.014}\\
+      TO & \textcolor{red}{-0.022} & \textcolor{red}{-0.057} & \textcolor{red}{-0.069} & \textcolor{red}{-0.070} & \textcolor{red}{-0.060} & \textcolor{red}{-0.070} & \textcolor{red}{-0.048} & \textcolor{red}{-0.052} & \textcolor{red}{-0.053} & \textcolor{red}{-0.014} & \textcolor{red}{-0.029} & \textcolor{red}{-0.078}\\
+      \hline
     \end{tabular}%
-    }
-    \label{tab:adm_var_cov}
+  }
+  \label{tab:adm_var_cov}
 \end{table}
 
 \begin{table}[H]
-\caption*{Table S29: $\RelRMSE_{\Base}$ of dismissal series. VAR model for base forecasts and sample covariance to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
-    \centering
-    \resizebox{1\textwidth}{!}{%
+  \caption*{Table S29: $\RelRMSE_{\Base}$ of dismissal series. VAR model for base forecasts and sample covariance to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
+  \centering
+  \resizebox{1\textwidth}{!}{%
     \begin{tabular}{lcccccccccccc}
-\hline
-\multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13} 
-& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
+      \hline
+      \multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
+      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
 
-Total & 0.143 & 0.128 & 0.146 & 0.081 & 0.062 & 0.081 & 0.086 & 0.108 & 0.068 & \textcolor{red}{-0.013} & \textcolor{red}{-0.055} & \textcolor{red}{-0.113}\\
-Midwest & 0.043 & 0.012 & 0.000 & \textcolor{red}{-0.007} & \textcolor{red}{-0.046} & \textcolor{red}{-0.005} & \textcolor{red}{-0.025} & 0.002 & 0.001 & \textcolor{red}{-0.016} & \textcolor{red}{-0.013} & \textcolor{red}{-0.048}\\
-Northeast & 0.003 & 0.000 & 0.039 & \textcolor{red}{-0.021} & \textcolor{red}{-0.020} & \textcolor{red}{-0.148} & \textcolor{red}{-0.220} & \textcolor{red}{-0.251} & \textcolor{red}{-0.331} & \textcolor{red}{-0.355} & \textcolor{red}{-0.392} & \textcolor{red}{-0.404}\\
-North & 0.048 & 0.033 & 0.013 & \textcolor{red}{-0.018} & \textcolor{red}{-0.060} & \textcolor{red}{-0.012} & \textcolor{red}{-0.033} & \textcolor{red}{-0.058} & \textcolor{red}{-0.088} & \textcolor{red}{-0.111} & \textcolor{red}{-0.079} & \textcolor{red}{-0.153}\\
-Southeast & 0.084 & 0.066 & 0.061 & 0.053 & 0.030 & 0.042 & 0.045 & 0.036 & 0.013 & \textcolor{red}{-0.057} & \textcolor{red}{-0.073} & \textcolor{red}{-0.122}\\
-South & 0.074 & 0.055 & 0.091 & 0.004 & 0.015 & 0.066 & 0.098 & 0.174 & 0.148 & 0.131 & 0.046 & \textcolor{red}{-0.010}\\
-AC & \textcolor{red}{-0.043} & \textcolor{red}{-0.040} & \textcolor{red}{-0.050} & 0.016 & \textcolor{red}{-0.003} & \textcolor{red}{-0.023} & \textcolor{red}{-0.064} & \textcolor{red}{-0.229} & \textcolor{red}{-0.145} & \textcolor{red}{-0.163} & \textcolor{red}{-0.062} & \textcolor{red}{-0.067}\\
-AL & 0.008 & 0.038 & \textcolor{red}{-0.043} & \textcolor{red}{-0.017} & 0.004 & 0.068 & 0.016 & 0.001 & 0.004 & 0.030 & 0.026 & 0.009\\
-AM & \textcolor{red}{-0.091} & \textcolor{red}{-0.099} & \textcolor{red}{-0.186} & \textcolor{red}{-0.269} & \textcolor{red}{-0.272} & \textcolor{red}{-0.220} & \textcolor{red}{-0.211} & \textcolor{red}{-0.253} & \textcolor{red}{-0.260} & \textcolor{red}{-0.261} & \textcolor{red}{-0.240} & \textcolor{red}{-0.270}\\
-AP & \textcolor{red}{-3.162} & \textcolor{red}{-4.496} & \textcolor{red}{-4.630} & \textcolor{red}{-4.104} & \textcolor{red}{-4.175} & \textcolor{red}{-3.868} & \textcolor{red}{-3.973} & \textcolor{red}{-3.504} & \textcolor{red}{-3.136} & \textcolor{red}{-3.724} & \textcolor{red}{-3.972} & \textcolor{red}{-5.697}\\
-BA & \textcolor{red}{-0.031} & \textcolor{red}{-0.037} & \textcolor{red}{-0.011} & \textcolor{red}{-0.022} & \textcolor{red}{-0.041} & \textcolor{red}{-0.048} & \textcolor{red}{-0.082} & \textcolor{red}{-0.072} & \textcolor{red}{-0.081} & \textcolor{red}{-0.097} & \textcolor{red}{-0.101} & \textcolor{red}{-0.118}\\
-CE & 0.017 & \textcolor{red}{-0.024} & \textcolor{red}{-0.025} & \textcolor{red}{-0.020} & \textcolor{red}{-0.033} & \textcolor{red}{-0.002} & 0.004 & \textcolor{red}{-0.017} & \textcolor{red}{-0.018} & \textcolor{red}{-0.078} & \textcolor{red}{-0.035} & \textcolor{red}{-0.050}\\
-DF & 0.000 & 0.000 & \textcolor{red}{-0.008} & \textcolor{red}{-0.003} & \textcolor{red}{-0.011} & \textcolor{red}{-0.001} & 0.001 & \textcolor{red}{-0.005} & \textcolor{red}{-0.012} & \textcolor{red}{-0.025} & \textcolor{red}{-0.016} & \textcolor{red}{-0.025}\\
-ES & \textcolor{red}{-0.010} & \textcolor{red}{-0.007} & \textcolor{red}{-0.017} & \textcolor{red}{-0.033} & \textcolor{red}{-0.035} & \textcolor{red}{-0.016} & \textcolor{red}{-0.011} & \textcolor{red}{-0.004} & \textcolor{red}{-0.013} & \textcolor{red}{-0.023} & \textcolor{red}{-0.025} & \textcolor{red}{-0.030}\\
-GO & \textcolor{red}{-0.044} & \textcolor{red}{-0.090} & \textcolor{red}{-0.004} & \textcolor{red}{-0.028} & 0.036 & 0.032 & 0.020 & 0.065 & 0.035 & 0.082 & 0.066 & 0.086\\
-MA & \textcolor{red}{-0.558} & \textcolor{red}{-0.581} & \textcolor{red}{-0.802} & \textcolor{red}{-0.261} & \textcolor{red}{-0.210} & \textcolor{red}{-0.104} & \textcolor{red}{-0.128} & \textcolor{red}{-0.177} & 0.089 & 0.218 & 0.222 & 0.254\\
-MG & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001}\\
-MS & 0.025 & 0.023 & 0.031 & 0.029 & 0.020 & 0.046 & 0.067 & 0.079 & 0.073 & 0.060 & 0.052 & 0.042\\
-MT & \textcolor{red}{-0.003} & 0.000 & \textcolor{red}{-0.007} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & 0.001 & 0.001 & \textcolor{red}{-0.007} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.005} & 0.001\\
-PA & 0.010 & 0.007 & 0.003 & 0.002 & 0.005 & \textcolor{red}{-0.001} & \textcolor{red}{-0.007} & \textcolor{red}{-0.021} & \textcolor{red}{-0.029} & \textcolor{red}{-0.035} & \textcolor{red}{-0.036} & \textcolor{red}{-0.062}\\
-PB & \textcolor{red}{-0.627} & \textcolor{red}{-0.396} & \textcolor{red}{-0.323} & \textcolor{red}{-0.284} & \textcolor{red}{-0.214} & \textcolor{red}{-0.137} & \textcolor{red}{-0.065} & 0.005 & 0.101 & 0.174 & 0.172 & 0.075\\
-PE & \textcolor{red}{-0.018} & \textcolor{red}{-0.010} & \textcolor{red}{-0.023} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.012} & \textcolor{red}{-0.016} & \textcolor{red}{-0.006} & \textcolor{red}{-0.015} & \textcolor{red}{-0.017} & \textcolor{red}{-0.033}\\
-PI & \textcolor{red}{-1.476} & \textcolor{red}{-1.647} & \textcolor{red}{-2.017} & \textcolor{red}{-1.861} & \textcolor{red}{-1.585} & \textcolor{red}{-1.832} & \textcolor{red}{-1.649} & \textcolor{red}{-2.456} & \textcolor{red}{-2.382} & \textcolor{red}{-2.150} & \textcolor{red}{-1.820} & \textcolor{red}{-2.198}\\
-PR & 0.001 & 0.001 & 0.007 & \textcolor{red}{-0.005} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.005 & 0.018 & 0.012 & 0.008 & \textcolor{red}{-0.005} & \textcolor{red}{-0.008}\\
-RJ & 0.014 & \textcolor{red}{-0.031} & \textcolor{red}{-0.020} & \textcolor{red}{-0.048} & \textcolor{red}{-0.027} & 0.008 & 0.041 & 0.087 & 0.100 & 0.070 & 0.035 & 0.030\\
-RN & 0.081 & 0.071 & 0.102 & \textcolor{red}{-0.053} & \textcolor{red}{-0.058} & \textcolor{red}{-0.015} & 0.022 & 0.096 & 0.042 & \textcolor{red}{-0.109} & \textcolor{red}{-0.107} & \textcolor{red}{-0.150}\\
-RO & 0.049 & \textcolor{red}{-0.084} & \textcolor{red}{-0.097} & \textcolor{red}{-0.222} & \textcolor{red}{-0.337} & \textcolor{red}{-0.184} & \textcolor{red}{-0.047} & 0.075 & 0.070 & \textcolor{red}{-0.070} & \textcolor{red}{-0.167} & \textcolor{red}{-0.288}\\
-RR & \textcolor{red}{-3.152} & \textcolor{red}{-4.506} & \textcolor{red}{-4.362} & \textcolor{red}{-6.285} & \textcolor{red}{-6.384} & \textcolor{red}{-8.316} & \textcolor{red}{-8.830} & \textcolor{red}{-10.723} & \textcolor{red}{-10.574} & \textcolor{red}{-8.078} & \textcolor{red}{-6.312} & \textcolor{red}{-6.071}\\
-RS & 0.039 & \textcolor{red}{-0.041} & 0.107 & \textcolor{red}{-0.040} & \textcolor{red}{-0.002} & 0.118 & 0.149 & 0.361 & 0.200 & 0.049 & \textcolor{red}{-0.074} & \textcolor{red}{-0.299}\\
-SC & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.002 & 0.001 & 0.003 & 0.005 & 0.004 & 0.006 & 0.004 & 0.000 & \textcolor{red}{-0.016}\\
-SE & \textcolor{red}{-0.021} & \textcolor{red}{-0.281} & \textcolor{red}{-0.232} & \textcolor{red}{-0.292} & \textcolor{red}{-0.141} & \textcolor{red}{-0.134} & \textcolor{red}{-0.009} & \textcolor{red}{-0.114} & \textcolor{red}{-0.151} & \textcolor{red}{-0.337} & \textcolor{red}{-0.595} & \textcolor{red}{-0.747}\\
-SP & 0.028 & 0.018 & 0.033 & 0.007 & 0.006 & 0.024 & 0.028 & 0.049 & 0.041 & 0.039 & 0.029 & 0.047\\
-TO & \textcolor{red}{-0.300} & \textcolor{red}{-0.466} & \textcolor{red}{-0.532} & \textcolor{red}{-0.234} & \textcolor{red}{-0.155} & \textcolor{red}{-0.242} & \textcolor{red}{-0.156} & \textcolor{red}{-0.162} & \textcolor{red}{-0.313} & \textcolor{red}{-0.165} & \textcolor{red}{-0.107} & \textcolor{red}{-0.074}\\
+      Total & 0.143 & 0.128 & 0.146 & 0.081 & 0.062 & 0.081 & 0.086 & 0.108 & 0.068 & \textcolor{red}{-0.013} & \textcolor{red}{-0.055} & \textcolor{red}{-0.113}\\
+      Midwest & 0.043 & 0.012 & 0.000 & \textcolor{red}{-0.007} & \textcolor{red}{-0.046} & \textcolor{red}{-0.005} & \textcolor{red}{-0.025} & 0.002 & 0.001 & \textcolor{red}{-0.016} & \textcolor{red}{-0.013} & \textcolor{red}{-0.048}\\
+      Northeast & 0.003 & 0.000 & 0.039 & \textcolor{red}{-0.021} & \textcolor{red}{-0.020} & \textcolor{red}{-0.148} & \textcolor{red}{-0.220} & \textcolor{red}{-0.251} & \textcolor{red}{-0.331} & \textcolor{red}{-0.355} & \textcolor{red}{-0.392} & \textcolor{red}{-0.404}\\
+      North & 0.048 & 0.033 & 0.013 & \textcolor{red}{-0.018} & \textcolor{red}{-0.060} & \textcolor{red}{-0.012} & \textcolor{red}{-0.033} & \textcolor{red}{-0.058} & \textcolor{red}{-0.088} & \textcolor{red}{-0.111} & \textcolor{red}{-0.079} & \textcolor{red}{-0.153}\\
+      Southeast & 0.084 & 0.066 & 0.061 & 0.053 & 0.030 & 0.042 & 0.045 & 0.036 & 0.013 & \textcolor{red}{-0.057} & \textcolor{red}{-0.073} & \textcolor{red}{-0.122}\\
+      South & 0.074 & 0.055 & 0.091 & 0.004 & 0.015 & 0.066 & 0.098 & 0.174 & 0.148 & 0.131 & 0.046 & \textcolor{red}{-0.010}\\
+      AC & \textcolor{red}{-0.043} & \textcolor{red}{-0.040} & \textcolor{red}{-0.050} & 0.016 & \textcolor{red}{-0.003} & \textcolor{red}{-0.023} & \textcolor{red}{-0.064} & \textcolor{red}{-0.229} & \textcolor{red}{-0.145} & \textcolor{red}{-0.163} & \textcolor{red}{-0.062} & \textcolor{red}{-0.067}\\
+      AL & 0.008 & 0.038 & \textcolor{red}{-0.043} & \textcolor{red}{-0.017} & 0.004 & 0.068 & 0.016 & 0.001 & 0.004 & 0.030 & 0.026 & 0.009\\
+      AM & \textcolor{red}{-0.091} & \textcolor{red}{-0.099} & \textcolor{red}{-0.186} & \textcolor{red}{-0.269} & \textcolor{red}{-0.272} & \textcolor{red}{-0.220} & \textcolor{red}{-0.211} & \textcolor{red}{-0.253} & \textcolor{red}{-0.260} & \textcolor{red}{-0.261} & \textcolor{red}{-0.240} & \textcolor{red}{-0.270}\\
+      AP & \textcolor{red}{-3.162} & \textcolor{red}{-4.496} & \textcolor{red}{-4.630} & \textcolor{red}{-4.104} & \textcolor{red}{-4.175} & \textcolor{red}{-3.868} & \textcolor{red}{-3.973} & \textcolor{red}{-3.504} & \textcolor{red}{-3.136} & \textcolor{red}{-3.724} & \textcolor{red}{-3.972} & \textcolor{red}{-5.697}\\
+      BA & \textcolor{red}{-0.031} & \textcolor{red}{-0.037} & \textcolor{red}{-0.011} & \textcolor{red}{-0.022} & \textcolor{red}{-0.041} & \textcolor{red}{-0.048} & \textcolor{red}{-0.082} & \textcolor{red}{-0.072} & \textcolor{red}{-0.081} & \textcolor{red}{-0.097} & \textcolor{red}{-0.101} & \textcolor{red}{-0.118}\\
+      CE & 0.017 & \textcolor{red}{-0.024} & \textcolor{red}{-0.025} & \textcolor{red}{-0.020} & \textcolor{red}{-0.033} & \textcolor{red}{-0.002} & 0.004 & \textcolor{red}{-0.017} & \textcolor{red}{-0.018} & \textcolor{red}{-0.078} & \textcolor{red}{-0.035} & \textcolor{red}{-0.050}\\
+      DF & 0.000 & 0.000 & \textcolor{red}{-0.008} & \textcolor{red}{-0.003} & \textcolor{red}{-0.011} & \textcolor{red}{-0.001} & 0.001 & \textcolor{red}{-0.005} & \textcolor{red}{-0.012} & \textcolor{red}{-0.025} & \textcolor{red}{-0.016} & \textcolor{red}{-0.025}\\
+      ES & \textcolor{red}{-0.010} & \textcolor{red}{-0.007} & \textcolor{red}{-0.017} & \textcolor{red}{-0.033} & \textcolor{red}{-0.035} & \textcolor{red}{-0.016} & \textcolor{red}{-0.011} & \textcolor{red}{-0.004} & \textcolor{red}{-0.013} & \textcolor{red}{-0.023} & \textcolor{red}{-0.025} & \textcolor{red}{-0.030}\\
+      GO & \textcolor{red}{-0.044} & \textcolor{red}{-0.090} & \textcolor{red}{-0.004} & \textcolor{red}{-0.028} & 0.036 & 0.032 & 0.020 & 0.065 & 0.035 & 0.082 & 0.066 & 0.086\\
+      MA & \textcolor{red}{-0.558} & \textcolor{red}{-0.581} & \textcolor{red}{-0.802} & \textcolor{red}{-0.261} & \textcolor{red}{-0.210} & \textcolor{red}{-0.104} & \textcolor{red}{-0.128} & \textcolor{red}{-0.177} & 0.089 & 0.218 & 0.222 & 0.254\\
+      MG & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001}\\
+      MS & 0.025 & 0.023 & 0.031 & 0.029 & 0.020 & 0.046 & 0.067 & 0.079 & 0.073 & 0.060 & 0.052 & 0.042\\
+      MT & \textcolor{red}{-0.003} & 0.000 & \textcolor{red}{-0.007} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & 0.001 & 0.001 & \textcolor{red}{-0.007} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.005} & 0.001\\
+      PA & 0.010 & 0.007 & 0.003 & 0.002 & 0.005 & \textcolor{red}{-0.001} & \textcolor{red}{-0.007} & \textcolor{red}{-0.021} & \textcolor{red}{-0.029} & \textcolor{red}{-0.035} & \textcolor{red}{-0.036} & \textcolor{red}{-0.062}\\
+      PB & \textcolor{red}{-0.627} & \textcolor{red}{-0.396} & \textcolor{red}{-0.323} & \textcolor{red}{-0.284} & \textcolor{red}{-0.214} & \textcolor{red}{-0.137} & \textcolor{red}{-0.065} & 0.005 & 0.101 & 0.174 & 0.172 & 0.075\\
+      PE & \textcolor{red}{-0.018} & \textcolor{red}{-0.010} & \textcolor{red}{-0.023} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.012} & \textcolor{red}{-0.016} & \textcolor{red}{-0.006} & \textcolor{red}{-0.015} & \textcolor{red}{-0.017} & \textcolor{red}{-0.033}\\
+      PI & \textcolor{red}{-1.476} & \textcolor{red}{-1.647} & \textcolor{red}{-2.017} & \textcolor{red}{-1.861} & \textcolor{red}{-1.585} & \textcolor{red}{-1.832} & \textcolor{red}{-1.649} & \textcolor{red}{-2.456} & \textcolor{red}{-2.382} & \textcolor{red}{-2.150} & \textcolor{red}{-1.820} & \textcolor{red}{-2.198}\\
+      PR & 0.001 & 0.001 & 0.007 & \textcolor{red}{-0.005} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.005 & 0.018 & 0.012 & 0.008 & \textcolor{red}{-0.005} & \textcolor{red}{-0.008}\\
+      RJ & 0.014 & \textcolor{red}{-0.031} & \textcolor{red}{-0.020} & \textcolor{red}{-0.048} & \textcolor{red}{-0.027} & 0.008 & 0.041 & 0.087 & 0.100 & 0.070 & 0.035 & 0.030\\
+      RN & 0.081 & 0.071 & 0.102 & \textcolor{red}{-0.053} & \textcolor{red}{-0.058} & \textcolor{red}{-0.015} & 0.022 & 0.096 & 0.042 & \textcolor{red}{-0.109} & \textcolor{red}{-0.107} & \textcolor{red}{-0.150}\\
+      RO & 0.049 & \textcolor{red}{-0.084} & \textcolor{red}{-0.097} & \textcolor{red}{-0.222} & \textcolor{red}{-0.337} & \textcolor{red}{-0.184} & \textcolor{red}{-0.047} & 0.075 & 0.070 & \textcolor{red}{-0.070} & \textcolor{red}{-0.167} & \textcolor{red}{-0.288}\\
+      RR & \textcolor{red}{-3.152} & \textcolor{red}{-4.506} & \textcolor{red}{-4.362} & \textcolor{red}{-6.285} & \textcolor{red}{-6.384} & \textcolor{red}{-8.316} & \textcolor{red}{-8.830} & \textcolor{red}{-10.723} & \textcolor{red}{-10.574} & \textcolor{red}{-8.078} & \textcolor{red}{-6.312} & \textcolor{red}{-6.071}\\
+      RS & 0.039 & \textcolor{red}{-0.041} & 0.107 & \textcolor{red}{-0.040} & \textcolor{red}{-0.002} & 0.118 & 0.149 & 0.361 & 0.200 & 0.049 & \textcolor{red}{-0.074} & \textcolor{red}{-0.299}\\
+      SC & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.002 & 0.001 & 0.003 & 0.005 & 0.004 & 0.006 & 0.004 & 0.000 & \textcolor{red}{-0.016}\\
+      SE & \textcolor{red}{-0.021} & \textcolor{red}{-0.281} & \textcolor{red}{-0.232} & \textcolor{red}{-0.292} & \textcolor{red}{-0.141} & \textcolor{red}{-0.134} & \textcolor{red}{-0.009} & \textcolor{red}{-0.114} & \textcolor{red}{-0.151} & \textcolor{red}{-0.337} & \textcolor{red}{-0.595} & \textcolor{red}{-0.747}\\
+      SP & 0.028 & 0.018 & 0.033 & 0.007 & 0.006 & 0.024 & 0.028 & 0.049 & 0.041 & 0.039 & 0.029 & 0.047\\
+      TO & \textcolor{red}{-0.300} & \textcolor{red}{-0.466} & \textcolor{red}{-0.532} & \textcolor{red}{-0.234} & \textcolor{red}{-0.155} & \textcolor{red}{-0.242} & \textcolor{red}{-0.156} & \textcolor{red}{-0.162} & \textcolor{red}{-0.313} & \textcolor{red}{-0.165} & \textcolor{red}{-0.107} & \textcolor{red}{-0.074}\\
 
-                        \hline
+      \hline
     \end{tabular}%
-    }
-    \label{tab:dem_var_cov}
-\end{table}
-
-
-\begin{table}[H]
-\caption*{Table S30: $\RelRMSE_{\Base}$ of admission series. VAR model for base forecasts and the shrinkage approach to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
-    \centering
-    \resizebox{1\textwidth}{!}{%
-    \begin{tabular}{lcccccccccccc}
-\hline
-\multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13} 
-& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
-Total & 0.009 & \textcolor{red}{-0.010} & \textcolor{red}{-0.008} & \textcolor{red}{-0.026} & \textcolor{red}{-0.045} & \textcolor{red}{-0.055} & \textcolor{red}{-0.029} & 0.017 & 0.038 & 0.033 & 0.001 & \textcolor{red}{-0.084}\\
-Midwest & \textcolor{red}{-0.008} & \textcolor{red}{-0.008} & 0.000 & 0.002 & \textcolor{red}{-0.017} & \textcolor{red}{-0.020} & \textcolor{red}{-0.010} & \textcolor{red}{-0.002} & 0.019 & 0.009 & 0.023 & \textcolor{red}{-0.009}\\
-Northeast & 0.040 & 0.000 & 0.002 & \textcolor{red}{-0.047} & \textcolor{red}{-0.068} & \textcolor{red}{-0.093} & \textcolor{red}{-0.086} & \textcolor{red}{-0.076} & \textcolor{red}{-0.054} & \textcolor{red}{-0.064} & \textcolor{red}{-0.110} & \textcolor{red}{-0.177}\\
-North & 0.018 & 0.008 & \textcolor{red}{-0.003} & \textcolor{red}{-0.009} & \textcolor{red}{-0.032} & \textcolor{red}{-0.032} & \textcolor{red}{-0.013} & 0.001 & 0.022 & 0.005 & 0.001 & 0.000\\
-Southeast & 0.023 & 0.021 & 0.021 & 0.009 & \textcolor{red}{-0.024} & \textcolor{red}{-0.038} & \textcolor{red}{-0.020} & \textcolor{red}{-0.011} & 0.019 & \textcolor{red}{-0.014} & \textcolor{red}{-0.036} & \textcolor{red}{-0.075}\\
-South & \textcolor{red}{-0.005} & \textcolor{red}{-0.008} & \textcolor{red}{-0.001} & 0.007 & \textcolor{red}{-0.004} & \textcolor{red}{-0.012} & \textcolor{red}{-0.009} & 0.000 & 0.008 & 0.030 & 0.028 & \textcolor{red}{-0.005}\\
-AC & \textcolor{red}{-0.083} & \textcolor{red}{-0.130} & \textcolor{red}{-0.160} & \textcolor{red}{-0.165} & \textcolor{red}{-0.203} & \textcolor{red}{-0.201} & \textcolor{red}{-0.194} & \textcolor{red}{-0.166} & \textcolor{red}{-0.075} & \textcolor{red}{-0.220} & \textcolor{red}{-0.293} & \textcolor{red}{-0.670}\\
-AL & 0.045 & 0.024 & 0.020 & 0.034 & 0.020 & 0.000 & 0.001 & 0.016 & 0.027 & 0.053 & 0.023 & 0.025\\
-AM & \textcolor{red}{-0.036} & \textcolor{red}{-0.016} & \textcolor{red}{-0.011} & \textcolor{red}{-0.003} & 0.002 & 0.000 & \textcolor{red}{-0.005} & \textcolor{red}{-0.010} & \textcolor{red}{-0.019} & 0.003 & 0.015 & 0.010\\
-AP & \textcolor{red}{-0.934} & \textcolor{red}{-0.733} & \textcolor{red}{-0.444} & \textcolor{red}{-0.489} & \textcolor{red}{-0.475} & \textcolor{red}{-0.682} & \textcolor{red}{-0.868} & \textcolor{red}{-1.380} & \textcolor{red}{-1.616} & \textcolor{red}{-1.751} & \textcolor{red}{-1.968} & \textcolor{red}{-1.773}\\
-BA & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.007} & \textcolor{red}{-0.020} & \textcolor{red}{-0.023} & \textcolor{red}{-0.021} & \textcolor{red}{-0.015} & \textcolor{red}{-0.007} & \textcolor{red}{-0.012} & \textcolor{red}{-0.016} & \textcolor{red}{-0.023}\\
-CE & \textcolor{red}{-0.002} & 0.006 & 0.002 & 0.004 & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & 0.001 & 0.004 & 0.016 & 0.017 & 0.023 & 0.038\\
-DF & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.000 & 0.001 & 0.000 & 0.001 & 0.001 & 0.002 & 0.004 & 0.003 & 0.007 & 0.008\\
-ES & 0.011 & 0.010 & 0.007 & 0.008 & 0.006 & 0.009 & 0.009 & 0.012 & 0.015 & 0.015 & 0.017 & 0.016\\
-GO & 0.055 & 0.027 & 0.016 & \textcolor{red}{-0.003} & 0.018 & 0.020 & 0.017 & 0.016 & \textcolor{red}{-0.004} & 0.045 & 0.005 & 0.067\\
-MA & \textcolor{red}{-0.009} & 0.069 & 0.023 & 0.054 & 0.027 & 0.056 & 0.080 & 0.099 & 0.155 & 0.208 & 0.229 & 0.223\\
-MG & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001}\\
-MS & 0.021 & 0.014 & 0.001 & \textcolor{red}{-0.002} & \textcolor{red}{-0.011} & \textcolor{red}{-0.008} & 0.003 & 0.011 & 0.015 & 0.007 & \textcolor{red}{-0.007} & \textcolor{red}{-0.004}\\
-MT & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.001 & 0.003 & 0.002 & 0.001\\
-PA & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.007} & \textcolor{red}{-0.016} & \textcolor{red}{-0.020} & \textcolor{red}{-0.012} & \textcolor{red}{-0.007} & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.005} & \textcolor{red}{-0.006}\\
-PB & \textcolor{red}{-0.069} & \textcolor{red}{-0.051} & \textcolor{red}{-0.124} & \textcolor{red}{-0.109} & \textcolor{red}{-0.150} & \textcolor{red}{-0.097} & \textcolor{red}{-0.137} & \textcolor{red}{-0.059} & 0.026 & \textcolor{red}{-0.008} & 0.004 & 0.006\\
-PE & 0.004 & 0.006 & 0.006 & 0.004 & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & 0.000 & \textcolor{red}{-0.004} & 0.004 & 0.004 & 0.001 & 0.003\\
-PI & \textcolor{red}{-1.565} & \textcolor{red}{-1.107} & \textcolor{red}{-1.005} & \textcolor{red}{-0.433} & \textcolor{red}{-0.551} & \textcolor{red}{-0.466} & \textcolor{red}{-0.318} & \textcolor{red}{-0.217} & \textcolor{red}{-0.234} & \textcolor{red}{-0.017} & 0.126 & 0.252\\
-PR & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.001 & 0.002 & 0.003 & 0.002 & \textcolor{red}{-0.002} & \textcolor{red}{-0.008}\\
-RJ & \textcolor{red}{-0.043} & \textcolor{red}{-0.019} & \textcolor{red}{-0.012} & 0.002 & \textcolor{red}{-0.004} & \textcolor{red}{-0.006} & \textcolor{red}{-0.005} & 0.011 & 0.017 & 0.023 & 0.032 & 0.027\\
-RN & \textcolor{red}{-0.029} & \textcolor{red}{-0.014} & \textcolor{red}{-0.015} & \textcolor{red}{-0.013} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & \textcolor{red}{-0.031} & \textcolor{red}{-0.003} & 0.005 & 0.018 & 0.027 & 0.034\\
-RO & \textcolor{red}{-0.298} & \textcolor{red}{-0.171} & \textcolor{red}{-0.072} & \textcolor{red}{-0.063} & \textcolor{red}{-0.059} & \textcolor{red}{-0.062} & \textcolor{red}{-0.084} & \textcolor{red}{-0.035} & 0.008 & 0.128 & 0.169 & 0.092\\
-RR & \textcolor{red}{-0.521} & \textcolor{red}{-0.632} & \textcolor{red}{-0.495} & \textcolor{red}{-0.450} & \textcolor{red}{-0.860} & \textcolor{red}{-0.855} & \textcolor{red}{-0.618} & \textcolor{red}{-0.576} & \textcolor{red}{-0.699} & \textcolor{red}{-0.568} & \textcolor{red}{-1.161} & \textcolor{red}{-0.991}\\
-RS & \textcolor{red}{-0.059} & \textcolor{red}{-0.017} & \textcolor{red}{-0.004} & 0.028 & \textcolor{red}{-0.003} & \textcolor{red}{-0.040} & \textcolor{red}{-0.019} & 0.007 & 0.001 & 0.010 & 0.024 & \textcolor{red}{-0.009}\\
-SC & 0.001 & 0.000 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.001 & 0.002 & 0.001 & 0.002 & 0.000\\
-SE & \textcolor{red}{-0.045} & 0.005 & 0.025 & 0.064 & 0.062 & 0.035 & 0.017 & \textcolor{red}{-0.024} & 0.012 & 0.058 & 0.097 & 0.147\\
-SP & \textcolor{red}{-0.006} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & 0.000 & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.007} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & 0.003 & 0.008 & 0.013\\
-TO & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.010} & \textcolor{red}{-0.016} & \textcolor{red}{-0.009} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & 0.004 & 0.007 & 0.004\\
-\hline
-    \end{tabular}%
-    }
-    \label{tab:adm_var_sh}
+  }
+  \label{tab:dem_var_cov}
 \end{table}
 
 \begin{table}[H]
-\caption*{Table S31: $\RelRMSE_{\Base}$ of dismissal series. VAR model for base forecasts and the shrinkage approach to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
-    \centering
-    \resizebox{1\textwidth}{!}{%
+  \caption*{Table S30: $\RelRMSE_{\Base}$ of admission series. VAR model for base forecasts and the shrinkage approach to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
+  \centering
+  \resizebox{1\textwidth}{!}{%
     \begin{tabular}{lcccccccccccc}
-\hline
-\multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13} 
-& 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
-Total & 0.111 & 0.112 & 0.108 & 0.080 & 0.056 & 0.067 & 0.063 & 0.054 & 0.044 & \textcolor{red}{-0.018} & \textcolor{red}{-0.047} & \textcolor{red}{-0.097}\\
-Midwest & 0.041 & 0.027 & \textcolor{red}{-0.010} & 0.005 & \textcolor{red}{-0.043} & \textcolor{red}{-0.004} & \textcolor{red}{-0.033} & \textcolor{red}{-0.027} & \textcolor{red}{-0.015} & \textcolor{red}{-0.030} & \textcolor{red}{-0.023} & \textcolor{red}{-0.054}\\
-Northeas & 0.010 & 0.035 & 0.039 & 0.031 & 0.026 & \textcolor{red}{-0.042} & \textcolor{red}{-0.071} & \textcolor{red}{-0.102} & \textcolor{red}{-0.130} & \textcolor{red}{-0.141} & \textcolor{red}{-0.175} & \textcolor{red}{-0.154}\\
-North & 0.019 & 0.016 & 0.012 & 0.027 & 0.006 & 0.023 & 0.017 & \textcolor{red}{-0.002} & \textcolor{red}{-0.008} & \textcolor{red}{-0.026} & \textcolor{red}{-0.018} & \textcolor{red}{-0.044}\\
-Southeast  & 0.053 & 0.048 & 0.029 & 0.047 & 0.020 & 0.024 & 0.021 & \textcolor{red}{-0.009} & \textcolor{red}{-0.018} & \textcolor{red}{-0.081} & \textcolor{red}{-0.090} & \textcolor{red}{-0.144}\\
-South  & 0.012 & 0.001 & 0.000 & \textcolor{red}{-0.006} & \textcolor{red}{-0.014} & 0.008 & 0.015 & 0.023 & 0.037 & 0.036 & 0.017 & \textcolor{red}{-0.012}\\
-AC & \textcolor{red}{-0.054} & \textcolor{red}{-0.064} & \textcolor{red}{-0.068} & \textcolor{red}{-0.081} & \textcolor{red}{-0.078} & \textcolor{red}{-0.073} & \textcolor{red}{-0.067} & \textcolor{red}{-0.092} & \textcolor{red}{-0.073} & \textcolor{red}{-0.160} & \textcolor{red}{-0.137} & \textcolor{red}{-0.193}\\
-AL & 0.026 & 0.062 & 0.049 & 0.067 & 0.015 & 0.080 & 0.077 & 0.088 & 0.090 & 0.094 & 0.097 & 0.103\\
-AM & \textcolor{red}{-0.027} & \textcolor{red}{-0.029} & \textcolor{red}{-0.056} & \textcolor{red}{-0.082} & \textcolor{red}{-0.075} & \textcolor{red}{-0.088} & \textcolor{red}{-0.087} & \textcolor{red}{-0.094} & \textcolor{red}{-0.110} & \textcolor{red}{-0.121} & \textcolor{red}{-0.120} & \textcolor{red}{-0.121}\\
-AP & \textcolor{red}{-0.869} & \textcolor{red}{-1.475} & \textcolor{red}{-1.297} & \textcolor{red}{-1.347} & \textcolor{red}{-1.222} & \textcolor{red}{-1.356} & \textcolor{red}{-1.487} & \textcolor{red}{-1.419} & \textcolor{red}{-1.322} & \textcolor{red}{-1.571} & \textcolor{red}{-1.772} & \textcolor{red}{-2.398}\\
-BA & \textcolor{red}{-0.015} & \textcolor{red}{-0.007} & \textcolor{red}{-0.002} & 0.008 & 0.001 & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.008} & \textcolor{red}{-0.011} & \textcolor{red}{-0.018} & \textcolor{red}{-0.020} & \textcolor{red}{-0.025}\\
-CE & 0.006 & 0.006 & 0.002 & 0.004 & \textcolor{red}{-0.016} & 0.013 & 0.016 & 0.014 & 0.024 & \textcolor{red}{-0.001} & 0.026 & 0.001\\
-DF & 0.000 & 0.000 & 0.001 & 0.002 & 0.000 & 0.004 & 0.003 & 0.001 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002}\\
-ES & 0.003 & 0.008 & 0.000 & 0.002 & \textcolor{red}{-0.002} & 0.004 & 0.005 & 0.005 & 0.005 & 0.002 & 0.002 & \textcolor{red}{-0.001}\\
-GO & \textcolor{red}{-0.015} & 0.013 & 0.026 & \textcolor{red}{-0.008} & 0.031 & 0.010 & 0.019 & 0.022 & 0.009 & 0.033 & 0.019 & 0.048\\
-MA & \textcolor{red}{-0.147} & \textcolor{red}{-0.167} & \textcolor{red}{-0.182} & \textcolor{red}{-0.081} & \textcolor{red}{-0.143} & 0.020 & 0.015 & 0.004 & 0.104 & 0.116 & 0.156 & 0.267\\
-MG & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000\\
-MS & 0.002 & 0.007 & 0.009 & 0.018 & 0.012 & 0.024 & 0.031 & 0.029 & 0.029 & 0.023 & 0.019 & 0.015\\
-MT & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.001 & 0.001 & 0.002 & 0.001 & 0.001 & 0.002 & 0.003\\
-PA & 0.003 & 0.005 & 0.001 & 0.005 & 0.005 & 0.003 & 0.002 & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.009} & \textcolor{red}{-0.013} & \textcolor{red}{-0.016}\\
-PB & \textcolor{red}{-0.251} & \textcolor{red}{-0.098} & \textcolor{red}{-0.162} & \textcolor{red}{-0.137} & \textcolor{red}{-0.092} & \textcolor{red}{-0.046} & 0.017 & 0.035 & 0.111 & 0.120 & 0.071 & \textcolor{red}{-0.048}\\
-PE & \textcolor{red}{-0.008} & \textcolor{red}{-0.004} & \textcolor{red}{-0.012} & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & 0.004 & 0.006 & 0.008 & 0.012 & 0.007 & 0.003 & \textcolor{red}{-0.004}\\
-PI & \textcolor{red}{-1.631} & \textcolor{red}{-2.236} & \textcolor{red}{-2.366} & \textcolor{red}{-3.029} & \textcolor{red}{-2.321} & \textcolor{red}{-2.582} & \textcolor{red}{-2.892} & \textcolor{red}{-4.077} & \textcolor{red}{-3.619} & \textcolor{red}{-2.860} & \textcolor{red}{-2.192} & \textcolor{red}{-2.876}\\
-PR & \textcolor{red}{-0.003} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.004} & \textcolor{red}{-0.003} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.012} & \textcolor{red}{-0.013}\\
-RJ & \textcolor{red}{-0.018} & \textcolor{red}{-0.020} & \textcolor{red}{-0.001} & 0.000 & 0.020 & 0.045 & 0.049 & 0.061 & 0.090 & 0.102 & 0.099 & 0.077\\
-RN & 0.047 & 0.055 & 0.005 & \textcolor{red}{-0.009} & \textcolor{red}{-0.019} & \textcolor{red}{-0.032} & \textcolor{red}{-0.026} & \textcolor{red}{-0.015} & \textcolor{red}{-0.006} & \textcolor{red}{-0.048} & \textcolor{red}{-0.059} & \textcolor{red}{-0.077}\\
-RO & 0.013 & 0.108 & 0.080 & 0.031 & 0.003 & 0.095 & 0.119 & 0.171 & 0.192 & 0.186 & 0.153 & 0.081\\
-RR & \textcolor{red}{-1.184} & \textcolor{red}{-1.889} & \textcolor{red}{-1.596} & \textcolor{red}{-2.171} & \textcolor{red}{-2.010} & \textcolor{red}{-2.806} & \textcolor{red}{-3.007} & \textcolor{red}{-4.065} & \textcolor{red}{-4.069} & \textcolor{red}{-3.224} & \textcolor{red}{-2.603} & \textcolor{red}{-2.578}\\
-RS & 0.017 & \textcolor{red}{-0.024} & 0.000 & 0.017 & \textcolor{red}{-0.010} & 0.036 & 0.031 & 0.043 & 0.092 & 0.044 & 0.041 & 0.005\\
-SC & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.001 & 0.000 & 0.002 & 0.003 & 0.003 & 0.004 & 0.004 & 0.002 & \textcolor{red}{-0.005}\\
-SE & \textcolor{red}{-0.026} & \textcolor{red}{-0.025} & \textcolor{red}{-0.046} & \textcolor{red}{-0.170} & \textcolor{red}{-0.067} & \textcolor{red}{-0.064} & 0.005 & 0.040 & 0.079 & 0.084 & \textcolor{red}{-0.011} & \textcolor{red}{-0.157}\\
-SP & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.006} & \textcolor{red}{-0.006} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & 0.001 & 0.005 & 0.005 & 0.001 & 0.004\\
-TO & \textcolor{red}{-0.097} & \textcolor{red}{-0.115} & \textcolor{red}{-0.104} & \textcolor{red}{-0.050} & \textcolor{red}{-0.025} & \textcolor{red}{-0.061} & \textcolor{red}{-0.036} & \textcolor{red}{-0.025} & \textcolor{red}{-0.037} & \textcolor{red}{-0.003} & 0.003 & 0.060\\
-                        \hline
+      \hline
+      \multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
+      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
+      Total & 0.009 & \textcolor{red}{-0.010} & \textcolor{red}{-0.008} & \textcolor{red}{-0.026} & \textcolor{red}{-0.045} & \textcolor{red}{-0.055} & \textcolor{red}{-0.029} & 0.017 & 0.038 & 0.033 & 0.001 & \textcolor{red}{-0.084}\\
+      Midwest & \textcolor{red}{-0.008} & \textcolor{red}{-0.008} & 0.000 & 0.002 & \textcolor{red}{-0.017} & \textcolor{red}{-0.020} & \textcolor{red}{-0.010} & \textcolor{red}{-0.002} & 0.019 & 0.009 & 0.023 & \textcolor{red}{-0.009}\\
+      Northeast & 0.040 & 0.000 & 0.002 & \textcolor{red}{-0.047} & \textcolor{red}{-0.068} & \textcolor{red}{-0.093} & \textcolor{red}{-0.086} & \textcolor{red}{-0.076} & \textcolor{red}{-0.054} & \textcolor{red}{-0.064} & \textcolor{red}{-0.110} & \textcolor{red}{-0.177}\\
+      North & 0.018 & 0.008 & \textcolor{red}{-0.003} & \textcolor{red}{-0.009} & \textcolor{red}{-0.032} & \textcolor{red}{-0.032} & \textcolor{red}{-0.013} & 0.001 & 0.022 & 0.005 & 0.001 & 0.000\\
+      Southeast & 0.023 & 0.021 & 0.021 & 0.009 & \textcolor{red}{-0.024} & \textcolor{red}{-0.038} & \textcolor{red}{-0.020} & \textcolor{red}{-0.011} & 0.019 & \textcolor{red}{-0.014} & \textcolor{red}{-0.036} & \textcolor{red}{-0.075}\\
+      South & \textcolor{red}{-0.005} & \textcolor{red}{-0.008} & \textcolor{red}{-0.001} & 0.007 & \textcolor{red}{-0.004} & \textcolor{red}{-0.012} & \textcolor{red}{-0.009} & 0.000 & 0.008 & 0.030 & 0.028 & \textcolor{red}{-0.005}\\
+      AC & \textcolor{red}{-0.083} & \textcolor{red}{-0.130} & \textcolor{red}{-0.160} & \textcolor{red}{-0.165} & \textcolor{red}{-0.203} & \textcolor{red}{-0.201} & \textcolor{red}{-0.194} & \textcolor{red}{-0.166} & \textcolor{red}{-0.075} & \textcolor{red}{-0.220} & \textcolor{red}{-0.293} & \textcolor{red}{-0.670}\\
+      AL & 0.045 & 0.024 & 0.020 & 0.034 & 0.020 & 0.000 & 0.001 & 0.016 & 0.027 & 0.053 & 0.023 & 0.025\\
+      AM & \textcolor{red}{-0.036} & \textcolor{red}{-0.016} & \textcolor{red}{-0.011} & \textcolor{red}{-0.003} & 0.002 & 0.000 & \textcolor{red}{-0.005} & \textcolor{red}{-0.010} & \textcolor{red}{-0.019} & 0.003 & 0.015 & 0.010\\
+      AP & \textcolor{red}{-0.934} & \textcolor{red}{-0.733} & \textcolor{red}{-0.444} & \textcolor{red}{-0.489} & \textcolor{red}{-0.475} & \textcolor{red}{-0.682} & \textcolor{red}{-0.868} & \textcolor{red}{-1.380} & \textcolor{red}{-1.616} & \textcolor{red}{-1.751} & \textcolor{red}{-1.968} & \textcolor{red}{-1.773}\\
+      BA & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.007} & \textcolor{red}{-0.020} & \textcolor{red}{-0.023} & \textcolor{red}{-0.021} & \textcolor{red}{-0.015} & \textcolor{red}{-0.007} & \textcolor{red}{-0.012} & \textcolor{red}{-0.016} & \textcolor{red}{-0.023}\\
+      CE & \textcolor{red}{-0.002} & 0.006 & 0.002 & 0.004 & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & 0.001 & 0.004 & 0.016 & 0.017 & 0.023 & 0.038\\
+      DF & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.000 & 0.001 & 0.000 & 0.001 & 0.001 & 0.002 & 0.004 & 0.003 & 0.007 & 0.008\\
+      ES & 0.011 & 0.010 & 0.007 & 0.008 & 0.006 & 0.009 & 0.009 & 0.012 & 0.015 & 0.015 & 0.017 & 0.016\\
+      GO & 0.055 & 0.027 & 0.016 & \textcolor{red}{-0.003} & 0.018 & 0.020 & 0.017 & 0.016 & \textcolor{red}{-0.004} & 0.045 & 0.005 & 0.067\\
+      MA & \textcolor{red}{-0.009} & 0.069 & 0.023 & 0.054 & 0.027 & 0.056 & 0.080 & 0.099 & 0.155 & 0.208 & 0.229 & 0.223\\
+      MG & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001}\\
+      MS & 0.021 & 0.014 & 0.001 & \textcolor{red}{-0.002} & \textcolor{red}{-0.011} & \textcolor{red}{-0.008} & 0.003 & 0.011 & 0.015 & 0.007 & \textcolor{red}{-0.007} & \textcolor{red}{-0.004}\\
+      MT & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.001 & 0.003 & 0.002 & 0.001\\
+      PA & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.007} & \textcolor{red}{-0.016} & \textcolor{red}{-0.020} & \textcolor{red}{-0.012} & \textcolor{red}{-0.007} & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.005} & \textcolor{red}{-0.006}\\
+      PB & \textcolor{red}{-0.069} & \textcolor{red}{-0.051} & \textcolor{red}{-0.124} & \textcolor{red}{-0.109} & \textcolor{red}{-0.150} & \textcolor{red}{-0.097} & \textcolor{red}{-0.137} & \textcolor{red}{-0.059} & 0.026 & \textcolor{red}{-0.008} & 0.004 & 0.006\\
+      PE & 0.004 & 0.006 & 0.006 & 0.004 & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & 0.000 & \textcolor{red}{-0.004} & 0.004 & 0.004 & 0.001 & 0.003\\
+      PI & \textcolor{red}{-1.565} & \textcolor{red}{-1.107} & \textcolor{red}{-1.005} & \textcolor{red}{-0.433} & \textcolor{red}{-0.551} & \textcolor{red}{-0.466} & \textcolor{red}{-0.318} & \textcolor{red}{-0.217} & \textcolor{red}{-0.234} & \textcolor{red}{-0.017} & 0.126 & 0.252\\
+      PR & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.001 & 0.002 & 0.003 & 0.002 & \textcolor{red}{-0.002} & \textcolor{red}{-0.008}\\
+      RJ & \textcolor{red}{-0.043} & \textcolor{red}{-0.019} & \textcolor{red}{-0.012} & 0.002 & \textcolor{red}{-0.004} & \textcolor{red}{-0.006} & \textcolor{red}{-0.005} & 0.011 & 0.017 & 0.023 & 0.032 & 0.027\\
+      RN & \textcolor{red}{-0.029} & \textcolor{red}{-0.014} & \textcolor{red}{-0.015} & \textcolor{red}{-0.013} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & \textcolor{red}{-0.031} & \textcolor{red}{-0.003} & 0.005 & 0.018 & 0.027 & 0.034\\
+      RO & \textcolor{red}{-0.298} & \textcolor{red}{-0.171} & \textcolor{red}{-0.072} & \textcolor{red}{-0.063} & \textcolor{red}{-0.059} & \textcolor{red}{-0.062} & \textcolor{red}{-0.084} & \textcolor{red}{-0.035} & 0.008 & 0.128 & 0.169 & 0.092\\
+      RR & \textcolor{red}{-0.521} & \textcolor{red}{-0.632} & \textcolor{red}{-0.495} & \textcolor{red}{-0.450} & \textcolor{red}{-0.860} & \textcolor{red}{-0.855} & \textcolor{red}{-0.618} & \textcolor{red}{-0.576} & \textcolor{red}{-0.699} & \textcolor{red}{-0.568} & \textcolor{red}{-1.161} & \textcolor{red}{-0.991}\\
+      RS & \textcolor{red}{-0.059} & \textcolor{red}{-0.017} & \textcolor{red}{-0.004} & 0.028 & \textcolor{red}{-0.003} & \textcolor{red}{-0.040} & \textcolor{red}{-0.019} & 0.007 & 0.001 & 0.010 & 0.024 & \textcolor{red}{-0.009}\\
+      SC & 0.001 & 0.000 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.001 & 0.002 & 0.001 & 0.002 & 0.000\\
+      SE & \textcolor{red}{-0.045} & 0.005 & 0.025 & 0.064 & 0.062 & 0.035 & 0.017 & \textcolor{red}{-0.024} & 0.012 & 0.058 & 0.097 & 0.147\\
+      SP & \textcolor{red}{-0.006} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & 0.000 & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.007} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & 0.003 & 0.008 & 0.013\\
+      TO & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.010} & \textcolor{red}{-0.016} & \textcolor{red}{-0.009} & \textcolor{red}{-0.019} & \textcolor{red}{-0.021} & 0.004 & 0.007 & 0.004\\
+      \hline
     \end{tabular}%
-    }
-    \label{tab:dem_var_sh}
+  }
+  \label{tab:adm_var_sh}
 \end{table}
 
+\begin{table}[H]
+  \caption*{Table S31: $\RelRMSE_{\Base}$ of dismissal series. VAR model for base forecasts and the shrinkage approach to estimate $\boldsymbol{W}$. Values in red indicate a $\RelRMSE_{\Base}$ greater than 1.}
+  \centering
+  \resizebox{1\textwidth}{!}{%
+    \begin{tabular}{lcccccccccccc}
+      \hline
+      \multirow{2}{*}{Series} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
+      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
+      Total & 0.111 & 0.112 & 0.108 & 0.080 & 0.056 & 0.067 & 0.063 & 0.054 & 0.044 & \textcolor{red}{-0.018} & \textcolor{red}{-0.047} & \textcolor{red}{-0.097}\\
+      Midwest & 0.041 & 0.027 & \textcolor{red}{-0.010} & 0.005 & \textcolor{red}{-0.043} & \textcolor{red}{-0.004} & \textcolor{red}{-0.033} & \textcolor{red}{-0.027} & \textcolor{red}{-0.015} & \textcolor{red}{-0.030} & \textcolor{red}{-0.023} & \textcolor{red}{-0.054}\\
+      Northeast & 0.010 & 0.035 & 0.039 & 0.031 & 0.026 & \textcolor{red}{-0.042} & \textcolor{red}{-0.071} & \textcolor{red}{-0.102} & \textcolor{red}{-0.130} & \textcolor{red}{-0.141} & \textcolor{red}{-0.175} & \textcolor{red}{-0.154}\\
+      North & 0.019 & 0.016 & 0.012 & 0.027 & 0.006 & 0.023 & 0.017 & \textcolor{red}{-0.002} & \textcolor{red}{-0.008} & \textcolor{red}{-0.026} & \textcolor{red}{-0.018} & \textcolor{red}{-0.044}\\
+      Southeast  & 0.053 & 0.048 & 0.029 & 0.047 & 0.020 & 0.024 & 0.021 & \textcolor{red}{-0.009} & \textcolor{red}{-0.018} & \textcolor{red}{-0.081} & \textcolor{red}{-0.090} & \textcolor{red}{-0.144}\\
+      South  & 0.012 & 0.001 & 0.000 & \textcolor{red}{-0.006} & \textcolor{red}{-0.014} & 0.008 & 0.015 & 0.023 & 0.037 & 0.036 & 0.017 & \textcolor{red}{-0.012}\\
+      AC & \textcolor{red}{-0.054} & \textcolor{red}{-0.064} & \textcolor{red}{-0.068} & \textcolor{red}{-0.081} & \textcolor{red}{-0.078} & \textcolor{red}{-0.073} & \textcolor{red}{-0.067} & \textcolor{red}{-0.092} & \textcolor{red}{-0.073} & \textcolor{red}{-0.160} & \textcolor{red}{-0.137} & \textcolor{red}{-0.193}\\
+      AL & 0.026 & 0.062 & 0.049 & 0.067 & 0.015 & 0.080 & 0.077 & 0.088 & 0.090 & 0.094 & 0.097 & 0.103\\
+      AM & \textcolor{red}{-0.027} & \textcolor{red}{-0.029} & \textcolor{red}{-0.056} & \textcolor{red}{-0.082} & \textcolor{red}{-0.075} & \textcolor{red}{-0.088} & \textcolor{red}{-0.087} & \textcolor{red}{-0.094} & \textcolor{red}{-0.110} & \textcolor{red}{-0.121} & \textcolor{red}{-0.120} & \textcolor{red}{-0.121}\\
+      AP & \textcolor{red}{-0.869} & \textcolor{red}{-1.475} & \textcolor{red}{-1.297} & \textcolor{red}{-1.347} & \textcolor{red}{-1.222} & \textcolor{red}{-1.356} & \textcolor{red}{-1.487} & \textcolor{red}{-1.419} & \textcolor{red}{-1.322} & \textcolor{red}{-1.571} & \textcolor{red}{-1.772} & \textcolor{red}{-2.398}\\
+      BA & \textcolor{red}{-0.015} & \textcolor{red}{-0.007} & \textcolor{red}{-0.002} & 0.008 & 0.001 & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.008} & \textcolor{red}{-0.011} & \textcolor{red}{-0.018} & \textcolor{red}{-0.020} & \textcolor{red}{-0.025}\\
+      CE & 0.006 & 0.006 & 0.002 & 0.004 & \textcolor{red}{-0.016} & 0.013 & 0.016 & 0.014 & 0.024 & \textcolor{red}{-0.001} & 0.026 & 0.001\\
+      DF & 0.000 & 0.000 & 0.001 & 0.002 & 0.000 & 0.004 & 0.003 & 0.001 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002}\\
+      ES & 0.003 & 0.008 & 0.000 & 0.002 & \textcolor{red}{-0.002} & 0.004 & 0.005 & 0.005 & 0.005 & 0.002 & 0.002 & \textcolor{red}{-0.001}\\
+      GO & \textcolor{red}{-0.015} & 0.013 & 0.026 & \textcolor{red}{-0.008} & 0.031 & 0.010 & 0.019 & 0.022 & 0.009 & 0.033 & 0.019 & 0.048\\
+      MA & \textcolor{red}{-0.147} & \textcolor{red}{-0.167} & \textcolor{red}{-0.182} & \textcolor{red}{-0.081} & \textcolor{red}{-0.143} & 0.020 & 0.015 & 0.004 & 0.104 & 0.116 & 0.156 & 0.267\\
+      MG & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000\\
+      MS & 0.002 & 0.007 & 0.009 & 0.018 & 0.012 & 0.024 & 0.031 & 0.029 & 0.029 & 0.023 & 0.019 & 0.015\\
+      MT & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.001 & 0.001 & 0.002 & 0.001 & 0.001 & 0.002 & 0.003\\
+      PA & 0.003 & 0.005 & 0.001 & 0.005 & 0.005 & 0.003 & 0.002 & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.009} & \textcolor{red}{-0.013} & \textcolor{red}{-0.016}\\
+      PB & \textcolor{red}{-0.251} & \textcolor{red}{-0.098} & \textcolor{red}{-0.162} & \textcolor{red}{-0.137} & \textcolor{red}{-0.092} & \textcolor{red}{-0.046} & 0.017 & 0.035 & 0.111 & 0.120 & 0.071 & \textcolor{red}{-0.048}\\
+      PE & \textcolor{red}{-0.008} & \textcolor{red}{-0.004} & \textcolor{red}{-0.012} & \textcolor{red}{-0.003} & \textcolor{red}{-0.005} & 0.004 & 0.006 & 0.008 & 0.012 & 0.007 & 0.003 & \textcolor{red}{-0.004}\\
+      PI & \textcolor{red}{-1.631} & \textcolor{red}{-2.236} & \textcolor{red}{-2.366} & \textcolor{red}{-3.029} & \textcolor{red}{-2.321} & \textcolor{red}{-2.582} & \textcolor{red}{-2.892} & \textcolor{red}{-4.077} & \textcolor{red}{-3.619} & \textcolor{red}{-2.860} & \textcolor{red}{-2.192} & \textcolor{red}{-2.876}\\
+      PR & \textcolor{red}{-0.003} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.001} & \textcolor{red}{-0.004} & \textcolor{red}{-0.003} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.008} & \textcolor{red}{-0.012} & \textcolor{red}{-0.013}\\
+      RJ & \textcolor{red}{-0.018} & \textcolor{red}{-0.020} & \textcolor{red}{-0.001} & 0.000 & 0.020 & 0.045 & 0.049 & 0.061 & 0.090 & 0.102 & 0.099 & 0.077\\
+      RN & 0.047 & 0.055 & 0.005 & \textcolor{red}{-0.009} & \textcolor{red}{-0.019} & \textcolor{red}{-0.032} & \textcolor{red}{-0.026} & \textcolor{red}{-0.015} & \textcolor{red}{-0.006} & \textcolor{red}{-0.048} & \textcolor{red}{-0.059} & \textcolor{red}{-0.077}\\
+      RO & 0.013 & 0.108 & 0.080 & 0.031 & 0.003 & 0.095 & 0.119 & 0.171 & 0.192 & 0.186 & 0.153 & 0.081\\
+      RR & \textcolor{red}{-1.184} & \textcolor{red}{-1.889} & \textcolor{red}{-1.596} & \textcolor{red}{-2.171} & \textcolor{red}{-2.010} & \textcolor{red}{-2.806} & \textcolor{red}{-3.007} & \textcolor{red}{-4.065} & \textcolor{red}{-4.069} & \textcolor{red}{-3.224} & \textcolor{red}{-2.603} & \textcolor{red}{-2.578}\\
+      RS & 0.017 & \textcolor{red}{-0.024} & 0.000 & 0.017 & \textcolor{red}{-0.010} & 0.036 & 0.031 & 0.043 & 0.092 & 0.044 & 0.041 & 0.005\\
+      SC & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.001 & 0.000 & 0.002 & 0.003 & 0.003 & 0.004 & 0.004 & 0.002 & \textcolor{red}{-0.005}\\
+      SE & \textcolor{red}{-0.026} & \textcolor{red}{-0.025} & \textcolor{red}{-0.046} & \textcolor{red}{-0.170} & \textcolor{red}{-0.067} & \textcolor{red}{-0.064} & 0.005 & 0.040 & 0.079 & 0.084 & \textcolor{red}{-0.011} & \textcolor{red}{-0.157}\\
+      SP & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} & \textcolor{red}{-0.006} & \textcolor{red}{-0.006} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & 0.001 & 0.005 & 0.005 & 0.001 & 0.004\\
+      TO & \textcolor{red}{-0.097} & \textcolor{red}{-0.115} & \textcolor{red}{-0.104} & \textcolor{red}{-0.050} & \textcolor{red}{-0.025} & \textcolor{red}{-0.061} & \textcolor{red}{-0.036} & \textcolor{red}{-0.025} & \textcolor{red}{-0.037} & \textcolor{red}{-0.003} & 0.003 & 0.060\\
+      \hline
+    \end{tabular}%
+  }
+  \label{tab:dem_var_sh}
+\end{table}
 
 \end{document}
