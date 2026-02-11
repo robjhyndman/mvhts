@@ -1,0 +1,68 @@
+
+\begin{table}[H]
+\caption{Mean RMSSE of the reconciled multivariate forecasts by forecast horizon and base model for the nine analyzed scenarios, using the shrinkage approach to estimate $\boldsymbol{W}$. Bold values represent the lowest values per horizon and model in each scenario.}
+    \centering
+    \resizebox{1\textwidth}{!}{%
+    \begin{tabular}{lcccccccccccc}
+\hline
+\multirow{2}{*}{Model} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13} 
+ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+\hline                                         
+Scenario 1 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & 0.641 & \textbf{0.802} & 0.883 & 0.918 & 0.973 & \textbf{0.999} & 1.029 & 1.043 & 1.070 & 1.082 & 1.093 & 1.095\\
+ETS & \textbf{0.629} & 0.810 & 0.910 & 0.967 & 1.032 & 1.067 & 1.101 & 1.130 & 1.163 & 1.179 & 1.196 & 1.213\\
+VAR & 0.659 & 0.834 & \textbf{0.879} & \textbf{0.888} & \textbf{0.970} & 1.003 & \textbf{1.016} & \textbf{0.999} & \textbf{1.054} & \textbf{1.058} & \textbf{1.055} & \textbf{1.034}\\
+\hline
+Scenario 2 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & \textbf{0.607} & \textbf{0.744} & \textbf{0.813} & 0.870 & \textbf{0.904} & \textbf{0.913} & \textbf{0.936} & \textbf{0.947} & \textbf{0.959} & \textbf{0.968} & \textbf{0.993} & \textbf{0.996}\\
+ETS & 0.630 & 0.806 & 0.913 & 1.004 & 1.048 & 1.077 & 1.109 & 1.130 & 1.139 & 1.152 & 1.178 & 1.190\\
+VAR & 0.639 & 0.788 & 0.835 & \textbf{0.857} & 0.914 & 0.939 & 0.970 & 0.954 & 0.991 & 0.998 & 1.039 & 1.006\\
+\hline
+Scenario 3 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & 0.640 & \textbf{0.791} & 0.875 & 0.906 & 0.971 & 1.016 & 1.044 & 1.048 & 1.085 & 1.113 & 1.142 & 1.145\\
+ETS & \textbf{0.634} & 0.799 & 0.898 & 0.956 & 1.015 & 1.069 & 1.105 & 1.122 & 1.155 & 1.191 & 1.220 & 1.240\\
+VAR & 0.641 & 0.799 & \textbf{0.843} & \textbf{0.854} & \textbf{0.918} & \textbf{0.962} & \textbf{0.981} & \textbf{0.963} & \textbf{1.007} & \textbf{1.016} & \textbf{1.032} & \textbf{1.003}\\
+\hline
+Scenario 4 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & \textbf{0.710} & \textbf{0.884} & \textbf{0.971} & \textbf{1.019} & \textbf{1.054} & \textbf{1.069} & \textbf{1.089} & \textbf{1.091} & \textbf{1.094} & 1.109 & 1.117 & 1.111\\
+ETS & 0.767 & 0.958 & 1.072 & 1.142 & 1.183 & 1.209 & 1.215 & 1.196 & 1.157 & \textbf{1.108} & \textbf{1.027} & \textbf{0.941}\\
+VAR & 0.830 & 1.026 & 1.083 & 1.106 & 1.209 & 1.260 & 1.278 & 1.262 & 1.267 & 1.245 & 1.249 & 1.207\\
+\hline
+Scenario 5 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & \textbf{0.751} & \textbf{0.918} & \textbf{1.015} & \textbf{1.077} & \textbf{1.083} & \textbf{1.097} & \textbf{1.102} & \textbf{1.095} & \textbf{1.097} & \textbf{1.073} & \textbf{1.070} & 1.067\\
+ETS & 0.853 & 1.092 & 1.247 & 1.366 & 1.368 & 1.386 & 1.410 & 1.400 & 1.337 & 1.230 & 1.108 & \textbf{0.979}\\
+VAR & 0.887 & 1.084 & 1.152 & 1.184 & 1.250 & 1.304 & 1.328 & 1.290 & 1.316 & 1.258 & 1.266 & 1.222\\
+\hline
+Scenario 6 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & \textbf{0.675} & \textbf{0.843} & \textbf{0.906} & \textbf{0.963} & \textbf{1.003} & \textbf{1.032} & \textbf{1.048} & \textbf{1.048} & \textbf{1.061} & 1.065 & 1.083 & 1.093\\
+ETS & 0.739 & 0.923 & 1.002 & 1.073 & 1.121 & 1.147 & 1.156 & 1.133 & 1.107 & \textbf{1.057} & \textbf{0.989} & \textbf{0.933}\\
+VAR & 0.775 & 0.976 & 1.001 & 1.031 & 1.128 & 1.185 & 1.196 & 1.166 & 1.181 & 1.164 & 1.182 & 1.142\\
+\hline
+Scenario 7 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & 0.604 & 0.732 & 0.794 & 0.832 & 0.942 & 0.983 & 1.014 & 1.032 & 1.117 & 1.151 & 1.167 & 1.185\\
+ETS & \textbf{0.563} & 0.714 & 0.814 & 0.891 & 0.956 & 1.010 & 1.066 & 1.114 & 1.175 & 1.243 & 1.301 & 1.367\\
+VAR & 0.578 & \textbf{0.705} & \textbf{0.740} & \textbf{0.756} & \textbf{0.807} & \textbf{0.818} & \textbf{0.819} & \textbf{0.811} & \textbf{0.855} & \textbf{0.861} & \textbf{0.859} & \textbf{0.842}\\
+\hline
+Scenario 8 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & 0.530 & 0.651 & 0.710 & 0.742 & 0.834 & 0.872 & 0.890 & 0.908 & 0.982 & 1.013 & 1.035 & 1.052\\
+ETS & 0.531 & 0.683 & 0.778 & 0.843 & 0.898 & 0.942 & 0.978 & 1.018 & 1.073 & 1.130 & 1.195 & 1.253\\
+VAR & \textbf{0.522} & \textbf{0.647} & \textbf{0.673} & \textbf{0.698} & \textbf{0.747} & \textbf{0.749} & \textbf{0.746} & \textbf{0.746} & \textbf{0.797} & \textbf{0.801} & \textbf{0.815} & \textbf{0.802}\\
+\hline
+Scenario 9 &  &  &  &  &  &  &  &  &  &  &  & \\
+\hline
+ARIMA & 0.616 & 0.755 & 0.817 & 0.850 & 0.973 & 1.029 & 1.057 & 1.071 & 1.152 & 1.189 & 1.217 & 1.239\\
+ETS & \textbf{0.574} & 0.729 & 0.825 & 0.899 & 0.984 & 1.050 & 1.101 & 1.157 & 1.220 & 1.285 & 1.360 & 1.428\\
+VAR & 0.590 & \textbf{0.717} & \textbf{0.740} & \textbf{0.745} & \textbf{0.806} & \textbf{0.824} & \textbf{0.820} & \textbf{0.800} & \textbf{0.859} & \textbf{0.870} & \textbf{0.866} & \textbf{0.855}\\
+\hline
+    \end{tabular}%
+    }
+    \label{tab:RMSSE}
+\end{table}
