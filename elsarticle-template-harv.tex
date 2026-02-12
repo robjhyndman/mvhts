@@ -232,34 +232,28 @@ Just like \eqref{eq:rec_2}, \eqref{eq:rec_3} will have better computational perf
 
 When $\bm{W}_h$ is the covariance matrix of $\widehat{\bm{y}}_{T+h|T}$, the resulting forecasts are optimal in the sense that the sum of the variances of the reconciled forecasts is minimized \citep{wickramasuriya2019optimal}. This method is known as MinT (minimum trace) reconciliation.
 
-Now we will extend the reconciliation process to the multivariate case. Let $\bm{G} = (\bm{S} \otimes \bm{I}_m)$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written as:
-\begin{equation}
-  \vetor(\widetilde{\bm{Y}}_{T+h|T}) = \bm{G} [\bm{G}^\prime \bm{W}_h^{-1} \bm{G}]^{-1} \bm{G}^\prime \bm{W}_h^{-1} \vetor(\widehat{\bm{Y}}_{T+h|T}),
-  \label{eq:rec_MV}
-\end{equation}
-or equivalently by
-\begin{equation}
-  \vetor(\widetilde{\bm{Y}}_{T+h|T}) = \bm{G} [(\bm{J}\otimes \bm{I}_m) - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
-  \label{eq:rec_MV2}
-\end{equation}
-where
-\begin{equation}
-  \bm{N}_h = (\bm{J}\otimes \bm{I}_m)\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)[(\bm{C}^\prime\otimes \bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)]^{-1}(\bm{C}^\prime\otimes \bm{I}_m)^\prime,
-\end{equation}
-or also as
-\begin{equation}
-  \vetor(\widetilde{\bm{Y}}_{T+h|T}) = \bm{M} \vetor(\widehat{\bm{Y}}_{T+h|T}),
+Now we will extend the reconciliation process to the multivariate case. Let $\bm{S}_* = (\bm{S} \otimes \bm{I}_m)$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written in one of the following three equivalent ways:
+\begin{align}
+  \vetor(\widetilde{\bm{Y}}_{T+h|T}) &= \bm{S}_* [\bm{S}_*^\prime \bm{W}_h^{-1} \bm{S}_*]^{-1} \bm{S}_*^\prime \bm{W}_h^{-1} \vetor(\widehat{\bm{Y}}_{T+h|T});
+  \label{eq:rec_MV} \\
+  &= \bm{S}_* [(\bm{J}\otimes \bm{I}_m) - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
+  \label{eq:rec_MV2} \\
+  & = \bm{M} \vetor(\widehat{\bm{Y}}_{T+h|T}),
   \label{eq:rec_MV3}
-\end{equation}
-\begin{equation}
-  \bm{M} = \bm{I}_{nm} - \bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)[(\bm{C}^\prime\otimes\bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)]^{-1}(\bm{C}^\prime\otimes\bm{I}_m)^\prime,
-\end{equation}
-where $\bm{W}_1 = \Var[\vetor(\bm{Y}_t) - \vetor(\widehat{\bm{Y}}_{t|t-1})]$ is the covariance matrix of the one-step base forecast errors, structured in the same way as the data.
+\end{align}
+where
+$$
+\bm{N}_h = (\bm{J}\otimes \bm{I}_m)\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)[(\bm{C}^\prime\otimes \bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)]^{-1}(\bm{C}^\prime\otimes \bm{I}_m)^\prime,
+$$
+$$
+\bm{M} = \bm{I}_{nm} - \bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)[(\bm{C}^\prime\otimes\bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)]^{-1}(\bm{C}^\prime\otimes\bm{I}_m)^\prime,
+$$
+and $\bm{W}_h = \Var[\vetor(\bm{Y}_t) - \vetor(\widehat{\bm{Y}}_{t|t-h})]$ is the covariance matrix of the $h$-step base forecast errors, structured in the same way as the data.
 
 To estimate $\bm{W}_h$ we can use the same two approaches that are employed in the univariate case \citep{wickramasuriya2019optimal}:
 \begin{itemize}
   \item\textbf{Sample covariance:} Let $\bm{W}_h = k_h\hat{\bm{W}}_1$ for all $h$, where $k_h > 0$ and $\widehat{\bm{W}}_1$ is the sample covariance  matrix of the one-step base forecast errors. In this approach, the covariance matrices of the errors are considered proportional to each other.
-  \item\textbf{Shrinkage estimator:} Let $\bm{W}_h = k_h\hat{\bm{W}}_{1,D}^*$, for all $h$, where $k_h > 0$, $\hat{\bm{W}}_{1,D}^* = \lambda_D\hat{\bm{W}}_{1,D}+(1-\lambda_D)\hat{\bm{W}}_{1}$ is the shrinkage estimator, $\hat{\bm{W}}_{1,D}$ a diagonal matrix composed of the diagonal of $\hat{\bm{W}}_{1}$, and $\lambda_D$ is the shrinkage intensity parameter \citep{wickramasuriya2019optimal}. This estimator aims to shrink the sample covariance towards a diagonal matrix \citep{hyndman2021forecasting}. The quantity $\lambda_D$ is estimated using the sample correlation of the residuals \citep{schafer2005shrinkage}, being computed as follows:
+  \item\textbf{Shrinkage estimator:} Let $\bm{W}_h = k_h\hat{\bm{W}}_{1,D}^*$, for all $h$, where $k_h > 0$, $\hat{\bm{W}}_{1,D}^* = \lambda_D\hat{\bm{W}}_{1,D}+(1-\lambda_D)\hat{\bm{W}}_{1}$ is the shrinkage estimator, $\hat{\bm{W}}_{1,D}$ a diagonal matrix composed of the diagonal of $\hat{\bm{W}}_{1}$, and $\lambda_D$ is the shrinkage intensity parameter \citep{wickramasuriya2019optimal}. This estimator aims to shrink the sample covariance towards a diagonal matrix. The quantity $\lambda_D$ is estimated using the sample correlation of the residuals \citep{schafer2005shrinkage}, being computed as follows:
     \begin{equation*}
       \hat{\lambda}_D = \frac{\sum_{i\ne j}\widehat{\Var(\hat{r}_{ij}})}{\sum_{i\ne j}\hat{r}_{ij}^2},
     \end{equation*}
@@ -267,6 +261,8 @@ To estimate $\bm{W}_h$ we can use the same two approaches that are employed in t
 \end{itemize}
 
 In the multivariate case, the matrix $\bm{W}$ contains the relationships among all series in the hierarchy, including the $m$ variables. Thus, reconciliation using \eqref{eq:rec_MV} and the two approaches described previously is referred to as multivariate reconciliation in this paper.
+
+Forecast reconciliation can be interpreted as optimally combining the base forecasts under the coherence constraint \citep{hyndman2011optimal}. In the multivariate case \eqref{eq:rec_MV}--\eqref{eq:rec_MV3}, the reconciliation process involves all series across all nodes, and so it can be seen as an optimal combination of forecasts across all series and variables in the hierarchy, accounting for relationships between and within nodes.
 
 \section{Numerical Simulation}
 \label{sec3}
@@ -439,7 +435,7 @@ Figures S1 to S9 of the supplementary material present examples of the simulatio
 Tables S1 to S9 of the supplementary material present the $\RelRMSE^{\Base}$ for all 16 hierarchical series across each forecast horizon, using ARIMA, ETS, and VAR models for base forecasts and the shrinkage approach to estimate $\bm{W}$ in scenarios 1 to 9, respectively. Values highlighted in red indicate a $\RelRMSE^{\Base}$ less than 0, meaning that the base forecasts achieved a lower RMSE than forecasts obtained through multivariate reconciliation.
 
 \begin{table}
-  \caption{Average of $\RelRMSE^{\Base}$ of the 16 series for different forecast horizons and for each scenario. ARIMA, ETS, and VAR models for base forecasts. Using the shrinkage approach to estimate $\bm{W}$. Values in red indicate a $\RelRMSE^{\Base}$ less than 0.}
+  \caption{Average of $\RelRMSE^{\Base}$ of the 16 series for different forecast horizons and for each scenario. ARIMA, ETS, and VAR models for base forecasts. Using the shrinkage approach to estimate $\bm{W}$. All values are positive, indicating reconciliation always improves upon base forecasts, on average.}
   \centering
   \resizebox{1\textwidth}{!}{%
     \begin{tabular}{lrrrrrrrrrrrr}
@@ -604,11 +600,15 @@ Tables S1 to S9 of the supplementary material present the $\RelRMSE^{\Base}$ for
   \label{tab:porc_cov}
 \end{table}
 
-Another summary of Tables S1 to S9 can be made by considering the percentage of non-negative $\RelRMSE^{\Base}$ values for each of the nine scenarios and base forecasting models (Table \ref{tab:porc_sh}). The ARIMA model exhibited 100\% of values greater than or equal to 0 in the three scenarios, 2, 5, and 8. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In the ETS case, the lowest percentages occurred in scenarios 1, 4, and 7, which use $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1} with a correlation of 0 between the series at the lowest level. Table \ref{tab:porc_sh} shows that all values exceeded 50\%, highlighting the advantages of multivariate reconciliation using the shrinkage approach across all three models and nine scenarios. The ARIMA model achieved the best overall results when combined with multivariate reconciliation.
+Another summary of Tables S1 to S9 can be made by considering the percentage of non-negative $\RelRMSE^{\Base}$ values for each of the nine scenarios and base forecasting models (Table \ref{tab:porc_sh}). The ARIMA model exhibited 100\% of values greater than or equal to 0 in the three scenarios, 2, 5, and 8.\todo{Also 3, 4 and 6} For the VAR, the best results were also observed in scenarios 2, 5, and 8. In the ETS case, the lowest percentages occurred in scenarios 1, 4, and 7, which use $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1} with a correlation of 0 between the series at the lowest level. Table \ref{tab:porc_sh} shows that all values exceeded 50\%, highlighting the advantages of multivariate reconciliation using the shrinkage approach across all three models and nine scenarios. The ARIMA model achieved the best overall results when combined with multivariate reconciliation.
+
+\todo[inline]{Why do you think this happens? The DGP should most closely match the VAR model, so perhaps it has less room for improvement. The ETS model should be the furthest from the DGP, so it should have more room for improvement due to reconciliation. Yet it improves the least. What's going on?}
 
 Table \ref{tab:sh_mean} provides a summary of these results by presenting the average $\RelRMSE^{\Base}$ values across the 16 hierarchical series for each model, forecast horizon, and scenario. All values in the table are greater than 0, indicating that forecasts obtained through multivariate reconciliation performed better or at least as well as the base forecasts. Among the nine scenarios analyzed, scenarios 2, 5, and 8 showed the best performance with multivariate reconciliation, as indicated by the highest average $\RelRMSE^{\Base}$ values shown in Table \ref{tab:sh_mean}. These scenarios used a correlation of 0.7 between the series at the lowest level, with $\bm{\Sigma}_2$ defined in \eqref{eq:Sigma2}.
 
 Among the three base forecasting models, ARIMA stood out across all scenarios and for nearly all forecast horizons, showing the highest average $\RelRMSE^{\Base}$ values. The VAR model was then followed, with results close to those of the ARIMA model. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In contrast, although the ETS model also produced positive averages, most of these values were very close to zero, indicating that, when used as the base forecasting method, multivariate reconciliation yielded results similar to incoherent forecasts that do not account for any hierarchical structure.
+
+\todo[inline]{Perhaps remove the sample covariance results, and just include a comment that we also tried it and it didn't work as well. The sample covariance is not a good estimator of the covariance matrix, so it's not surprising that it doesn't perform well. In fact, I'm surprised that it was even possible to invert the matrices in this case.}
 
 The results using the sample covariance to estimate $\bm{W}$ are presented in the supplementary material. Tables S10 to S18 provide the $\RelRMSE^{\Base}$ for scenarios 1-9, respectively, using the ARIMA, ETS, and VAR models for base forecasts. Table \ref{tab:cov_mean} summarizes these tables, where the average $\RelRMSE^{\Base}$ of the 16 series was calculated, considering the different models, horizons, and scenarios.
 
