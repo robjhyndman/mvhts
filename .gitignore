@@ -39,6 +39,6 @@ rubber.cache
 *.bak[0-9]*
 
 .vscode/
+.positai
 .claude/
 CLAUDE.md
-Saida/
