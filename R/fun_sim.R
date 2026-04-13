@@ -20,24 +20,19 @@ simulacao <- function(
 ) {
   successes <- list()
   attempt <- 1
-
   while (length(successes) < n_sim) {
     needed <- n_sim - length(successes)
-
     results <- furrr::future_map(
       seq_len(batch_size),
       \(j) run_one_simulation(Phi, V, Sigma, S, sim_id = attempt + j - 1),
       .options = furrr::furrr_options(seed = TRUE)
     )
     attempt <- attempt + batch_size
-
     new_successes <- Filter(Negate(is.null), results)
     n_new <- min(length(new_successes), needed)
     successes <- c(successes, new_successes[seq_len(n_new)])
-
     message(length(successes), " / ", n_sim, " simulations complete.")
   }
-
   list(
     fc_sim = bind_rows(lapply(successes, `[[`, "fc")),
     Y_sim = bind_rows(lapply(successes, `[[`, "Y2"))
@@ -83,18 +78,14 @@ sim_mvhts <- function(T, Phi, V, Sigma) {
   if (NROW(Phi) != m) {
     stop("Phi must have the same number of rows as V")
   }
-
   # Covariance matrix for the whole system
   W <- kronecker(Sigma, V)
-
   # Set up space for storing the simulation
   B <- array(dim = c(m, n_b, T))
-
   # Generate noise with N(0,W) distribution
   # E[t,,] contains E_t
   noise <- mvtnorm::rmvnorm(T, rep(0, n_b * m), W)
   E <- array(noise, dim = c(m, n_b, T))
-
   # Generate bottom level series
   for (i in seq(n_b)) {
     B[, i, ] <- t(
@@ -105,7 +96,6 @@ sim_mvhts <- function(T, Phi, V, Sigma) {
   Y <- array(dim = c(m, n_b + 1, T))
   Y[, 1, ] <- apply(B, c(1, 3), sum)
   Y[, -1, ] <- B
-
   # Return as a tsibble object
   tibble::tibble(
     time = make_yearquarter(
