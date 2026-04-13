@@ -150,22 +150,34 @@ n <- length(unique(Dados$node))
 m <- length(unique(Dados$series))
 
 # Number of states within each region
-count_agg <- c(4, 9, 7, 4, 3)
+count_agg <- c(table(regioes$Região))
 
 # Number of intermediate nodes (regions)
-n_agg <- 5
+n_agg <- length(count_agg)
 
 # ============================================================
 # Build summing matrix S (hierarchical structure)
 # ============================================================
 
 # Aggregation matrix for regions → states
-matrix_agg <- matrix(0, n_agg, n - n_agg - 1)
-start = 1
-for (i in 1:n_agg) {
-  matrix_agg[i, start:sum(count_agg[1:i])] <- 1
-  start <- start + count_agg[i]
-}
+state_region <- rep(seq_len(n_agg), count_agg)
+matrix_agg <- t(model.matrix(~ factor(state_region) - 1))
+attributes(matrix_agg)$assign <- NULL
+attributes(matrix_agg)$contrasts <- NULL
+rownames(matrix_agg) <- c(
+  "Norte",
+  "Nordeste",
+  "Centro-Oeste",
+  "Sudeste",
+  "Sul"
+)
+colnames(matrix_agg) <- c(
+  regioes$UF[regioes$Região == "Norte"],
+  regioes$UF[regioes$Região == "Nordeste"],
+  regioes$UF[regioes$Região == "Centro-Oeste"],
+  regioes$UF[regioes$Região == "Sudeste"],
+  regioes$UF[regioes$Região == "Sul"]
+)
 
 # Full summing matrix
 S <- rbind(
@@ -173,6 +185,8 @@ S <- rbind(
   matrix_agg, # Regions
   diag(1, n - n_agg - 1) # States (bottom level)
 )
+rownames(S)[1] <- "Total"
+rownames(S)[(1 + n_agg) + seq_len(n - n_agg - 1)] <- colnames(matrix_agg)
 
 # ============================================================
 # Multivariate reconciliation using covariance and shrinkage
