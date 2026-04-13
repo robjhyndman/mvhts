@@ -213,31 +213,23 @@ save(mod, fc, file = "mod_fc_arima_regiao.RData")
 
 # ---------------- Reconciliation using covariance estimator ----------------
 
-fc_rec_arima_cov = mv_reconcile(
-  mod |> filter(.id == 1),
-  fc |> filter(.id == 1),
-  S
+fc_rec_arima_cov <- reconcile_over_id(
+  mod_tbl = mod,
+  fc_tbl = fc,
+  S = S,
+  rec_fun = mv_reconcile
 )
-
-for (i in 2:12) {
-  a = mv_reconcile(mod |> filter(.id == i), fc |> filter(.id == i), S)
-  fc_rec_arima_cov <- add_row(fc_rec_arima_cov, a)
-}
 
 save(fc_rec_arima_cov, file = "fc_rec_arima_regiao.RData")
 
 # ---------------- Reconciliation using shrinkage estimator ----------------
 
-fc_rec_arima_sh = mv_reconcile_s(
-  mod |> filter(.id == 1),
-  fc |> filter(.id == 1),
-  S
+fc_rec_arima_sh <- reconcile_over_id(
+  mod_tbl = mod,
+  fc_tbl = fc,
+  S = S,
+  rec_fun = mv_reconcile_s
 )
-
-for (i in 2:12) {
-  a = mv_reconcile_s(mod |> filter(.id == i), fc |> filter(.id == i), S)
-  fc_rec_arima_sh <- add_row(fc_rec_arima_sh, a)
-}
 
 save(fc_rec_arima_cov, fc_rec_arima_sh, file = "fc_rec_arima_regiao2.RData")
 
@@ -277,30 +269,22 @@ save(mod_var, fc_var, file = "mod_fc_var_regiao.RData")
 
 # ---------------- Reconciliation using covariance estimator ----------------
 
-fc_rec_var_cov = mv_reconcile(
-  mod_var |> filter(.id == 1),
-  fc_var |> filter(.id == 1),
-  S
+fc_rec_var_cov <- reconcile_over_id(
+  mod_tbl = mod_var,
+  fc_tbl = fc_var,
+  S = S,
+  rec_fun = mv_reconcile
 )
-
-for (i in 2:12) {
-  a = mv_reconcile(mod_var |> filter(.id == i), fc_var |> filter(.id == i), S)
-  fc_rec_var_cov <- add_row(fc_rec_var_cov, a)
-}
 
 save(fc_rec_var_cov, file = "fc_rec_var_regiao.RData")
 
 # ---------------- Reconciliation using shrinkage estimator ----------------
 
-fc_rec_var_s = mv_reconcile_s(
-  mod_var |> filter(.id == 1),
-  fc_var |> filter(.id == 1),
-  S
+fc_rec_var_s <- reconcile_over_id(
+  mod_tbl = mod_var,
+  fc_tbl = fc_var,
+  S = S,
+  rec_fun = mv_reconcile_s
 )
-
-for (i in 2:12) {
-  a = mv_reconcile_s(mod_var |> filter(.id == i), fc_var |> filter(.id == i), S)
-  fc_rec_var_s <- add_row(fc_rec_var_s, a)
-}
 
 save(fc_rec_var_cov, fc_rec_var_s, file = "fc_rec_var_regiao.RData")
