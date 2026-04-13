@@ -1,8 +1,9 @@
 library(fpp3)
 library(tsibble)
-source(here::here("R/function_rec_application.R"))
 source(here::here("R/read_data.R"))
 source(here::here("R/compute_S.R"))
+source(here::here("R/helpers.R"))
+source(here::here("R/reconcile.R"))
 
 # ==============================================================
 # Read employment data (Admissions and Dismissals)
@@ -47,7 +48,8 @@ fc_rec_arima_sh <- reconcile_over_id(
   mod_tbl = mod,
   fc_tbl = fc,
   S = S,
-  rec_fun = mv_reconcile_s
+  rec_fun = mv_reconcile,
+  cov_fn = shrinkage_cov
 )
 
 # Fit VAR model (bivariate: Admissions and Dismissals) ---------
@@ -93,5 +95,6 @@ fc_rec_var_s <- reconcile_over_id(
   mod_tbl = mod_var,
   fc_tbl = fc_var,
   S = S,
-  rec_fun = mv_reconcile_s
+  rec_fun = mv_reconcile,
+  cov_fn = shrinkage_cov
 )
