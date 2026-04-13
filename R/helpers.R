@@ -6,6 +6,34 @@ order_nodes <- function(nodes) {
   )
 }
 
+# --------------------------------------------------------------------
+# Reshape a VAR forecast from wide mable format to long tsibble format.
+# series_names: character vector of the two series names (in V1, V2 order).
+# extra_keys: additional tsibble key columns beyond node and series.
+# --------------------------------------------------------------------
+tidy_var_forecast <- function(
+  fc_var,
+  series_names = c("A", "B"),
+  extra_keys = character()
+) {
+  fc_var |>
+    mutate(.mean = as.data.frame(.mean)) |>
+    unnest_wider(.mean, names_sep = "_") |>
+    rename(
+      !!series_names[1] := .mean_V1,
+      !!series_names[2] := .mean_V2,
+      value = .distribution
+    ) |>
+    pivot_longer(
+      -c(all_of(extra_keys), node, .model, time, value),
+      names_to = "series",
+      values_to = ".mean",
+      cols_vary = "slowest"
+    ) |>
+    arrange(node) |>
+    as_tsibble(index = time, key = c(all_of(extra_keys), node, series))
+}
+
 make_array <- function(object, variable = "value") {
   if (!is_tsibble(object)) {
     stop("Object must be a tsibble or fable object")
@@ -65,7 +93,7 @@ make_matrix2 <- function(object, variable = "value") {
   }
   Y <- object |>
     as_tibble() |>
-    select(-.model, -Região, -.id) |>
+    select(-any_of(c(".model", "Região", ".id"))) |>
     filter(node %in% nodes) |>
     pivot_wider(names_from = node, values_from = all_of(variable)) |>
     # filter(if_all(everything(), ~ !is.na(.))) |>
@@ -87,13 +115,13 @@ sample_cov <- function(res) {
 
 # Shrinkage estimator for covariance matrix
 shrinkage_cov <- function(res) {
+  res <- stats::na.omit(res)
   t <- nrow(res)
   # Sample covariance matrix
-  covm <- crossprod(stats::na.omit(res)) / t
-  tar <- diag(apply(res, 2, purrr::compose(crossprod, stats::na.omit)) / t)
+  covm <- crossprod(res) / t
+  tar <- diag(apply(res, 2, crossprod) / t)
   corm <- cov2cor(covm)
   xs <- scale(res, center = FALSE, scale = sqrt(diag(covm)))
-  xs <- xs[stats::complete.cases(xs), ]
   v <- (1 / (t * (t - 1))) * (crossprod(xs^2) - 1 / t * (crossprod(xs))^2)
   diag(v) <- 0
   corapn <- cov2cor(tar)
@@ -133,11 +161,7 @@ ytilde_to_tsibble <- function(
 # ============================================================
 
 residuals_matrix <- function(res) {
-  # Fix node order to match the hierarchy structure
-  res$node <- factor(
-    res$node,
-    levels = c("Total", "agg_1", "agg_2", "1", "2", "3", "4", "5")
-  )
+  res$node <- factor(res$node, levels = order_nodes(unique(res$node)))
   res <- res |> arrange(node)
 
   ##### Adjust the residual matrix

@@ -169,24 +169,6 @@ make_forecasts <- function(fits) {
 }
 
 # --------------------------------------------------------------------
-# Reshape a VAR forecast from wide mable format to long tsibble format
-# --------------------------------------------------------------------
-tidy_var_forecast <- function(fc_var) {
-  fc_var |>
-    mutate(.mean = as.data.frame(.mean)) |>
-    unnest_wider(.mean, names_sep = "_") |>
-    rename(A = .mean_V1, B = .mean_V2, value = .distribution) |>
-    pivot_longer(
-      -c(node, .model, time, value),
-      names_to = "series",
-      values_to = ".mean",
-      cols_vary = "slowest"
-    ) |>
-    arrange(node) |>
-    as_tsibble(index = time, key = c(node, series))
-}
-
-# --------------------------------------------------------------------
 # Multivariate reconciliation (covariance + shrinkage) for one model.
 # Returns a data frame with both reconciled columns, or NULL on error.
 # --------------------------------------------------------------------

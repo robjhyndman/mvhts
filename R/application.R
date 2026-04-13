@@ -66,18 +66,10 @@ if (fs::file_exists(here::here("Saida/mod_var_regiao.rds"))) {
 # Forecast 12 steps ahead
 fc_var <- mod_var |>
   forecast(h = 12) |>
-  # Reshape VAR output back to long format
-  mutate(.mean = as.data.frame(.mean)) |>
-  unnest_wider(.mean, names_sep = "_") |>
-  rename(Admissões = .mean_V1, Demissões = .mean_V2, value = .distribution) |>
-  pivot_longer(
-    -c(.id, Região, node, .model, time, value),
-    names_to = "series",
-    values_to = ".mean",
-    cols_vary = "slowest"
+  tidy_var_forecast(
+    series_names = c("Admissões", "Demissões"),
+    extra_keys = c(".id", "Região")
   ) |>
-  arrange(Região) |>
-  as_tsibble(index = time, key = c(.id, Região, node, .model, series)) |>
   # Create forecast horizon index
   group_by(.id, node, series) |>
   mutate(h = row_number()) |>
