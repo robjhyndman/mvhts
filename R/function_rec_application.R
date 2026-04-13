@@ -1,4 +1,3 @@
-
 make_array <- function(object, variable = "value") {
   if (!is_tsibble(object)) {
     stop("Object must be a tsibble or fable object")
@@ -18,10 +17,11 @@ make_array <- function(object, variable = "value") {
   if (!("Total" %in% nodes)) {
     stop("nodes must contain a 'Total' series")
   } else {
-    
-    nodes <- c("Total", 
-               grep("^agg", nodes, value = TRUE), 
-               nodes[!grepl("^agg", nodes) & nodes != "Total"])
+    nodes <- c(
+      "Total",
+      grep("^agg", nodes, value = TRUE),
+      nodes[!grepl("^agg", nodes) & nodes != "Total"]
+    )
   }
   # Make sure result is ordered correctly
   object <- arrange(object, node, series, time)
@@ -35,10 +35,11 @@ make_array <- function(object, variable = "value") {
   for (i in seq(T)) {
     for (j in seq(m)) {
       for (k in seq(n)) {
-        Y[i, j, k] <- object[[variable]][object$time == times[i] & 
-                                           object$series == series[j] &
-                                           object$node == nodes[k]]
-        
+        Y[i, j, k] <- object[[variable]][
+          object$time == times[i] &
+            object$series == series[j] &
+            object$node == nodes[k]
+        ]
       }
     }
   }
@@ -49,7 +50,11 @@ make_matrix <- function(object, variable = "value") {
   Y <- make_array(object, variable)
   Ymat <- matrix(Y, nrow = dim(Y)[1], ncol = dim(Y)[2] * dim(Y)[3])
   rownames(Ymat) <- dimnames(Y)[[1]]
-  colnames(Ymat) <- paste0(rep(dimnames(Y)[[3]], each = dim(Y)[2]), ".", rep(dimnames(Y)[[2]], times = dim(Y)[3]))
+  colnames(Ymat) <- paste0(
+    rep(dimnames(Y)[[3]], each = dim(Y)[2]),
+    ".",
+    rep(dimnames(Y)[[2]], times = dim(Y)[3])
+  )
   return(Ymat)
 }
 
@@ -65,23 +70,31 @@ make_matrix2 <- function(object, variable = "value") {
   if (!("Total" %in% nodes)) {
     stop("nodes must contain a 'Total' series")
   }
-  
-  nodes <- c("Total", 
-             grep("^agg", nodes, value = TRUE), 
-             nodes[!grepl("^agg", nodes) & nodes != "Total"])
-  
-  
-  Y <- object %>% as_tibble() |> select(-.model)  |> 
-    filter(node %in% nodes) %>%
-    pivot_wider(names_from = node, values_from = all_of(variable)) %>%
-    filter(if_all(everything(), ~ !is.na(.))) |> 
-    pivot_wider(names_from = series, values_from = all_of(nodes), names_sep = ".") |>
-    select(-time) |> 
+
+  nodes <- c(
+    "Total",
+    grep("^agg", nodes, value = TRUE),
+    nodes[!grepl("^agg", nodes) & nodes != "Total"]
+  )
+  if (length(unique(object$.id)) > 1) {
+    stop("Object must contain only one .id")
+  }
+  Y <- object |>
+    as_tibble() |>
+    select(-.model, -Região, -.id) |>
+    filter(node %in% nodes) |>
+    pivot_wider(names_from = node, values_from = all_of(variable)) |>
+    # filter(if_all(everything(), ~ !is.na(.))) |>
+    pivot_wider(
+      names_from = series,
+      values_from = all_of(nodes),
+      names_sep = "."
+    ) |>
+    select(-time) |>
     as.matrix()
-  
+
   return(Y)
 }
-
 
 est_cov2 <- function(fit) {
   if (!is_mable(fit)) {
@@ -89,12 +102,23 @@ est_cov2 <- function(fit) {
   }
   
   res <- fit |> residuals()
-  
-  if(unique(res$.model) == "var"){
-    res |> 
-      pivot_longer(-c(node, .model, time), names_to = "series", values_to = ".resid", cols_vary =  "slowest")|>
-      arrange(node) |> make_matrix2(".resid") |> cov()
-  } else {res |> make_matrix2(".resid") |> cov()}
+
+  if (unique(res$.model) == "var") {
+    res |>
+      pivot_longer(
+        -c(node, .model, time, .id, Região),
+        names_to = "series",
+        values_to = ".resid",
+        cols_vary = "slowest"
+      ) |>
+      arrange(node) |>
+      make_matrix2(".resid") |>
+      cov(use = "complete.obs")
+  } else {
+    res |>
+      make_matrix2(".resid") |>
+      cov(use = "complete.obs")
+  }
 }
 
 # ============================================================
@@ -119,11 +143,15 @@ mv_reconcile <- function(fit, fc, S) {
   out <- t(Ytilde) |>
     as.data.frame() |>
     rownames_to_column("time") |>
-    pivot_longer(cols = -time, names_to = c("node", "series"), names_pattern = "(.*)\\.(.*)",
-                 values_to = ".reconciled_mean_cov") |>
-    mutate(time = as.numeric(time)) |> 
+    pivot_longer(
+      cols = -time,
+      names_to = c("node", "series"),
+      names_pattern = "(.*)\\.(.*)",
+      values_to = ".reconciled_mean_cov"
+    ) |>
+    mutate(time = as.numeric(time)) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
-  
+
   out$time <- fc$time
   
   # Add in anything else from the original fc object
@@ -135,7 +163,6 @@ mv_reconcile <- function(fit, fc, S) {
 # ================================================================
 
 mv_reconcile_s <- function(fit, fc, S) {
-  
   # Turn forecasts into matrix
   Yhat <- t(make_matrix(fc, ".mean"))
   m <- length(unique(fc$series))
@@ -145,15 +172,23 @@ mv_reconcile_s <- function(fit, fc, S) {
   
   # Residual matrix
   res <- fit |> residuals()
-  
-  if(unique(res$.model) == "var"){
-    res <- res |> 
-      pivot_longer(-c(node, .model, time), names_to = "series", values_to = ".resid", cols_vary =  "slowest")|>
-      arrange(node) |> make_matrix2(".resid")
-  } else {res <- res |> make_matrix2(".resid")}
-  
+
+  if (unique(res$.model) == "var") {
+    res <- res |>
+      pivot_longer(
+        -c(node, .model, time),
+        names_to = "series",
+        values_to = ".resid",
+        cols_vary = "slowest"
+      ) |>
+      arrange(node) |>
+      make_matrix2(".resid")
+  } else {
+    res <- res |> make_matrix2(".resid")
+  }
+
   t <- nrow(res)
-  
+
   # Sample covariance matrix
   covm <- crossprod(stats::na.omit(res)) / t
   
@@ -179,11 +214,15 @@ mv_reconcile_s <- function(fit, fc, S) {
   out <- t(Ytilde) |>
     as.data.frame() |>
     rownames_to_column("time") |>
-    pivot_longer(cols = -time, names_to = c("node", "series"), names_pattern = "(.*)\\.(.*)",
-                 values_to = ".reconciled_mean_shrink") |>
-    mutate(time = as.numeric(time)) |> 
+    pivot_longer(
+      cols = -time,
+      names_to = c("node", "series"),
+      names_pattern = "(.*)\\.(.*)",
+      values_to = ".reconciled_mean_shrink"
+    ) |>
+    mutate(time = as.numeric(time)) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
-  
+
   out$time <- fc$time
   
   # Add in anything else from the original fc object

@@ -132,19 +132,12 @@ Dados <- Dados |>
 
 Dados <- Dados |>
   as_tsibble(key = c(Região, node, series), index = Data)
-
 colnames(Dados) <- c("time", "Região", "node", "series", "value")
+Dados <- Dados |>
+  arrange(Região) |>
+  ungroup()
 
-Dados <- Dados |> arrange(Região) |> ungroup()
-
-#save(Dados, file = "Dados_regiao.RData")
-
-# Test data
-Dados2 <- Dados |>
-  filter_index("2022 Q2" ~ "2023 Q12") |>
-  mutate(Y = value) |>
-  as_tibble() |>
-  select(time, node, series, Y)
+# save(Dados, file = "Dados_regiao.RData")
 
 # ============================================================
 # Hierarchy information
@@ -185,7 +178,7 @@ S <- rbind(
 # Multivariate reconciliation using covariance and shrinkage
 # ============================================================
 
-########################### ARIMA MODEL ###########################################
+########################### ARIMA MODEL ###################################
 
 # Fit ARIMA with rolling origin cross-validation
 mod <- Dados |>
@@ -198,8 +191,8 @@ fc <- mod |> forecast(h = 12)
 
 # Create forecast horizon index
 fc <- fc |>
-  group_by(.id) %>%
-  mutate(h = row_number()) %>%
+  group_by(.id, node, series) |>
+  mutate(h = row_number()) |>
   ungroup()
 
 save(mod, fc, file = "mod_fc_arima_regiao.RData")
@@ -247,8 +240,8 @@ mod_var <- Dados |>
 fc_var <- mod_var |> forecast(h = 12)
 
 # Reshape VAR output back to long format
-fc_var = fc_var |>
-  mutate(.mean = as.data.frame(.mean)) %>%
+fc_var <- fc_var |>
+  mutate(.mean = as.data.frame(.mean)) |>
   unnest_wider(.mean, names_sep = "_") |>
   rename(Admissões = .mean_V1, Demissões = .mean_V2, value = .distribution) |>
   pivot_longer(
@@ -262,8 +255,8 @@ fc_var = fc_var |>
 
 # Create forecast horizon index
 fc_var <- fc_var |>
-  group_by(.id, node, series) %>%
-  mutate(h = row_number()) %>%
+  group_by(.id, node, series) |>
+  mutate(h = row_number()) |>
   ungroup()
 
 save(mod_var, fc_var, file = "mod_fc_var_regiao.RData")

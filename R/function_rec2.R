@@ -48,7 +48,6 @@ sim_mvhts <- function(T, Phi, V, Sigma) {
     tsibble::as_tsibble(index = time, key = c(node, series))
 }
 
-
 make_array <- function(object, variable = "value") {
   if (!is_tsibble(object)) {
     stop("Object must be a tsibble or fable object")
@@ -96,7 +95,6 @@ make_array <- function(object, variable = "value") {
   }
   return(Y)
 }
-
 
 make_matrix <- function(object, variable = "value") {
   Y <- make_array(object, variable)

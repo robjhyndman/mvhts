@@ -6,7 +6,7 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
   Y_sim <- list()
 
   # Counter of valid simulations (only counts when no error occurs)
-  i = 0
+  i <- 0
 
   # Loop that runs until n_sim valid simulations are obtained
   while (i != n_sim) {
@@ -68,7 +68,7 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
     # 5) Process VAR output to return to long tsibble format
     # ============================================================
     fc_var <- fc_var |>
-      mutate(.mean = as.data.frame(.mean)) %>%
+      mutate(.mean = as.data.frame(.mean)) |>
       unnest_wider(.mean, names_sep = "_") |>
       rename(A = .mean_V1, B = .mean_V2, value = .distribution) |>
       pivot_longer(
@@ -122,11 +122,11 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
         inherits(fc2_var, "try-error")
     ) {
       # Do not increment the counter
-      i = i
+      i <- i
       print(i)
     } else {
       # Count as a valid simulation
-      i = i + 1
+      i <- i + 1
 
       # ============================================================
       # 9) Combine multivariate reconciliations (shrinkage and cov) in fc2
