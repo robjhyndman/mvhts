@@ -1,11 +1,15 @@
 library(fpp3)
 library(fable.prophet)
+library(furrr)
 
 source(here::here("R/fun_sim.R"))
 source(here::here("R/helpers.R"))
 source(here::here("R/reconcile.R"))
 
-set.seed(30)
+# Use all available cores; adjust workers as needed
+future::plan(future::multisession, workers = parallelly::availableCores() - 2)
+
+set.seed(30, kind = "L'Ecuyer-CMRG")
 nsim <- 1000
 
 # ============================================================
@@ -65,8 +69,9 @@ params <- expand.grid(
 
 fc_list <- vector("list", nrow(params))
 
-pwalk(params, function(v_name, sigma_name, i) {
+purrr::pwalk(params, function(v_name, sigma_name, i) {
   path <- here::here(sprintf("Simulations/sim_rec%d.rds", i))
+  message(paste("Running simulation for", v_name, "and", sigma_name))
   if (fs::file_exists(path)) {
     fc_list[[i]] <<- readRDS(path)
   } else {

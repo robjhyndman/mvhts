@@ -3,28 +3,44 @@
 # ====================================================================
 
 # --------------------------------------------------------------------
-# Main simulation loop: runs until n_sim valid simulations are obtained
+# Main simulation loop: runs until n_sim valid simulations are obtained.
+#
+# Uses furrr::future_map() to run attempts in parallel. Because some
+# attempts may fail, we run in batches of `batch_size`, keep successes,
+# and repeat until n_sim are collected. batch_size controls how many
+# attempts are launched per round.
 # --------------------------------------------------------------------
-simulacao <- function(Phi, V, Sigma, S, n_sim) {
-  fc_list <- list()
-  Y_sim <- list()
-  i <- 0
+simulacao <- function(
+  Phi,
+  V,
+  Sigma,
+  S,
+  n_sim = 1000,
+  batch_size = 20
+) {
+  successes <- list()
+  attempt <- 1
 
-  while (i < n_sim) {
-    result <- run_one_simulation(Phi, V, Sigma, S, i + 1)
-    if (is.null(result)) {
-      message("Simulation attempt failed (", i, " successes so far); retrying.")
-    } else {
-      i <- i + 1
-      fc_list[[i]] <- result$fc
-      Y_sim[[i]] <- result$Y2
-      message("Simulation ", i, " / ", n_sim, " complete.")
-    }
+  while (length(successes) < n_sim) {
+    needed <- n_sim - length(successes)
+
+    results <- furrr::future_map(
+      seq_len(batch_size),
+      \(j) run_one_simulation(Phi, V, Sigma, S, sim_id = attempt + j - 1),
+      .options = furrr::furrr_options(seed = TRUE)
+    )
+    attempt <- attempt + batch_size
+
+    new_successes <- Filter(Negate(is.null), results)
+    n_new <- min(length(new_successes), needed)
+    successes <- c(successes, new_successes[seq_len(n_new)])
+
+    message(length(successes), " / ", n_sim, " simulations complete.")
   }
 
   list(
-    fc_sim = bind_rows(fc_list),
-    Y_sim = bind_rows(Y_sim)
+    fc_sim = bind_rows(lapply(successes, `[[`, "fc")),
+    Y_sim = bind_rows(lapply(successes, `[[`, "Y2"))
   )
 }
 
@@ -182,7 +198,6 @@ reconcile_mv_one <- function(fit, fc, S) {
   if (inherits(fc_cov, "try-error")) {
     return(NULL)
   }
-
   fc_shrink <- try(
     mv_reconcile(
       fit,
@@ -196,7 +211,6 @@ reconcile_mv_one <- function(fit, fc, S) {
   if (inherits(fc_shrink, "try-error")) {
     return(NULL)
   }
-
   fc_cov$.reconciled_mean_shrink <- fc_shrink$.reconciled_mean_cov
   fc_cov
 }
