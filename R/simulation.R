@@ -67,21 +67,20 @@ params <- expand.grid(
 ) |>
   mutate(i = row_number())
 
-fc_list <- vector("list", nrow(params))
-
-purrr::pwalk(params, function(v_name, sigma_name, i) {
-  path <- here::here(sprintf("Simulations/sim_rec%d.rds", i))
+fc_list <- purrr::pmap(params, function(v_name, sigma_name, i) {
+  path <- here::here(sprintf("Saida/sim_rec%d.rds", i))
   message(paste("Running simulation for", v_name, "and", sigma_name))
   if (fs::file_exists(path)) {
-    fc_list[[i]] <<- readRDS(path)
+    readRDS(path)
   } else {
-    fc_list[[i]] <<- simulacao(
+    result <- simulacao(
       Phi,
       V_list[[v_name]],
       Sigma_list[[sigma_name]],
       S,
       nsim
     )
-    saveRDS(fc_list[[i]], file = path)
+    saveRDS(result, file = path)
+    result
   }
 })
