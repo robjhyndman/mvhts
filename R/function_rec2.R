@@ -44,68 +44,7 @@ sim_mvhts <- function(T, Phi, V, Sigma) {
     series = rep(LETTERS[seq(m)], T * (n_b + 1)),
     value = as.vector(Y)
   ) |>
-    mutate(time = time) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
-}
-
-make_array <- function(object, variable = "value") {
-  if (!is_tsibble(object)) {
-    stop("Object must be a tsibble or fable object")
-  }
-  if (!(variable %in% colnames(object))) {
-    stop("Variable not found in object")
-  }
-  # Time dimension
-  times <- unique(object$time)
-  T <- length(times)
-  # Series
-  series <- unique(object$series)
-  m <- length(series)
-  # Nodes
-  nodes <- unique(object$node)
-  n <- length(nodes)
-  if (!("Total" %in% nodes)) {
-    stop("nodes must contain a 'Total' series")
-  } else {
-    nodes <- c(
-      "Total",
-      grep("^agg", nodes, value = TRUE),
-      nodes[!grepl("^agg", nodes) & nodes != "Total"]
-    )
-  }
-  # Make sure result is ordered correctly
-  object <- arrange(object, node, series, time)
-  # Create array output
-  Y <- array(dim = c(T, m, n))
-  dimnames(Y) <- list(time = times, series = series, node = nodes)
-
-  # Fill array.
-  # This is slower than necessary, but it is easy to get things in the wrong place
-  # and a triple loop ensures we don't make mistakes
-  for (i in seq(T)) {
-    for (j in seq(m)) {
-      for (k in seq(n)) {
-        Y[i, j, k] <- object[[variable]][
-          object$time == times[i] &
-            object$series == series[j] &
-            object$node == nodes[k]
-        ]
-      }
-    }
-  }
-  return(Y)
-}
-
-make_matrix <- function(object, variable = "value") {
-  Y <- make_array(object, variable)
-  Ymat <- matrix(Y, nrow = dim(Y)[1], ncol = dim(Y)[2] * dim(Y)[3])
-  rownames(Ymat) <- dimnames(Y)[[1]]
-  colnames(Ymat) <- paste0(
-    rep(dimnames(Y)[[3]], each = dim(Y)[2]),
-    ".",
-    rep(dimnames(Y)[[2]], times = dim(Y)[3])
-  )
-  return(Ymat)
 }
 
 # ============================================================
