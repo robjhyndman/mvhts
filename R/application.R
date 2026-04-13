@@ -14,43 +14,35 @@ Dados <- read_data()
 # ==============================================================
 S <- compute_S(Dados)
 
-
-# ============================================================
+# ==============================================================
 # Multivariate reconciliation using covariance and shrinkage
-# ============================================================
+# ==============================================================
 
-########################### ARIMA MODEL ###################################
-
-# Fit ARIMA with rolling origin cross-validation
-mod <- Dados |>
-  filter_index(~"2022 Q12") |>
-  stretch_tsibble(.init = 217, .step = 1) |>
-  model(arima = ARIMA(value))
-
+# Fit ARIMA with rolling origin cross-validation ---------------
+if (fs::file_exists(here::here("Saida/mod_arima_regiao.rds"))) {
+  mod <- readRDS(here::here("Saida/mod_arima_regiao.rds"))
+} else {
+  mod <- Dados |>
+    filter_index(~"2022 Q12") |>
+    stretch_tsibble(.init = 217, .step = 1) |>
+    model(arima = ARIMA(value))
+  saveRDS(mod, file = here::here("Saida/mod_arima_regiao.rds"))
+}
 # Forecast 12 steps ahead
-fc <- mod |> forecast(h = 12)
-
-# Create forecast horizon index
-fc <- fc |>
+fc <- mod |>
+  forecast(h = 12) |>
+  # Create forecast horizon index
   group_by(.id, node, series) |>
   mutate(h = row_number()) |>
   ungroup()
-
-save(mod, fc, file = "mod_fc_arima_regiao.RData")
-
-# ---------------- Reconciliation using covariance estimator ----------------
-
+# Reconciliation using covariance estimator
 fc_rec_arima_cov <- reconcile_over_id(
   mod_tbl = mod,
   fc_tbl = fc,
   S = S,
   rec_fun = mv_reconcile
 )
-
-save(fc_rec_arima_cov, file = "fc_rec_arima_regiao.RData")
-
-# ---------------- Reconciliation using shrinkage estimator ----------------
-
+# Reconciliation using shrinkage estimator
 fc_rec_arima_sh <- reconcile_over_id(
   mod_tbl = mod,
   fc_tbl = fc,
@@ -58,22 +50,21 @@ fc_rec_arima_sh <- reconcile_over_id(
   rec_fun = mv_reconcile_s
 )
 
-save(fc_rec_arima_cov, fc_rec_arima_sh, file = "fc_rec_arima_regiao2.RData")
-
-########################### VAR MODEL ########################################
-
-# Fit VAR model (bivariate: Admissions and Dismissals)
-mod_var <- Dados |>
-  pivot_wider(names_from = series, values_from = value) |>
-  filter_index(~"2022 Q12") |>
-  stretch_tsibble(.init = 217, .step = 1) |>
-  model(var = VAR(vars(Admissões, Demissões)))
-
+# Fit VAR model (bivariate: Admissions and Dismissals) ---------
+if (fs::file_exists(here::here("Saida/mod_var_regiao.rds"))) {
+  mod_var <- readRDS(here::here("Saida/mod_var_regiao.rds"))
+} else {
+  mod_var <- Dados |>
+    pivot_wider(names_from = series, values_from = value) |>
+    filter_index(~"2022 Q12") |>
+    stretch_tsibble(.init = 217, .step = 1) |>
+    model(var = VAR(vars(Admissões, Demissões)))
+  saveRDS(mod_var, file = here::here("Saida/mod_var_regiao.rds"))
+}
 # Forecast 12 steps ahead
-fc_var <- mod_var |> forecast(h = 12)
-
-# Reshape VAR output back to long format
-fc_var <- fc_var |>
+fc_var <- mod_var |>
+  forecast(h = 12) |>
+  # Reshape VAR output back to long format
   mutate(.mean = as.data.frame(.mean)) |>
   unnest_wider(.mean, names_sep = "_") |>
   rename(Admissões = .mean_V1, Demissões = .mean_V2, value = .distribution) |>
@@ -84,34 +75,23 @@ fc_var <- fc_var |>
     cols_vary = "slowest"
   ) |>
   arrange(Região) |>
-  as_tsibble(index = time, key = c(.id, Região, node, .model, series))
-
-# Create forecast horizon index
-fc_var <- fc_var |>
+  as_tsibble(index = time, key = c(.id, Região, node, .model, series)) |>
+  # Create forecast horizon index
   group_by(.id, node, series) |>
   mutate(h = row_number()) |>
   ungroup()
 
-save(mod_var, fc_var, file = "mod_fc_var_regiao.RData")
-
-# ---------------- Reconciliation using covariance estimator ----------------
-
+# Reconciliation using covariance estimator
 fc_rec_var_cov <- reconcile_over_id(
   mod_tbl = mod_var,
   fc_tbl = fc_var,
   S = S,
   rec_fun = mv_reconcile
 )
-
-save(fc_rec_var_cov, file = "fc_rec_var_regiao.RData")
-
-# ---------------- Reconciliation using shrinkage estimator ----------------
-
+# Reconciliation using shrinkage estimator
 fc_rec_var_s <- reconcile_over_id(
   mod_tbl = mod_var,
   fc_tbl = fc_var,
   S = S,
   rec_fun = mv_reconcile_s
 )
-
-save(fc_rec_var_cov, fc_rec_var_s, file = "fc_rec_var_regiao.RData")
