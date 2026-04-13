@@ -434,89 +434,9 @@ Figures S1 to S9 of the supplementary material present examples of the simulatio
 
 Tables S1 to S9 of the supplementary material present the $\RelRMSE^{\Base}$ for all 16 hierarchical series across each forecast horizon, using ARIMA, ETS, and VAR models for base forecasts and the shrinkage approach to estimate $\bm{W}$ in scenarios 1 to 9, respectively. Values highlighted in red indicate a $\RelRMSE^{\Base}$ less than 0, meaning that the base forecasts achieved a lower RMSE than forecasts obtained through multivariate reconciliation.
 
-\begin{table}
-  \caption{Average of $\RelRMSE^{\Base}$ of the 16 series for different forecast horizons and for each scenario. ARIMA, ETS, and VAR models for base forecasts. Using the shrinkage approach to estimate $\bm{W}$. All values are positive, indicating reconciliation always improves upon base forecasts, on average.}
-  \centering
-  \resizebox{1\textwidth}{!}{%
-    \begin{tabular}{lrrrrrrrrrrrr}
-      \hline
-      \multirow{2}{*}{Model} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
-      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
-      \hline
-      Scenario 1 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.021 & 0.017 & 0.017 & 0.015 & 0.020 & 0.018 & 0.021 & 0.019 & 0.025 & 0.022 & 0.024 & 0.022 \\
-      ETS & 0.003 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 \\
-      VAR & 0.013 & 0.010 & 0.011 & 0.007 & 0.012 & 0.011 & 0.013 & 0.008 & 0.013 & 0.009 & 0.014 & 0.008 \\
-      \hline
-      Scenario 2 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.042 & 0.035 & 0.032 & 0.028 & 0.034 & 0.032 & 0.036 & 0.033 & 0.037 & 0.035 & 0.036 & 0.032 \\
-      ETS & 0.009 & 0.005 & 0.004 & 0.002 & 0.003 & 0.002 & 0.002 & 0.002 & 0.002 & 0.002 & 0.002 & 0.001 \\
-      VAR & 0.028 & 0.028 & 0.025 & 0.020 & 0.027 & 0.023 & 0.024 & 0.017 & 0.024 & 0.018 & 0.020 & 0.013 \\
-      \hline
-      Scenario 3 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.023 & 0.021 & 0.019 & 0.017 & 0.023 & 0.022 & 0.022 & 0.020 & 0.022 & 0.022 & 0.024 & 0.022 \\
-      ETS & 0.005 & 0.003 & 0.002 & 0.002 & 0.002 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 \\
-      VAR & 0.016 & 0.013 & 0.015 & 0.010 & 0.015 & 0.012 & 0.014 & 0.009 & 0.013 & 0.008 & 0.012 & 0.006 \\
-      \hline
-      Scenario 4 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.029 & 0.027 & 0.027 & 0.023 & 0.027 & 0.025 & 0.028 & 0.024 & 0.030 & 0.027 & 0.030 & 0.027 \\
-      ETS & 0.005 & 0.004 & 0.002 & 0.001 & 0.002 & 0.002 & 0.002 & 0.001 & 0.002 & 0.003 & 0.003 & 0.002 \\
-      VAR & 0.016 & 0.016 & 0.015 & 0.011 & 0.017 & 0.017 & 0.019 & 0.012 & 0.019 & 0.018 & 0.021 & 0.013 \\
-      \hline
-      Scenario 5 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.049 & 0.046 & 0.046 & 0.039 & 0.039 & 0.032 & 0.034 & 0.030 & 0.035 & 0.027 & 0.031 & 0.025 \\
-      ETS & 0.020 & 0.014 & 0.008 & 0.005 & 0.005 & 0.005 & 0.004 & 0.003 & 0.005 & 0.005 & 0.004 & 0.003 \\
-      VAR & 0.036 & 0.034 & 0.032 & 0.027 & 0.035 & 0.034 & 0.032 & 0.025 & 0.029 & 0.028 & 0.031 & 0.023 \\
-      \hline
-      Scenario 6 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.035 & 0.032 & 0.031 & 0.028 & 0.033 & 0.031 & 0.034 & 0.030 & 0.035 & 0.035 & 0.039 & 0.036 \\
-      ETS & 0.007 & 0.005 & 0.004 & 0.002 & 0.003 & 0.003 & 0.003 & 0.002 & 0.003 & 0.003 & 0.003 & 0.003 \\
-      VAR & 0.016 & 0.014 & 0.013 & 0.009 & 0.015 & 0.013 & 0.014 & 0.010 & 0.015 & 0.010 & 0.014 & 0.006 \\
-      \hline
-      Scenario 7 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.020 & 0.018 & 0.022 & 0.022 & 0.026 & 0.025 & 0.027 & 0.026 & 0.030 & 0.028 & 0.030 & 0.029 \\
-      ETS & 0.003 & 0.002 & 0.002 & 0.001 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 \\
-      VAR & 0.012 & 0.010 & 0.011 & 0.007 & 0.012 & 0.008 & 0.012 & 0.007 & 0.011 & 0.005 & 0.013 & 0.006 \\
-      \hline
-      Scenario 8 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.054 & 0.051 & 0.051 & 0.046 & 0.056 & 0.062 & 0.066 & 0.063 & 0.066 & 0.066 & 0.066 & 0.062 \\
-      ETS & 0.013 & 0.007 & 0.004 & 0.004 & 0.004 & 0.004 & 0.003 & 0.003 & 0.003 & 0.003 & 0.003 & 0.002 \\
-      VAR & 0.032 & 0.028 & 0.027 & 0.020 & 0.022 & 0.020 & 0.021 & 0.015 & 0.021 & 0.015 & 0.020 & 0.013 \\
-      \hline
-      Scenario 9 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.027 & 0.023 & 0.024 & 0.021 & 0.025 & 0.024 & 0.026 & 0.024 & 0.026 & 0.026 & 0.026 & 0.024 \\
-      ETS & 0.004 & 0.003 & 0.002 & 0.002 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 \\
-      VAR & 0.015 & 0.013 & 0.013 & 0.008 & 0.013 & 0.012 & 0.014 & 0.008 & 0.011 & 0.007 & 0.011 & 0.004 \\
-      \hline
-    \end{tabular}%
-  }
-  \label{tab:sh_mean}
-\end{table}
+\input{Tabelas/Tabs_sh_mean}
 
-\begin{table}
-  \caption{Percentage of $\RelRMSE^{\Base}$ greater than or equal to 0 considering the 16 series in the hierarchy and the 12 forecast horizons. Using the shrinkage approach to estimate $\bm{W}$ for the 9 scenarios.}
-  \centering
-  \begin{tabular}{lrrrrrrrrr}
-    \hline
-    \multirow{2}{*}{Model} & \multicolumn{9}{c}{Scenario} \\ \cline{2-10}
-    & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} & \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} & \multicolumn{1}{c}{5} & 6 & 7 & 8 & 9 \\ \hline
-    ARIMA & 97.9 & 100.0 & 100.0 & 100.0 & 100.0 & 100.0 & 89.1 & 100.0 & 90.6 \\
-    ETS & 89.6 & 93.2 & 92.2 & 88.5 & 91.1 & 94.8 & 82.3 & 98.4 & 92.7 \\
-    VAR & 89.6 & 98.4 & 90.1 & 88.5 & 97.9 & 87.5 & 84.4 & 96.9 & 85.9 \\
-    \hline
-  \end{tabular}%
-  \label{tab:porc_sh}
-\end{table}
-
+\input{Tabelas/Tabs_porc_sh}
 
 
 Another summary of Tables S1 to S9 can be made by considering the percentage of non-negative $\RelRMSE^{\Base}$ values for each of the nine scenarios and base forecasting models (Table \ref{tab:porc_sh}). The ARIMA model exhibited 100\% of values greater than or equal to 0 in the three scenarios, 2, 3, 4, 5, 6 and 8.\todo{Also 3, 4 and 6} For the VAR, the best results were also observed in scenarios 2, 5, and 8. In the ETS case, the lowest percentages occurred in scenarios 1, 4, and 7, which use $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1} with a correlation of 0 between the series at the lowest level. Table \ref{tab:porc_sh} shows that all values exceeded 50\%, highlighting the advantages of multivariate reconciliation using the shrinkage approach across all three models and nine scenarios. The ARIMA model achieved the best overall results when combined with multivariate reconciliation.
@@ -540,89 +460,9 @@ Among the three base forecasting models, ARIMA stood out across all scenarios an
 The multivariate reconciliation using shrinkage was compared with the univariate reconciliation with the same approach.
 Tables S10 to S18 of the supplementary material present the $\RelRMSE^{\Uni}$ for each series in the hierarchy and for each forecasting horizon in scenarios 1 to 9, comparing these methodologies.
 
-\begin{table}
-  \caption{Average of $\RelRMSE^{\Uni}$ of the 16 series for different forecast horizons and for each scenario. ARIMA, ETS, and VAR models for base forecasts. Using the shrinkage approach to estimate $\bm{W}$. Values in red indicate a $\RelRMSE^{\Uni}$ less than 0.
-  }
-  \centering
-  \resizebox{1\textwidth}{!}{%
-    \begin{tabular}{lrrrrrrrrrrrr}
-      \hline
-      \multirow{2}{*}{Model} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
-      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
-      \hline
-      Scenario 1 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} & 0.000 & \textcolor{red}{-0.002} \\
-      ETS & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.000 & 0.000 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      \hline
-      Scenario 2 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.003 & 0.003 & 0.003 & 0.002 & 0.002 & 0.001 & 0.001 & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.002} \\
-      ETS & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.003 & 0.003 & 0.003 & 0.001 & 0.002 & 0.001 & 0.001 & 0.001 & 0.002 & 0.000 & 0.000 & 0.001 \\
-      \hline
-      Scenario 3 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.004 & 0.002 & 0.003 & 0.003 & 0.003 & 0.001 & 0.002 & 0.000 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} \\
-      ETS & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.001 & 0.000 & 0.001 & 0.001 & 0.001 & 0.000 & 0.001 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 \\
-      \hline
-      Scenario 4 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.001 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.002 & 0.002 & 0.002 & 0.003 & 0.003 & 0.003 \\
-      ETS & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 & 0.000 & 0.001 & 0.001 & 0.001 \\
-      VAR & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      \hline
-      Scenario 5 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.003 & 0.004 & 0.005 & 0.003 & 0.003 & 0.002 & 0.002 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & 0.002 & 0.001 \\
-      ETS & 0.005 & 0.003 & 0.002 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.005 & 0.003 & 0.002 & 0.003 & 0.004 & 0.003 & 0.003 & 0.002 & 0.002 & 0.001 & 0.002 & 0.000 \\
-      \hline
-      Scenario 6 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.004 & 0.003 & 0.003 & 0.004 & 0.004 & 0.004 & 0.003 & 0.002 & 0.004 & 0.003 & 0.003 & 0.003 \\
-      ETS & 0.001 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.001 & 0.001 & 0.001 & 0.001 \\
-      VAR & 0.001 & 0.001 & 0.001 & 0.000 & 0.001 & 0.000 & 0.001 & 0.001 & 0.001 & 0.000 & 0.001 & \textcolor{red}{-0.001} \\
-      \hline
-      Scenario 7 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.001 & 0.000 & 0.001 & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.008} & \textcolor{red}{-0.009} \\
-      ETS & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.001 & 0.000 & \textcolor{red}{-0.001} & 0.000 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 \\
-      \hline
-      Scenario 8 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.007 & 0.008 & 0.007 & 0.006 & 0.006 & 0.006 & 0.004 & 0.003 & 0.003 & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} \\
-      ETS & 0.004 & 0.002 & 0.002 & 0.002 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 \\
-      VAR & 0.005 & 0.004 & 0.003 & 0.003 & 0.002 & 0.000 & 0.001 & 0.000 & 0.002 & 0.000 & 0.001 & 0.000 \\
-      \hline
-      Scenario 9 & & & & & & & & & & & & \\
-      \hline
-      ARIMA & 0.003 & 0.003 & 0.002 & \textcolor{red}{-0.001} & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.004} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} \\
-      ETS & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
-      VAR & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 & 0.000 & 0.000 & 0.001 & 0.000 \\
-      \hline
-    \end{tabular}%
-  }
-  \label{tab:sh_uni_mean}
-\end{table}
+\input{Tabelas/Tabs_sh_uni_mean}
 
-\begin{table}
-  \caption{Percentage of $\RelRMSE^{\Uni}$ greater than or equal to 0 considering the 16 series in the hierarchy and the 12 forecast horizons. Using the shrinkage approach to estimate $\bm{W}$ for the 9 scenarios.}
-  \centering
-  \begin{tabular}{lrrrrrrrrr}
-    \hline
-    \multirow{2}{*}{Model} & \multicolumn{9}{c}{Scenario} \\ \cline{2-10}
-    & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} & \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} & \multicolumn{1}{c}{5} & 6 & 7 & 8 & 9 \\ \hline
-    ARIMA & 51.6 & 66.1 & 72.9 & 82.3 & 78.6 & 88.5 & 30.2 & 79.7 & 41.1 \\
-    ETS & 98.4 & 96.4 & 100.0 & 91.7 & 77.1 & 93.8 & 97.9 & 98.4 & 99.5 \\
-    VAR & 65.6 & 83.9 & 75.5 & 65.6 & 86.5 & 68.2 & 60.4 & 77.1 & 70.3 \\
-    \hline
-  \end{tabular}%
-  \label{tab:porc_sh_uni}
-\end{table}
+\input{Tabelas/Tabs_porc_sh_uni}
 
 Table \ref{tab:sh_uni_mean} provides a summary of these results by presenting the average $\RelRMSE^{\Uni}$ values across the 16 hierarchical series for each model, forecast horizon, and scenario. The ETS model did not present mean values less than 0, indicating results that were better or similar to those of Univariate Reconciliation (Table \ref{tab:sh_uni_mean}). In scenario 1, most of the values were approximately 0, indicating that the results of multivariate and univariate reconciliation were similar. This scenario uses diagonal matrices for $\bm{V}$ and $\bm{\Sigma}$, implying that there is no correlation between variables or nodes. In scenarios 7 and 9, most of the ARIMA model means were negative, whereas in scenarios 6 and 4, all were positive. The VAR model showed good results in scenarios 2, 5, and 8, which used a correlation of 0.7 between the nodes with $\bm{\Sigma}_2$ defined in \eqref{eq:Sigma2}. The highest values observed in Table \ref{tab:sh_uni_mean} correspond to the ARIMA model, indicating a more pronounced improvement in univariate reconciliation compared to the other models.
 
@@ -732,7 +572,6 @@ Through simulation, we observed that among the three models analyzed, ARIMA, ETS
 Tables \ref{tab:adm_sh} and \ref{tab:dem_sh} show the results obtained using the shrinkage estimator for $\bm{W}$, with Table \ref{tab:adm_sh} dedicated to the admission series and Table \ref{tab:dem_sh} to the dismissal series.
 
 %The bivariate reconciliation approach, when using the sample covariance to estimate $\bm{W}$, yielded for the admission series (Table \ref{tab:adm_cov}) 61.9\% of the values greater than or equal to 0. These values correspond to the 12 forecast horizons for each of the 33 series. This outcome indicates that the proposed methodology outperformed the base forecasts in more than half of the observations. Higher values, less than 0, were concentrated in the final horizons (10, 11, and 12). The methodology performed worse for some admission series, particularly in the South region and in PA and SC states. Conversely, improvements were observed across all horizons for forecasts in the Midwest region and the states of AC, GO, MA, and MT.
-
 
 %For the dismissal series (Table \ref{tab:dem_cov}), the results were less favorable, with only 30.1\% of the observations presenting a $\RelRMSE^{\Base}$ greater than or equal to 0. Furthermore, none of the forecast horizons exhibited particularly good results. Only the state of MT recorded values greater than 0 across all horizons.
 %Thus, it can be concluded that the bivariate reconciliation approach using sample covariance did not provide any advantage in forecasting the dismissal series relative to the base forecasts, except for a few specific series.

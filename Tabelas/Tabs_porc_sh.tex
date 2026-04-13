@@ -1,0 +1,14 @@
+\begin{table}
+  \caption{Percentage of $\RelRMSE^{\Base}$ greater than or equal to 0 considering the 16 series in the hierarchy and the 12 forecast horizons. Using the shrinkage approach to estimate $\bm{W}$ for the 9 scenarios.}
+  \centering
+  \begin{tabular}{lrrrrrrrrr}
+    \hline
+    \multirow{2}{*}{Model} & \multicolumn{9}{c}{Scenario} \\ \cline{2-10}
+    & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{2} & \multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} & \multicolumn{1}{c}{5} & 6 & 7 & 8 & 9 \\ \hline
+    ARIMA & 98.4 & 100.0 & 94.8 & 100.0 & 99.5 & 100.0 & 99.0 & 100.0 & 91.1 \\
+    ETS & 62.0 & 80.2 & 62.5 & 85.4 & 91.7 & 99.0 & 88.0 & 70.8 & 92.2 \\
+    VAR & 44.3 & 35.9 & 39.6 & 42.2 & 41.7 & 35.9 & 44.8 & 32.8 & 43.8 \\
+    \hline
+  \end{tabular}%
+  \label{tab:porc_sh}
+\end{table}

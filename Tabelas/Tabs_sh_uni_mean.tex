@@ -1,0 +1,67 @@
+\begin{table}
+  \caption{Average of $\RelRMSE^{\Uni}$ of the 16 series for different forecast horizons and for each scenario. ARIMA, ETS, and VAR models for base forecasts. Using the shrinkage approach to estimate $\bm{W}$. Values in red indicate a $\RelRMSE^{\Uni}$ less than 0.}
+  \centering
+  \resizebox{1\textwidth}{!}{%
+    \begin{tabular}{lrrrrrrrrrrrr}
+      \hline
+      \multirow{2}{*}{Model} & \multicolumn{12}{c}{Forecast horizons ($h$)} \\ \cline{2-13}
+      & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+      \hline
+      Scenario 1 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.002 & 0.001 & 0.003 & 0.002 & 0.002 & 0.001 & \textcolor{red}{-0.000} & \textcolor{red}{-0.001} & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} \\
+      ETS & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & \textcolor{red}{-0.000} & \textcolor{red}{-0.000} & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+      VAR & \textcolor{red}{-0.018} & \textcolor{red}{-0.017} & \textcolor{red}{-0.013} & \textcolor{red}{-0.013} & \textcolor{red}{-0.022} & \textcolor{red}{-0.023} & \textcolor{red}{-0.021} & \textcolor{red}{-0.017} & \textcolor{red}{-0.019} & \textcolor{red}{-0.019} & \textcolor{red}{-0.019} & \textcolor{red}{-0.017} \\
+      \hline
+      Scenario 2 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.001 & \textcolor{red}{-0.001} & 0.002 & 0.003 & 0.004 & 0.004 & 0.003 & 0.003 & 0.005 & 0.004 & 0.004 & 0.002 \\
+      ETS & 0.002 & 0.001 & 0.000 & \textcolor{red}{-0.000} & 0.000 & 0.000 & \textcolor{red}{-0.000} & \textcolor{red}{-0.000} & 0.001 & 0.001 & 0.001 & 0.001 \\
+      VAR & \textcolor{red}{-0.025} & \textcolor{red}{-0.028} & \textcolor{red}{-0.020} & \textcolor{red}{-0.019} & \textcolor{red}{-0.028} & \textcolor{red}{-0.034} & \textcolor{red}{-0.029} & \textcolor{red}{-0.027} & \textcolor{red}{-0.031} & \textcolor{red}{-0.031} & \textcolor{red}{-0.019} & \textcolor{red}{-0.023} \\
+      \hline
+      Scenario 3 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.000 & 0.001 & \textcolor{red}{-0.000} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.006} & \textcolor{red}{-0.007} & \textcolor{red}{-0.007} & \textcolor{red}{-0.007} \\
+      ETS & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & \textcolor{red}{-0.000} & \textcolor{red}{-0.000} & \textcolor{red}{-0.000} & \textcolor{red}{-0.000} \\
+      VAR & \textcolor{red}{-0.017} & \textcolor{red}{-0.019} & \textcolor{red}{-0.013} & \textcolor{red}{-0.015} & \textcolor{red}{-0.016} & \textcolor{red}{-0.022} & \textcolor{red}{-0.018} & \textcolor{red}{-0.014} & \textcolor{red}{-0.009} & \textcolor{red}{-0.014} & \textcolor{red}{-0.013} & \textcolor{red}{-0.010} \\
+      \hline
+      Scenario 4 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.005 & 0.007 & 0.006 & 0.004 & 0.002 & 0.002 & 0.000 & \textcolor{red}{-0.001} & \textcolor{red}{-0.000} & \textcolor{red}{-0.001} & \textcolor{red}{-0.002} & \textcolor{red}{-0.003} \\
+      ETS & 0.003 & 0.002 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+      VAR & \textcolor{red}{-0.035} & \textcolor{red}{-0.037} & \textcolor{red}{-0.031} & \textcolor{red}{-0.032} & \textcolor{red}{-0.034} & \textcolor{red}{-0.037} & \textcolor{red}{-0.036} & \textcolor{red}{-0.031} & \textcolor{red}{-0.030} & \textcolor{red}{-0.032} & \textcolor{red}{-0.027} & \textcolor{red}{-0.029} \\
+      \hline
+      Scenario 5 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.005 & 0.004 & 0.003 & 0.001 & 0.000 & 0.001 & \textcolor{red}{-0.000} & 0.000 & 0.000 & 0.001 & 0.001 & 0.002 \\
+      ETS & 0.005 & 0.003 & 0.003 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.002 & 0.002 & 0.001 & 0.001 \\
+      VAR & \textcolor{red}{-0.036} & \textcolor{red}{-0.045} & \textcolor{red}{-0.038} & \textcolor{red}{-0.039} & \textcolor{red}{-0.045} & \textcolor{red}{-0.051} & \textcolor{red}{-0.046} & \textcolor{red}{-0.039} & \textcolor{red}{-0.043} & \textcolor{red}{-0.049} & \textcolor{red}{-0.045} & \textcolor{red}{-0.038} \\
+      \hline
+      Scenario 6 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.011 & 0.009 & 0.008 & 0.004 & 0.006 & 0.003 & 0.003 & 0.001 & 0.001 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} \\
+      ETS & 0.005 & 0.004 & 0.004 & 0.003 & 0.003 & 0.002 & 0.002 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 \\
+      VAR & \textcolor{red}{-0.040} & \textcolor{red}{-0.049} & \textcolor{red}{-0.040} & \textcolor{red}{-0.031} & \textcolor{red}{-0.034} & \textcolor{red}{-0.043} & \textcolor{red}{-0.035} & \textcolor{red}{-0.028} & \textcolor{red}{-0.024} & \textcolor{red}{-0.022} & \textcolor{red}{-0.021} & \textcolor{red}{-0.020} \\
+      \hline
+      Scenario 7 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.003 & 0.002 & 0.002 & 0.001 & 0.002 & 0.000 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & \textcolor{red}{-0.001} \\
+      ETS & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.001 & 0.000 & 0.001 & 0.001 & 0.000 & \textcolor{red}{-0.000} \\
+      VAR & \textcolor{red}{-0.018} & \textcolor{red}{-0.023} & \textcolor{red}{-0.017} & \textcolor{red}{-0.015} & \textcolor{red}{-0.017} & \textcolor{red}{-0.022} & \textcolor{red}{-0.016} & \textcolor{red}{-0.016} & \textcolor{red}{-0.019} & \textcolor{red}{-0.019} & \textcolor{red}{-0.013} & \textcolor{red}{-0.010} \\
+      \hline
+      Scenario 8 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.003 & 0.004 & 0.003 & 0.003 & 0.004 & 0.003 & 0.002 & 0.003 & 0.004 & 0.005 & 0.004 & 0.004 \\
+      ETS & 0.003 & 0.002 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.001 & 0.001 & 0.002 & 0.001 & 0.001 \\
+      VAR & \textcolor{red}{-0.019} & \textcolor{red}{-0.028} & \textcolor{red}{-0.020} & \textcolor{red}{-0.016} & \textcolor{red}{-0.018} & \textcolor{red}{-0.025} & \textcolor{red}{-0.024} & \textcolor{red}{-0.022} & \textcolor{red}{-0.024} & \textcolor{red}{-0.029} & \textcolor{red}{-0.021} & \textcolor{red}{-0.020} \\
+      \hline
+      Scenario 9 & & & & & & & & & & & & \\
+      \hline
+      ARIMA & 0.001 & 0.001 & 0.001 & \textcolor{red}{-0.000} & 0.001 & \textcolor{red}{-0.001} & \textcolor{red}{-0.001} & \textcolor{red}{-0.003} & \textcolor{red}{-0.003} & \textcolor{red}{-0.004} & \textcolor{red}{-0.005} & \textcolor{red}{-0.005} \\
+      ETS & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.001 & 0.000 & 0.000 & 0.000 \\
+      VAR & \textcolor{red}{-0.025} & \textcolor{red}{-0.027} & \textcolor{red}{-0.025} & \textcolor{red}{-0.021} & \textcolor{red}{-0.024} & \textcolor{red}{-0.028} & \textcolor{red}{-0.022} & \textcolor{red}{-0.016} & \textcolor{red}{-0.016} & \textcolor{red}{-0.017} & \textcolor{red}{-0.012} & \textcolor{red}{-0.011} \\
+      \hline
+    \end{tabular}%
+  }
+  \label{tab:sh_uni_mean}
+\end{table}
