@@ -72,7 +72,7 @@ fc_list <- purrr::pmap(params, function(v_name, sigma_name, i) {
   path <- here::here(sprintf("Saida/sim_rec%d.rds", i))
   message(paste("Running simulation for", v_name, "and", sigma_name))
   if (fs::file_exists(path)) {
-    readRDS(path)
+    result <- readRDS(path)
   } else {
     result <- simulacao(
       Phi,
@@ -81,9 +81,9 @@ fc_list <- purrr::pmap(params, function(v_name, sigma_name, i) {
       S,
       nsim
     )
-    saveRDS(result, file = path)
-    result
+    saveRDS(result, file = path, compress = "xz")
   }
+  result
 })
 
 # ============================================================
@@ -188,7 +188,7 @@ write_mean_relrmse_table(
     " All values are positive, indicating reconciliation always improves",
     " upon base forecasts, on average."
   ),
-  label   = "tab:sh_mean",
+  label = "tab:sh_mean",
   has_red = FALSE,
   file = here::here("Tabelas/Tabs_sh_mean.tex")
 )
@@ -222,7 +222,7 @@ write_mean_relrmse_table(
     " forecasts. Using the shrinkage approach to estimate $\\bm{W}$.",
     " Values in red indicate a $\\RelRMSE^{\\Uni}$ less than 0."
   ),
-  label   = "tab:sh_uni_mean",
+  label = "tab:sh_uni_mean",
   has_red = TRUE,
   file = here::here("Tabelas/Tabs_sh_uni_mean.tex")
 )

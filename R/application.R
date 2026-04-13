@@ -28,7 +28,7 @@ if (fs::file_exists(here::here("Saida/mod_arima_regiao.rds"))) {
     filter_index(~"2022 Q12") |>
     stretch_tsibble(.init = 217, .step = 1) |>
     model(arima = ARIMA(value))
-  saveRDS(mod, file = here::here("Saida/mod_arima_regiao.rds"))
+  saveRDS(mod, file = here::here("Saida/mod_arima_regiao.rds"), compress = "xz")
 }
 # Forecast 12 steps ahead
 fc <- mod |>
@@ -62,7 +62,11 @@ if (fs::file_exists(here::here("Saida/mod_var_regiao.rds"))) {
     filter_index(~"2022 Q12") |>
     stretch_tsibble(.init = 217, .step = 1) |>
     model(var = VAR(vars(Admissões, Demissões)))
-  saveRDS(mod_var, file = here::here("Saida/mod_var_regiao.rds"))
+  saveRDS(
+    mod_var,
+    file = here::here("Saida/mod_var_regiao.rds"),
+    compress = "xz"
+  )
 }
 # Forecast 12 steps ahead
 fc_var <- mod_var |>
