@@ -1,15 +1,13 @@
 simulacao <- function(Phi, V, Sigma, S, n_sim) {
   # Data frame that will store all reconciled forecasts
-  fc_sim <- data.frame()
-
+  fc_list <- list()
   # List to store all simulated series for each repetition
   Y_sim <- list()
-
   # Counter of valid simulations (only counts when no error occurs)
   i <- 0
 
   # Loop that runs until n_sim valid simulations are obtained
-  while (i != n_sim) {
+  while (i < n_sim) {
     # ============================================================
     # 1) Generation of the simulated series only at the bottom level
     # ============================================================
@@ -18,24 +16,7 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
     # ============================================================
     # 2) Aggregate the bottom-level series
     # ============================================================
-    Y2 <- bind_rows(
-      # Original bottom series
-      Y,
-
-      # First aggregated level: sum of nodes 1 and 2
-      Y |>
-        filter(node %in% c(1, 2)) |>
-        group_by(series) |>
-        summarise(value = sum(value)) |>
-        mutate(node = "agg_1"),
-
-      # Second aggregated level: sum of nodes 3, 4 and 5
-      Y |>
-        filter(node %in% c(3, 4, 5)) |>
-        group_by(series) |>
-        summarise(value = sum(value)) |>
-        mutate(node = "agg_2")
-    )
+    Y2 <- sim_aggregate(Y)
 
     # ============================================================
     # 3) Fit models up to 2026 Q4 (training data)
@@ -121,8 +102,6 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
         inherits(fc2_ets, "try-error") ||
         inherits(fc2_var, "try-error")
     ) {
-      # Do not increment the counter
-      i <- i
       print(i)
     } else {
       # Count as a valid simulation
@@ -138,20 +117,13 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
       # ============================================================
       # 10) Add the true future values to fc2
       # ============================================================
-      fc2_arima <- bind_cols(
-        fc2_arima,
-        (Y2 |> filter_index("2027 Q1" ~ "2029 Q4") |> mutate(Y = value))[, 5]
-      )
-
-      fc2_ets <- bind_cols(
-        fc2_ets,
-        (Y2 |> filter_index("2027 Q1" ~ "2029 Q4") |> mutate(Y = value))[, 5]
-      )
-
-      fc2_var <- bind_cols(
-        fc2_var,
-        (Y2 |> filter_index("2027 Q1" ~ "2029 Q4") |> mutate(Y = value))[, 5]
-      )
+      true_vals <- Y2 |>
+        filter_index("2027 Q1" ~ "2029 Q4") |>
+        mutate(Y = value) |>
+        select(Y)
+      fc2_arima <- bind_cols(fc2_arima, true_vals)
+      fc2_ets <- bind_cols(fc2_ets, true_vals)
+      fc2_var <- bind_cols(fc2_var, true_vals)
 
       # Identify which simulation generated the results
       fc2_arima$simulacao <- i
@@ -175,23 +147,42 @@ simulacao <- function(Phi, V, Sigma, S, n_sim) {
       )
 
       # Accumulate all forecasts
-      fc_sim <- bind_rows(fc_sim, fc)
+      fc_list[[i]] <- fc
 
       # Store the complete simulated series
       Y2$simulacao <- i
+      Y_sim[[i]] <- data.frame(Y2)
       print(i)
       print("#####################################")
     }
-
-    # Store the simulated series in the list
-    Y_sim[[i]] <- data.frame(Y2)
   }
 
   # ============================================================
   # 12) Final return
   # ============================================================
   return(list(
-    fc_sim = fc_sim,
+    fc_sim = bind_rows(fc_list),
     Y_sim = bind_rows(Y_sim)
   ))
+}
+
+sim_aggregate <- function(Y) {
+  bind_rows(
+    # Original bottom series
+    Y,
+
+    # First aggregated level: sum of nodes 1 and 2
+    Y |>
+      filter(node %in% c(1, 2)) |>
+      group_by(series) |>
+      summarise(value = sum(value)) |>
+      mutate(node = "agg_1"),
+
+    # Second aggregated level: sum of nodes 3, 4 and 5
+    Y |>
+      filter(node %in% c(3, 4, 5)) |>
+      group_by(series) |>
+      summarise(value = sum(value)) |>
+      mutate(node = "agg_2")
+  )
 }
