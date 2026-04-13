@@ -148,3 +148,72 @@ ytilde_to_tsibble <- function(
   # Add in anything else from the original fc object
   left_join(fc, out, by = c("time", "node", "series"))
 }
+
+# ============================================================
+# Extract the residual matrix in the required format
+# ============================================================
+
+residuals_matrix <- function(res) {
+  # Fix node order to match the hierarchy structure
+  res$node <- factor(
+    res$node,
+    levels = c("Total", "agg_1", "agg_2", "1", "2", "3", "4", "5")
+  )
+  res <- res |> arrange(node)
+
+  ##### Adjust the residual matrix
+
+  ## VAR model
+
+  if (unique(res$.model) == "var") {
+    res <- res |>
+      select(-.model) |>
+      # Transform from long to wide format:
+      # Each column becomes: node.variable (e.g., Total.A, Total.B, agg_1.A, agg_1.B ...)
+      pivot_wider(
+        names_from = node,
+        values_from = c(A, B),
+        names_glue = "{node}.{.value}"
+      )
+  } else {
+    ## ARIMA and ETS
+    res <- res |>
+      select(-.model) |>
+      # Transform from long to wide format:
+      # Each column becomes: node.variable (e.g., Total.A, Total.B, agg_1.A, agg_1.B ...)
+      pivot_wider(
+        names_from = c(node, series),
+        names_glue = "{node}.{series}",
+        values_from = .resid
+      )
+  }
+  res |>
+    drop_na() |>
+    select(-time) |>
+    as.matrix()
+}
+
+get_residuals <- function(fit) {
+  if (!is_mable(fit)) {
+    stop("fit must be a mable object")
+  }
+  res <- fit |> residuals()
+
+  if ("agg_1" %in% res$node) {
+    # fit from simulation
+    return(residuals_matrix(res))
+  } else if (unique(res$.model) == "var") {
+    res |>
+      pivot_longer(
+        -c(node, .model, time, .id, Região),
+        names_to = "series",
+        values_to = ".resid",
+        cols_vary = "slowest"
+      ) |>
+      arrange(node) |>
+      make_matrix2(".resid")
+  } else {
+    res |>
+      make_matrix2(".resid")
+  }
+}
