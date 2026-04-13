@@ -96,12 +96,40 @@ fc_rec_var_s <- reconcile_over_id(
   cov_fn = shrinkage_cov
 )
 
-# ==============================================================
-# Generate application RelRMSE_Base tables (tab:adm_sh, tab:dem_sh)
-# ==============================================================
+# =========================================
+# Generate application RelRMSE_Base tables
+# =========================================
+
+fc_combined <- bind_rows(
+  fc_rec_arima_cov,
+  fc_rec_arima_sh,
+  fc_rec_var_cov,
+  fc_rec_var_s
+) |>
+  left_join(
+    Dados |> select(time, node, series, value),
+    by = c("time", "node", "series")
+  )
+
+app_rmse <- fc_combined |>
+  group_by(node, series, h, .model, type) |>
+  summarise(
+    RMSE = sqrt(mean((forecast - value)^2, na.rm = TRUE)),
+    .groups = "drop"
+  )
+app_relrmse <- app_rmse |>
+  pivot_wider(names_from = type, values_from = RMSE) |>
+  pivot_longer(
+    starts_with("reconciled"),
+    names_to = "type",
+    values_to = "reconciled"
+  ) |>
+  mutate(type = stringr::str_remove(type, "reconciled_")) |>
+  mutate(RelRMSE = 1 - reconciled / base) |>
+  filter(type == "shrinkage")
 
 # Node display ordering and labels (Total → regions alphabetically → states)
-all_nodes <- unique(as_tibble(Dados)$node)
+all_nodes <- unique(Dados$node)
 app_agg_nodes <- sort(all_nodes[startsWith(all_nodes, "agg_")])
 app_states <- sort(all_nodes[!all_nodes %in% c("Total", app_agg_nodes)])
 app_node_order <- c("Total", app_agg_nodes, app_states)
@@ -117,62 +145,48 @@ app_node_labels <- c(
   region_english[app_agg_nodes],
   setNames(app_states, app_states)
 )
-
-# Actual values for joining (drop Região to keep join keys simple)
-actuals <- as_tibble(Dados) |> select(time, node, series, value)
-
-# Base forecasts: drop the distribution column, keep .mean and h
-fc_base <- as_tibble(fc) |>
-  select(.id, node, series, time, h, .mean)
-
-# Reconciled (ARIMA + shrinkage): keep .reconciled_mean_cov and h
-fc_rec <- as_tibble(fc_rec_arima_sh) |>
-  select(.id, node, series, time, h, .reconciled_mean_cov)
-
-# Compute RelRMSE_Base per (node, series, h) across all cross-validation origins
-app_relrmse <- fc_rec |>
-  left_join(actuals, by = c("time", "node", "series")) |>
-  group_by(node, series, h) |>
-  summarise(
-    RMSE_rec = sqrt(mean((.reconciled_mean_cov - value)^2, na.rm = TRUE)),
-    .groups = "drop"
-  ) |>
-  left_join(
-    fc_base |>
-      left_join(actuals, by = c("time", "node", "series")) |>
-      group_by(node, series, h) |>
-      summarise(
-        RMSE_base = sqrt(mean((.mean - value)^2, na.rm = TRUE)),
-        .groups = "drop"
-      ),
-    by = c("node", "series", "h")
-  ) |>
-  mutate(RelRMSE_Base = 1 - RMSE_rec / RMSE_base)
-
-app_caption <- function(series_name) {
+app_caption <- function(model, series_name) {
   paste0(
     "$\\RelRMSE^{\\Base}$ of ",
     series_name,
     " series.",
-    " ARIMA model for base forecasts and the shrinkage approach to",
+    " ",
+    model,
+    " model for base forecasts and the shrinkage approach to",
     " estimate $\\bm{W}$.",
     " Values in red indicate a $\\RelRMSE^{\\Base}$ less than 0."
   )
 }
 
 write_app_relrmse_table(
-  app_relrmse |> filter(series == "Admissões"),
+  app_relrmse |> filter(series == "Admissões", .model == "arima"),
   node_order = app_node_order,
   node_labels_map = app_node_labels,
-  caption = app_caption("admission"),
+  caption = app_caption("ARIMA", "admission"),
   label = "tab:adm_sh",
   file = here::here("Tabelas/Tabs_adm_sh.tex")
 )
 write_app_relrmse_table(
-  app_relrmse |> filter(series == "Demissões"),
+  app_relrmse |> filter(series == "Demissões", .model == "arima"),
   node_order = app_node_order,
   node_labels_map = app_node_labels,
-  caption = app_caption("dismissal"),
+  caption = app_caption("ARIMA", "dismissal"),
   label = "tab:dem_sh",
   file = here::here("Tabelas/Tabs_dem_sh.tex")
+)
+write_app_relrmse_table(
+  app_relrmse |> filter(series == "Admissões", .model == "var"),
+  node_order = app_node_order,
+  node_labels_map = app_node_labels,
+  caption = paste("Table S19:", app_caption("VAR", "admission")),
+  label = "tab:adm_var_sh",
+  file = here::here("Tabelas/Tabs_var_adm_sh.tex")
+)
+write_app_relrmse_table(
+  app_relrmse |> filter(series == "Demissões", .model == "var"),
+  node_order = app_node_order,
+  node_labels_map = app_node_labels,
+  caption = paste("Table S19:", app_caption("VAR", "dismissal")),
+  label = "tab:dem_var_sh",
+  file = here::here("Tabelas/Tabs_var_dem_sh.tex")
 )

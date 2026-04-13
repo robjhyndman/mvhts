@@ -354,7 +354,7 @@ write_app_relrmse_table <- function(
       next
     }
     nd_lab <- node_labels_map[[nd]]
-    vals <- vapply(row_data$RelRMSE_Base, fmt_red, character(1))
+    vals <- vapply(row_data$RelRMSE, fmt_red, character(1))
     lines <- c(
       lines,
       paste(c(paste0("      ", nd_lab), vals), collapse = " & ") |>

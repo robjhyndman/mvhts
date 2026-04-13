@@ -66,10 +66,27 @@ reconcile_over_id <- function(
 ) {
   mod_n <- split(mod_tbl, mod_tbl$.id)
   fc_n <- split(fc_tbl, fc_tbl$.id)
-  purrr::map2(
+  output <- purrr::map2(
     mod_n,
     fc_n,
     ~ rec_fun(.x, .y, S, cov_fn = cov_fn, time_fn = time_fn)
   ) |>
     bind_rows()
+  shrinkage <- if (identical(cov_fn, shrinkage_cov)) "shrinkage" else "sample"
+  output |>
+    as_tibble() |>
+    select(-value) |>
+    rename(base = .mean, reconciled = .reconciled_mean_cov) |>
+    tidyr::pivot_longer(
+      cols = c(base, reconciled),
+      names_to = "type",
+      values_to = "forecast"
+    ) |>
+    mutate(
+      type = if_else(
+        type == "reconciled",
+        paste("reconciled", shrinkage, sep = "_"),
+        type
+      )
+    )
 }
