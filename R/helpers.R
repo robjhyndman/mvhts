@@ -80,33 +80,12 @@ make_matrix2 <- function(object, variable = "value") {
   return(Y)
 }
 
-est_cov2 <- function(fit) {
-  if (!is_mable(fit)) {
-    stop("fit must be a mable object")
-  }
-
-  res <- fit |> residuals()
-
-  if (unique(res$.model) == "var") {
-    res |>
-      pivot_longer(
-        -c(node, .model, time, .id, Região),
-        names_to = "series",
-        values_to = ".resid",
-        cols_vary = "slowest"
-      ) |>
-      arrange(node) |>
-      make_matrix2(".resid") |>
-      cov(use = "complete.obs")
-  } else {
-    res |>
-      make_matrix2(".resid") |>
-      cov(use = "complete.obs")
-  }
+# Sample estimator for covariance matrix
+sample_cov <- function(res) {
+  cov(res, use = "complete.obs")
 }
 
 # Shrinkage estimator for covariance matrix
-
 shrinkage_cov <- function(res) {
   t <- nrow(res)
   # Sample covariance matrix
