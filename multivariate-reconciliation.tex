@@ -14,11 +14,11 @@
 \DeclareMathOperator{\Rec}{Rec}
 \DeclareMathOperator{\Uni}{Uni}
 \allowdisplaybreaks
-
-\journal{TBD}
 \sloppy
 \widowpenalty=10000
 \clubpenalty=10000
+
+\journal{TBD}
 
 \begin{document}
 
@@ -640,7 +640,7 @@ We conclude that, for this simulation study, the shrinkage approach outperforms 
 
 \todo[inline]{Rather than just stating what works best, can we shed some light on these results? For example, reconciliation often mimics multivariate modelling by borrowing strength across the series indirectly. So, it is not surprising that the ARIMA model, which is univariate, benefits more from reconciliation than the VAR model, which already accounts for multivariate relationships. Is there something about negatively correlated series that makes reconciliation more effective for some models?}
 
-\textcolor{red}{These results provide some insight into the role of cross-series dependence in reconciliation. Since reconciliation borrows strength across series, it can partially mimic multivariate modelling, which helps explain why univariate models such as ARIMA tend to benefit more than models like VAR that already capture cross-dependencies. Regarding negatively correlated series, our results do not suggest a systematic advantage or disadvantage. For instance, scenarios 7 and 9 (with correlation −0.7) show weaker performance compared to other scenarios and even to the base forecasts, whereas scenario 8 shows improved results. Nevertheless, the average RMSSE of multivariate reconciliation is consistently lower across these scenarios and models (Table 6), indicating that the benefits of reconciliation are present but may depend on the specific data structure rather than the sign of the correlation alone.}
+\textcolor{red}{These results provide some insight into the role of cross-series dependence in reconciliation. Since reconciliation borrows strength across series, it can partially mimic multivariate modelling, which helps explain why univariate models such as ARIMA tend to benefit more than models like VAR that already capture cross-dependencies. Regarding negatively correlated series, our results do not suggest a systematic advantage or disadvantage. For instance, scenarios 7 and 9 (with correlation $-0.7$) show weaker performance compared to other scenarios and even to the base forecasts, whereas scenario 8 shows improved results. Nevertheless, the average RMSSE of multivariate reconciliation is consistently lower across these scenarios and models (Table 6), indicating that the benefits of reconciliation are present but may depend on the specific data structure rather than the sign of the correlation alone.}
 
 \FloatBarrier
 
