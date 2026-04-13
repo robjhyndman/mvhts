@@ -106,8 +106,7 @@ scale_factors <- all_Y |>
   group_by(scenario, simulacao, node, series) |>
   arrange(time, .by_group = TRUE) |>
   mutate(lag4 = lag(value, 4)) |>
-  filter(!is.na(lag4)) |>
-  summarise(scale = mean((value - lag4)^2), .groups = "drop") |>
+  summarise(scale = mean((value - lag4)^2, na.rm = TRUE), .groups = "drop") |>
   group_by(scenario, node, series) |>
   summarise(mean_scale = mean(scale), .groups = "drop")
 
