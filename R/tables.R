@@ -47,7 +47,7 @@ write_rmsse_table <- function(rmsse_df, file) {
   model_labels <- c(arima = "ARIMA", ets = "ETS", var = "VAR")
   lines <- c(
     "",
-    "\\begin{table}",
+    "\\begin{table}[!htb]",
     paste(
       "\\caption{Mean RMSSE of the reconciled multivariate forecasts by forecast",
       "horizon and base model for the nine analyzed scenarios, using the shrinkage",
@@ -118,13 +118,9 @@ write_relrmse_tables <- function(
 
   lines <- character(0)
 
-  for (sc in 1:9) {
-    tab_num <- tab_start + sc - 1
-
+  for (sc in seq_len(9)) {
     caption <- paste0(
-      "\\caption*{Table S",
-      tab_num,
-      ": $",
+      "\\caption{$",
       metric_tex,
       "$ for all series in the hierarchy across different forecast horizons.",
       " ARIMA, ETS, and VAR models for base forecasts.",
@@ -140,7 +136,7 @@ write_relrmse_tables <- function(
     lines <- c(
       lines,
       if (sc > 1) "" else character(0),
-      "\\begin{table}",
+      "\\begin{table}[!htb]",
       caption,
       "\\centering\\resizebox{1\\textwidth}{!}{%",
       "\\begin{tabular}{llcccccccccccc}\\hline",
@@ -214,7 +210,7 @@ write_mean_relrmse_table <- function(df, caption, label, has_red, file) {
   fmt_cell <- if (has_red) fmt_red else fmt3
 
   lines <- c(
-    "\\begin{table}",
+    "\\begin{table}[!htb]",
     paste0("  \\caption{", caption, "}"),
     "  \\centering",
     "  \\resizebox{1\\textwidth}{!}{%",
@@ -276,7 +272,7 @@ write_perc_table <- function(df, caption, label, file) {
   fmt_pct <- function(x) formatC(x, digits = 1, format = "f")
 
   lines <- c(
-    "\\begin{table}",
+    "\\begin{table}[!htb]",
     paste0("  \\caption{", caption, "}"),
     "  \\centering",
     "  \\begin{tabular}{lrrrrrrrrr}",
@@ -333,7 +329,7 @@ write_app_relrmse_table <- function(
   file
 ) {
   lines <- c(
-    "\\begin{table}",
+    "\\begin{table}[!htb]",
     paste0("  \\caption{", caption, "}"),
     "  \\centering",
     "  \\resizebox{1\\textwidth}{!}{%",

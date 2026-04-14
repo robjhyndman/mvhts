@@ -178,7 +178,7 @@ write_app_relrmse_table(
   app_relrmse |> filter(series == "Admissões", .model == "var"),
   node_order = app_node_order,
   node_labels_map = app_node_labels,
-  caption = paste("Table S19:", app_caption("VAR", "admission")),
+  caption = app_caption("VAR", "admission"),
   label = "tab:adm_var_sh",
   file = here::here("Tabelas/Tabs_var_adm_sh.tex")
 )
@@ -186,7 +186,7 @@ write_app_relrmse_table(
   app_relrmse |> filter(series == "Demissões", .model == "var"),
   node_order = app_node_order,
   node_labels_map = app_node_labels,
-  caption = paste("Table S19:", app_caption("VAR", "dismissal")),
+  caption = app_caption("VAR", "dismissal"),
   label = "tab:dem_var_sh",
   file = here::here("Tabelas/Tabs_var_dem_sh.tex")
 )
