@@ -71,7 +71,7 @@ run_one_simulation <- function(Phi, V, Sigma, S, sim_id) {
 # Simulation of multivariate series at the bottom level
 # ====================================================================
 
-sim_mvhts <- function(T, Phi, V, Sigma) {
+sim_mvhts <- function(len_T, Phi, V, Sigma) {
   # Get dimensions
   m <- NROW(V)
   n_b <- NROW(Sigma)
@@ -81,29 +81,34 @@ sim_mvhts <- function(T, Phi, V, Sigma) {
   # Covariance matrix for the whole system
   W <- kronecker(Sigma, V)
   # Set up space for storing the simulation
-  B <- array(dim = c(m, n_b, T))
+  B <- array(dim = c(m, n_b, len_T))
   # Generate noise with N(0,W) distribution
   # E[t,,] contains E_t
-  noise <- mvtnorm::rmvnorm(T, rep(0, n_b * m), W)
-  E <- array(noise, dim = c(m, n_b, T))
+  noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), W)
+  E <- array(noise, dim = c(m, n_b, len_T))
   # Generate bottom level series
   for (i in seq(n_b)) {
     B[, i, ] <- t(
-      tsDyn::VAR.sim(B = Phi, n = T, include = "none", innov = t(E[, i, ])) +
-        runif(1, 0, 4) * sin(2 * pi * seq(T) / 4)
+      tsDyn::VAR.sim(
+        B = Phi,
+        n = len_T,
+        include = "none",
+        innov = t(E[, i, ])
+      ) +
+        runif(1, 0, 4) * sin(2 * pi * seq(len_T) / 4)
     )
   }
-  Y <- array(dim = c(m, n_b + 1, T))
+  Y <- array(dim = c(m, n_b + 1, len_T))
   Y[, 1, ] <- apply(B, c(1, 3), sum)
   Y[, -1, ] <- B
   # Return as a tsibble object
   tibble::tibble(
     time = make_yearquarter(
-      year = rep(2000:(2000 + T / 4 - 1), each = 4 * (m * (n_b + 1))),
-      quarter = rep(rep(1:4, each = m * (n_b + 1)), T / 4)
+      year = rep(2000:(2000 + len_T / 4 - 1), each = 4 * (m * (n_b + 1))),
+      quarter = rep(rep(1:4, each = m * (n_b + 1)), len_T / 4)
     ),
-    node = rep(rep(c("Total", seq(n_b)), each = m), T),
-    series = rep(LETTERS[seq(m)], T * (n_b + 1)),
+    node = rep(rep(c("Total", seq(n_b)), each = m), len_T),
+    series = rep(LETTERS[seq(m)], len_T * (n_b + 1)),
     value = as.vector(Y)
   ) |>
     tsibble::as_tsibble(index = time, key = c(node, series))

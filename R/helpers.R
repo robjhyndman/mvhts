@@ -43,7 +43,7 @@ make_array <- function(object, variable = "value") {
   }
   # Time dimension
   times <- sort(unique(object$time))
-  T <- length(times)
+  len_T <- length(times)
   # Series
   series <- sort(unique(object$series))
   m <- length(series)
@@ -57,7 +57,7 @@ make_array <- function(object, variable = "value") {
   # Make sure result is ordered correctly
   object <- object |> arrange(factor(node, levels = nodes), series, time)
   # Create array output
-  Y <- array(object[[variable]], dim = c(T, m, n))
+  Y <- array(object[[variable]], dim = c(len_T, m, n))
   dimnames(Y) <- list(time = as.character(times), series = series, node = nodes)
   return(Y)
 }
