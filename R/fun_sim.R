@@ -54,14 +54,14 @@ run_one_simulation <- function(Phi, V, Sigma, S, sim_id) {
   }
   uv <- reconcile_uv(fits, fcs, S)
   Y_true <- Y2 |> rename(Y = value)
-  fc <- purrr::imap(mv, \(fc_model, name) {
+  fc <- purrr::map(mv, \(fc_model) {
     fc_model |>
       left_join(Y_true, by = c("time", "node", "series")) |>
       mutate(simulacao = sim_id) |>
       data.frame() |>
       select(-value)
   }) |>
-    bind_rows() |>
+    purrr::list_rbind() |>
     left_join(uv, by = c("time", "node", "series", ".model", ".mean"))
   Y2$simulacao <- sim_id
   list(fc = fc, Y2 = data.frame(Y2))
@@ -232,5 +232,5 @@ reconcile_uv <- function(fits, fcs, S) {
     )) |>
       select(-value)
   }) |>
-    bind_rows()
+    purrr::list_rbind()
 }
