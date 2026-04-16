@@ -104,11 +104,11 @@ sim_mvhts <- function(len_T, Phi, V, Sigma) {
   # Return as a tsibble object
   tibble::tibble(
     time = make_yearquarter(
-      year = rep(2000:(2000 + len_T / 4 - 1), each = 4 * (m * (n_b + 1))),
+      year = rep(1994:(1994 + len_T / 4 - 1), each = 4 * (m * (n_b + 1))),
       quarter = rep(rep(1:4, each = m * (n_b + 1)), len_T / 4)
     ),
     node = rep(rep(c("Total", seq(n_b)), each = m), len_T),
-    series = rep(LETTERS[seq(m)], len_T * (n_b + 1)),
+    series = as.character(rep(seq(m), len_T * (n_b + 1))),
     value = as.vector(Y)
   ) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
@@ -214,7 +214,7 @@ reconcile_mv <- function(fits, fcs, S) {
 # --------------------------------------------------------------------
 reconcile_uv <- function(fits, fcs, S) {
   models <- c("arima", "ets", "var")
-  series <- c("A", "B")
+  series <- c("1", "2")
   combos <- expand.grid(
     model = models,
     series = series,
