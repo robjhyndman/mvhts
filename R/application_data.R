@@ -137,8 +137,10 @@ read_data <- function() {
 
   Dados <- Dados |>
     as_tsibble(key = c(Região, node, series), index = Data)
+
   colnames(Dados) <- c("time", "Região", "node", "series", "value")
-  Dados <- Dados |>
+
+  Dados |>
     arrange(Região) |>
     ungroup()
 }
