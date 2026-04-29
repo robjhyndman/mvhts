@@ -1,14 +1,13 @@
 \documentclass[a4paper, 12pt]{article}
-\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[margin=2cm]{geometry}
 \usepackage{color}
 \usepackage{amsmath,bm}
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{adjustbox}
-\usepackage{multirow}
+\usepackage{booktabs,multirow}
 \usepackage{float}
-\usepackage{caption}
 \usepackage{authblk}
+\usepackage{pgffor}
+\usepackage[no-weekday]{eukdate}
 
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thetable}{S\arabic{table}}
@@ -39,82 +38,22 @@
 
 \section*{Figures}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/1.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 1.}
-  \label{fig:sim1}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/2.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 2.}
-  \label{fig:sim2}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/3.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 3.}
-  \label{fig:sim3}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/4.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 4.}
-  \label{fig:sim4}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/5.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 5.}
-  \label{fig:sim5}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/6.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 6.}
-  \label{fig:sim6}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/7.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 7.}
-  \label{fig:sim7}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/8.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 8.}
-  \label{fig:sim8}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Imagens/9.pdf}
-  \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario 9.}
-  \label{fig:sim9}
-\end{figure}
+\foreach \i in {1,...,9}{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Imagens/\i.pdf}
+    \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario \i.}
+    \label{fig:sim\i}
+  \end{figure}
+}
 
 \newpage
 
 \section*{Tables}
 
 \input{Tabelas/Tabs_sh}
-
-%\input{Tabelas/Tabs_cov}
-
 \input{Tabelas/Tabs_uni}
-
 \input{Tabelas/Tabs_var_adm_sh.tex}
-
 \input{Tabelas/Tabs_var_dem_sh.tex}
-
 
 \end{document}
