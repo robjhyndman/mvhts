@@ -5,8 +5,12 @@ library(sf)
 library(geobr)
 library(rnaturalearth)
 
-source(here::here("R/read_data.R"))
+source(here::here("R/application_data.R"))
 
+# ============================================================
+# Read employment data (Admissions and Dismissals)
+# ============================================================
+Dados <- read_data()
 
 # ============================================================
 # Create descriptive labels for each Brazilian state (used in plots)
@@ -100,7 +104,8 @@ reg_labels <- c(
 # Plot 1 — Top hierarchical level (Brazil Total)
 # ============================================================
 
-Dados |>
+pdf(here::here("Imagens/fig_emprego_br.pdf"), width = 9, height = 4.5)
+p <- Dados |>
   filter(str_starts(node, "Total")) |>
   pivot_wider(names_from = series, values_from = value) |>
   ggplot() +
@@ -140,7 +145,8 @@ Dados |>
       color = "black"
     )
   )
-
+print(p)
+crop::dev.off.crop(here::here("Imagens/fig_emprego_br.pdf"))
 
 # ============================================================
 # Plot 2 — Intermediate hierarchical level (Regions)
@@ -149,7 +155,8 @@ Dados |>
 Dados_reg <- Dados |>
   mutate(Região = factor(Região, levels = reg_order))
 
-Dados_reg |>
+pdf(here::here("Imagens/fig_emprego_reg.pdf"), width = 9, height = 6)
+p <- Dados_reg |>
   filter(str_starts(node, "agg")) |>
   pivot_wider(names_from = series, values_from = value) |>
   ggplot() +
@@ -189,7 +196,8 @@ Dados_reg |>
       color = "black"
     )
   )
-
+print(p)
+crop::dev.off.crop(here::here("Imagens/fig_emprego_reg.pdf"))
 
 # ============================================================
 # Plot 3 — Bottom hierarchical level (States)
@@ -198,7 +206,8 @@ Dados_reg |>
 Dados_state <- Dados |>
   mutate(node = factor(node, levels = state_order))
 
-Dados_state |>
+pdf(here::here("Imagens/fig_emprego_uf.pdf"), width = 9, height = 12)
+p <- Dados_state |>
   filter(!str_starts(node, "agg")) |>
   filter(!str_starts(node, "Total")) |>
   pivot_wider(names_from = series, values_from = value) |>
@@ -233,51 +242,27 @@ Dados_state |>
       color = "black"
     )
   )
-
+print(p)
+crop::dev.off.crop(here::here("Imagens/fig_emprego_uf.pdf"))
 
 # ============================================================
 # Plot 4 — Map: location of brazilian regions and states
 # ============================================================
 
-# ============================================================
-# Load Brazilian states spatial data (sf object)
-# ============================================================
-
-uf = read_state(year = 2020)
-
-# ============================================================
-# Load world map
-# ============================================================
-
+uf <- read_state(year = 2020)
 world <- ne_countries(scale = "medium", returnclass = "sf")
-
-# Extract centroid coordinates of each country (for labeling)
 world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
+world_points$name[world_points$name == "Brazil"] <- NA
 
-# Remove label for Brazil to avoid overlapping with the main map
-world_points$name[world_points$name == "Brazil"] = NA
-
-
-# ============================================================
-# Map: Brazil by regions
-# ============================================================
-
+pdf(here::here("Imagens/mapa_reg.pdf"), width = 9, height = 9)
 ggplot() +
-
-  # Background world map
-  geom_sf(data = world, colour = '#9f9f9f', fill = "#e6e7e8") +
-
-  # Brazilian states filled by region
+  geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
   geom_sf(data = uf, aes(fill = as.character(code_region)), color = "#e6e7e8") +
-
-  # Manual color palette for the five Brazilian regions
   scale_fill_manual(
     values = c("#98a54b", "#f13f31", "#0b7374", "#54bebe", "#f2972c"),
     name = "Region",
     labels = c("North", "Northeast", "Southeast", "South", "Midwest")
   ) +
-
-  # Add state abbreviations on the map
   geom_sf_text(
     data = uf,
     aes(label = abbrev_state),
@@ -285,17 +270,13 @@ ggplot() +
     color = "#e6e7e8",
     fontface = "bold"
   ) +
-
-  # Add country names around Brazil
   geom_text(
     data = world_points,
     aes(x = X, y = Y, label = name),
-    color = '#9f9f9f',
+    color = "#9f9f9f",
     fontface = "bold",
     check_overlap = FALSE
   ) +
-
-  # Annotate oceans
   annotate(
     geom = "text",
     x = -33,
@@ -305,7 +286,6 @@ ggplot() +
     color = "#3a739c",
     size = 5.5
   ) +
-
   annotate(
     geom = "text",
     x = -33,
@@ -315,7 +295,6 @@ ggplot() +
     color = "#3a739c",
     size = 5.5
   ) +
-
   annotate(
     geom = "text",
     x = -74,
@@ -325,7 +304,6 @@ ggplot() +
     color = "#3a739c",
     size = 5.5
   ) +
-
   annotate(
     geom = "text",
     x = -74,
@@ -335,19 +313,15 @@ ggplot() +
     color = "#3a739c",
     size = 5.5
   ) +
-
-  # Remove axis labels
   labs(x = "", y = "") +
-
-  # Adjust map window to focus on South America and Brazil
   coord_sf(xlim = c(-30, -75), ylim = c(-35, 5)) +
-
-  # Map styling
   theme_bw() +
   theme(
-    panel.background = element_rect(fill = "#d7f9f8"), # light ocean color
-    legend.position = c(.9, .13), # manual legend position
-    legend.background = element_rect(fill = 'transparent'),
-    legend.key.size = unit(0.6, 'cm'),
+    panel.background = element_rect(fill = "#d7f9f8"),
+    legend.position = c(.9, .13),
+    legend.background = element_rect(fill = "transparent"),
+    legend.key.size = unit(0.6, "cm"),
     panel.grid.major = element_line(color = "#dadad9")
   )
+print(p)
+crop::dev.off.crop(here::here("Imagens/mapa_reg.pdf"))
