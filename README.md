@@ -50,13 +50,7 @@ Generates figures in `Imagens`
 source("R/application.R")
 ```
 
-Applies the methodology to the Brazilian employment data in `Dados/Dados_emprego_rgi.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`.
-
-```r
-source("R/application_tables.R")
-```
-
-LaTeX tables are written to `Tabelas/`.
+Applies the methodology to the Brazilian employment data in `Dados/Dados_emprego_rgi.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`. LaTeX tables are written to `Tabelas/`.
 
 ```r
 source("R/application_figures.R")
