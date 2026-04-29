@@ -1,6 +1,9 @@
 source(here::here("R/simulation.R"))
 source(here::here("R/tables.R"))
 
+# Ensure output directory exists
+fs::dir_create(here::here("Tabelas"))
+
 # ============================================================
 # Generate LaTeX tables from simulation results
 # ============================================================
@@ -9,7 +12,10 @@ source(here::here("R/tables.R"))
 all_fc <- purrr::imap_dfr(fc_list, \(x, i) {
   mutate(as_tibble(x$fc_sim), scenario = i)
 }) |>
-  mutate(h = as.integer(time - yearquarter("2026 Q4")))
+  group_by(scenario, simulacao, .model, node, series) |>
+  arrange(time, .by_group = TRUE) |>
+  mutate(h = row_number()) |>
+  ungroup()
 
 all_Y <- purrr::imap_dfr(fc_list, \(x, i) {
   mutate(as_tibble(x$Y_sim), scenario = i)
@@ -63,6 +69,7 @@ write_rmsse_table(
   rmsse_df,
   here::here("Tabelas/Tabs_RMSSE.tex")
 )
+
 write_relrmse_tables(
   relrmse_df,
   metric_col = "RelRMSE_sh",
@@ -71,6 +78,7 @@ write_relrmse_tables(
   tab_start = 1,
   file = here::here("Tabelas/Tabs_sh.tex")
 )
+
 write_relrmse_tables(
   relrmse_df,
   metric_col = "RelRMSE_uni",
@@ -79,6 +87,7 @@ write_relrmse_tables(
   tab_start = 10,
   file = here::here("Tabelas/Tabs_uni.tex")
 )
+
 write_relrmse_tables(
   relrmse_df,
   metric_col = "RelRMSE_cov",
