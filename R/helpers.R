@@ -1,9 +1,8 @@
 order_nodes <- function(nodes) {
-  c(
-    "Total",
-    grep("^agg", nodes, value = TRUE),
-    nodes[!grepl("^agg", nodes) & nodes != "Total"]
-  )
+  nodes <- unique(nodes)
+  agg <- sort(grep("^agg", nodes, value = TRUE))
+  bottom <- sort(nodes[!grepl("^agg", nodes) & nodes != "Total"])
+  c("Total", agg, bottom)
 }
 
 # --------------------------------------------------------------------
