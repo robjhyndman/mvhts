@@ -7,8 +7,12 @@ source(here::here("R/reconcile.R"))
 source(here::here("R/simulation_functions.R"))
 source(here::here("R/simulation_setup.R"))
 
-# Use all available cores; adjust workers as needed
-future::plan(future::multisession, workers = parallelly::availableCores() - 2)
+# Ensure output directory exists
+fs::dir_create(here::here("Saida"))
+
+# Use all available cores; leave at least 1 core free
+n_workers <- max(1, parallelly::availableCores() - 2)
+future::plan(future::multisession, workers = n_workers)
 
 set.seed(30, kind = "L'Ecuyer-CMRG")
 nsim <- 1000
