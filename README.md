@@ -9,9 +9,10 @@ Ana Caroline Pinheiro, Rodrigo de Souza Bulhões, Rob J. Hyndman, Paulo Canas Ro
 Install all required packages from CRAN:
 
 ```r
-install.packages(c(
-  "fpp3", "fable.prophet", "tsibble", "mvtnorm",
-  "tsDyn", "furrr", "parallelly", "fs", "here"
+pak::pak(c(
+  "dplyr", "fable.prophet", "fpp3", "fs", "furrr", "geobr",
+  "ggplot2", "here", "mvtnorm", "parallelly", "rnaturalearth",
+  "scales", "sf", "stringr", "tsDyn", "tsibble"
 ))
 ```
 
@@ -29,7 +30,19 @@ Run the following R scripts. Each script caches its output in `Saida/` so it can
 source("R/simulation.R")
 ```
 
-Runs 9 Monte Carlo simulation scenarios (3 cross-series correlation structures × 3 cross-node correlation structures), each with 1000 replications using parallel processing. Results are saved to `Saida/sim_rec1.rds` through `Saida/sim_rec9.rds`. Completed scenarios are skipped on re-runs. LaTeX table fragments are written to `Tabelas/`.
+Runs 9 Monte Carlo simulation scenarios (3 cross-series correlation structures × 3 cross-node correlation structures), each with 1000 replications using parallel processing. Results are saved to `Saida/sim_rec1.rds` through `Saida/sim_rec9.rds`. Completed scenarios are skipped on re-runs.
+
+```r
+source("R/simulation_tables.R")
+```
+
+LaTeX tables are written to `Tabelas/`.
+
+```r
+source("R/simulation_figures.R")
+```
+
+Generates figures in `Imagens`
 
 ### 2. Real-data application
 
@@ -37,7 +50,19 @@ Runs 9 Monte Carlo simulation scenarios (3 cross-series correlation structures �
 source("R/application.R")
 ```
 
-Applies the methodology to the Brazilian employment data in `Dados/Dados_emprego_rgi.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`. LaTeX table fragments are written to `Tabelas/`.
+Applies the methodology to the Brazilian employment data in `Dados/Dados_emprego_rgi.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`.
+
+```r
+source("R/application_tables.R")
+```
+
+LaTeX tables are written to `Tabelas/`.
+
+```r
+source("R/application_figures.R")
+```
+
+Generates figures in `Imagens`
 
 ## Compiling the paper
 
