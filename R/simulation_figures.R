@@ -4,6 +4,7 @@ library(tsibble)
 
 source(here::here("R/simulation_setup.R"))
 source(here::here("R/simulation_functions.R"))
+fs::dir_create(here::here("Imagens"))
 
 set.seed(11)
 
