@@ -6,6 +6,7 @@ library(geobr)
 library(rnaturalearth)
 
 source(here::here("R/application_data.R"))
+fs::dir_create(here::here("Imagens"))
 
 # ============================================================
 # Read employment data (Admissions and Dismissals)

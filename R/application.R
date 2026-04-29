@@ -157,6 +157,8 @@ app_caption <- function(model, series_name) {
     " Values in red indicate a $\\RelRMSE^{\\Base}$ less than 0."
   )
 }
+fs::dir_create(here::here("Tabelas"))
+fs::dir_create(here::here("Saida"))
 
 write_app_relrmse_table(
   app_relrmse |> filter(series == "Admissões", .model == "arima"),
