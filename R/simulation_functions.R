@@ -53,7 +53,9 @@ run_one_simulation <- function(Phi, V, Sigma, S, sim_id) {
     return(NULL)
   }
   uv <- reconcile_uv(fits, fcs, S)
+
   Y_true <- Y2 |> rename(Y = value)
+
   fc <- purrr::map(mv, \(fc_model) {
     fc_model |>
       left_join(Y_true, by = c("time", "node", "series")) |>
@@ -63,29 +65,40 @@ run_one_simulation <- function(Phi, V, Sigma, S, sim_id) {
   }) |>
     purrr::list_rbind() |>
     left_join(uv, by = c("time", "node", "series", ".model", ".mean"))
+
   Y2$simulacao <- sim_id
   list(fc = fc, Y2 = data.frame(Y2))
 }
 
 # ====================================================================
 # Simulation of multivariate series at the bottom level
+#
+# NOTE: Series names "A" and "B" and start at year 2000
+# so that a length-120 quarterly series spans 2000 Q1 to 2029 Q4.
 # ====================================================================
 
-sim_mvhts <- function(len_T, Phi, V, Sigma) {
+sim_mvhts <- function(len_T, Phi, V, Sigma, start_year = 2000) {
+  if (len_T %% 4 != 0) {
+    stop("len_T must be a multiple of 4 for quarterly indexing.")
+  }
+
   # Get dimensions
   m <- NROW(V)
   n_b <- NROW(Sigma)
   if (NROW(Phi) != m) {
     stop("Phi must have the same number of rows as V")
   }
+
   # Covariance matrix for the whole system
   W <- kronecker(Sigma, V)
+
   # Set up space for storing the simulation
   B <- array(dim = c(m, n_b, len_T))
+
   # Generate noise with N(0,W) distribution
-  # E[t,,] contains E_t
   noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), W)
   E <- array(noise, dim = c(m, n_b, len_T))
+
   # Generate bottom level series
   for (i in seq(n_b)) {
     B[, i, ] <- t(
@@ -98,17 +111,23 @@ sim_mvhts <- function(len_T, Phi, V, Sigma) {
         runif(1, 0, 4) * sin(2 * pi * seq(len_T) / 4)
     )
   }
+
   Y <- array(dim = c(m, n_b + 1, len_T))
   Y[, 1, ] <- apply(B, c(1, 3), sum)
   Y[, -1, ] <- B
-  # Return as a tsibble object
+
+  series_names <- LETTERS[seq_len(m)]
+
   tibble::tibble(
     time = make_yearquarter(
-      year = rep(1994:(1994 + len_T / 4 - 1), each = 4 * (m * (n_b + 1))),
+      year = rep(
+        start_year:(start_year + len_T / 4 - 1),
+        each = 4 * (m * (n_b + 1))
+      ),
       quarter = rep(rep(1:4, each = m * (n_b + 1)), len_T / 4)
     ),
     node = rep(rep(c("Total", seq(n_b)), each = m), len_T),
-    series = as.character(rep(seq(m), len_T * (n_b + 1))),
+    series = rep(series_names, len_T * (n_b + 1)),
     value = as.vector(Y)
   ) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
@@ -127,14 +146,14 @@ sim_aggregate <- function(Y) {
     Y |>
       filter(node %in% c(1, 2)) |>
       group_by(series) |>
-      summarise(value = sum(value)) |>
+      summarise(value = sum(value), .groups = "drop") |>
       mutate(node = "agg_1"),
 
     # Second aggregated level: sum of nodes 3, 4 and 5
     Y |>
       filter(node %in% c(3, 4, 5)) |>
       group_by(series) |>
-      summarise(value = sum(value)) |>
+      summarise(value = sum(value), .groups = "drop") |>
       mutate(node = "agg_2")
   )
 }
@@ -159,7 +178,8 @@ make_forecasts <- function(fits) {
   list(
     arima = forecast(fits$arima, h = 12),
     ets = forecast(fits$ets, h = 12),
-    var = forecast(fits$var, h = 12) |> tidy_var_forecast()
+    var = forecast(fits$var, h = 12) |>
+      tidy_var_forecast(series_names = c("A", "B"))
   )
 }
 
@@ -214,7 +234,8 @@ reconcile_mv <- function(fits, fcs, S) {
 # --------------------------------------------------------------------
 reconcile_uv <- function(fits, fcs, S) {
   models <- c("arima", "ets", "var")
-  series <- c("1", "2")
+  series <- c("A", "B")
+
   combos <- expand.grid(
     model = models,
     series = series,
@@ -222,14 +243,16 @@ reconcile_uv <- function(fits, fcs, S) {
   )
 
   purrr::pmap(combos, \(model, series) {
-    data.frame(uv_reconcile(
-      fits[[model]],
-      fcs[[model]],
-      S,
-      series,
-      cov_fn = shrinkage_cov,
-      time_fn = tsibble::yearquarter
-    )) |>
+    data.frame(
+      uv_reconcile(
+        fits[[model]],
+        fcs[[model]],
+        S,
+        series,
+        cov_fn = shrinkage_cov,
+        time_fn = tsibble::yearquarter
+      )
+    ) |>
       select(-value)
   }) |>
     purrr::list_rbind()
