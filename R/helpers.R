@@ -95,7 +95,6 @@ make_matrix2 <- function(object, variable = "value") {
     select(-any_of(c(".model", "Região", ".id"))) |>
     filter(node %in% nodes) |>
     pivot_wider(names_from = node, values_from = all_of(variable)) |>
-    # filter(if_all(everything(), ~ !is.na(.))) |>
     pivot_wider(
       names_from = series,
       values_from = all_of(nodes),
