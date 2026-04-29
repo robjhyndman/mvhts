@@ -1,58 +1,79 @@
 compute_S <- function(Dados) {
-  n <- length(unique(Dados$node))
+  if (!("node" %in% names(Dados))) {
+    stop("Dados must contain a 'node' column")
+  }
+  if (!("Região" %in% names(Dados))) {
+    stop("Dados must contain a 'Região' column")
+  }
 
-  # Number of series: Admissions and Dismissals
-  m <- length(unique(Dados$series))
+  all_nodes <- unique(Dados$node)
 
-  # Number of states within each region
-  count_agg <- Dados |>
-    as_tibble() |>
-    select(Região, node) |>
-    distinct() |>
-    filter(!node %in% c("Total", paste0("agg_", unique(Região)))) |>
-    count(Região)
+  agg_nodes <- sort(all_nodes[startsWith(all_nodes, "agg_")])
+  bottom_nodes <- sort(setdiff(all_nodes, c("Total", agg_nodes)))
 
-  # Number of intermediate nodes (regions)
-  n_agg <- NROW(count_agg)
+  if (length(bottom_nodes) == 0) {
+    stop("No bottom-level nodes detected (states).")
+  }
 
-  # Regions for each state (used to build the aggregation matrix)
-  regioes <- Dados |>
+  # Map each bottom node (state) to exactly one region.
+  mapping <- Dados |>
     as_tibble() |>
     select(node, Região) |>
     distinct() |>
-    filter(!node %in% c("Total", paste0("agg_", unique(Região))))
+    filter(node %in% bottom_nodes)
 
-  # ============================================================
-  # Build summing matrix S (hierarchical structure)
-  # ============================================================
+  check_map <- mapping |>
+    count(node, name = "n_region") |>
+    filter(n_region != 1)
 
-  # Aggregation matrix for regions → states
-  state_region <- rep(seq_len(n_agg), count_agg$n)
-  matrix_agg <- t(model.matrix(~ factor(state_region) - 1))
-  attributes(matrix_agg)$assign <- NULL
-  attributes(matrix_agg)$contrasts <- NULL
-  rownames(matrix_agg) <- c(
-    "Norte",
-    "Nordeste",
-    "Centro-Oeste",
-    "Sudeste",
-    "Sul"
+  if (nrow(check_map) > 0) {
+    stop(
+      "Some bottom nodes map to zero or multiple regions: ",
+      paste(check_map$node, collapse = ", ")
+    )
+  }
+
+  # Expected agg nodes based on mapping
+  regions <- sort(unique(mapping$Região))
+  expected_agg <- sort(paste0("agg_", regions))
+
+  if (!all(expected_agg %in% agg_nodes)) {
+    missing <- setdiff(expected_agg, agg_nodes)
+    stop(
+      "Missing aggregated nodes for some regions. Expected but not found: ",
+      paste(missing, collapse = ", ")
+    )
+  }
+
+  # Use deterministic region/agg order (sorted by agg node name).
+  agg_nodes <- sort(intersect(agg_nodes, expected_agg))
+
+  # Region -> state incidence matrix
+  matrix_agg <- matrix(
+    0,
+    nrow = length(agg_nodes),
+    ncol = length(bottom_nodes),
+    dimnames = list(agg_nodes, bottom_nodes)
   )
-  colnames(matrix_agg) <- c(
-    regioes$node[regioes$Região == "Norte"],
-    regioes$node[regioes$Região == "Nordeste"],
-    regioes$node[regioes$Região == "Centro-Oeste"],
-    regioes$node[regioes$Região == "Sudeste"],
-    regioes$node[regioes$Região == "Sul"]
-  )
 
-  # Full summing matrix
+  for (i in seq_len(nrow(mapping))) {
+    r <- paste0("agg_", mapping$Região[[i]])
+    c <- mapping$node[[i]]
+    matrix_agg[r, c] <- 1
+  }
+
+  # Full summing matrix: Total, region aggregations, identity for bottom nodes
   S <- rbind(
-    rep(1, n - n_agg - 1), # Total (Brazil)
-    matrix_agg, # Regions
-    diag(1, n - n_agg - 1) # States (bottom level)
+    Total = rep(1, length(bottom_nodes)),
+    matrix_agg,
+    diag(length(bottom_nodes))
   )
-  rownames(S)[1] <- "Total"
-  rownames(S)[(1 + n_agg) + seq_len(n - n_agg - 1)] <- colnames(matrix_agg)
-  return(S)
+
+  colnames(S) <- bottom_nodes
+
+  # Name identity rows with bottom node names
+  bottom_row_idx <- (nrow(S) - length(bottom_nodes) + 1):nrow(S)
+  rownames(S)[bottom_row_idx] <- bottom_nodes
+
+  S
 }
