@@ -19,9 +19,15 @@ params <- expand.grid(
 ) |>
   mutate(i = row_number())
 
-purrr::pmap(params, function(v_name, sigma_name, i) {
+for (i in seq(NROW(params))) {
+  sigma_name <- params$sigma_name[i]
   filename <- here::here(sprintf("Imagens/%d.pdf", i))
-  Y <- sim_mvhts(120, Phi, V_list[[v_name]], Sigma_list[[sigma_name]]) |>
+  Y <- sim_mvhts(
+    120,
+    Phi,
+    V_list[[params$v_name[i]]],
+    Sigma_list[[sigma_name]]
+  ) |>
     sim_aggregate() |>
     as_tibble() |>
     mutate(
@@ -40,5 +46,4 @@ purrr::pmap(params, function(v_name, sigma_name, i) {
     theme_bw()
   print(p)
   crop::dev.off.crop(filename)
-  invisible()
-})
+}

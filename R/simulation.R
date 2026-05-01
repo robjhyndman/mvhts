@@ -27,21 +27,23 @@ params <- expand.grid(
 ) |>
   mutate(i = row_number())
 
-fc_list <- purrr::pmap(params, function(v_name, sigma_name, i) {
-  path <- here::here(sprintf("Saida/sim_rec%d.rds", i))
-  if (fs::file_exists(path)) {
-    message(paste("Loading simulation for", v_name, "and", sigma_name))
-    result <- readRDS(path)
-  } else {
-    message(paste("Running simulation for", v_name, "and", sigma_name))
-    result <- simulacao(
-      Phi,
-      V_list[[v_name]],
-      Sigma_list[[sigma_name]],
-      S,
-      nsim
-    )
-    saveRDS(result, file = path, compress = "xz")
-  }
-  result
-})
+if (!exists("fc_list")) {
+  fc_list <- purrr::pmap(params, function(v_name, sigma_name, i) {
+    path <- here::here(sprintf("Saida/sim_rec%d.rds", i))
+    if (fs::file_exists(path)) {
+      message(paste("Loading simulation for", v_name, "and", sigma_name))
+      result <- readRDS(path)
+    } else {
+      message(paste("Running simulation for", v_name, "and", sigma_name))
+      result <- simulacao(
+        Phi,
+        V_list[[v_name]],
+        Sigma_list[[sigma_name]],
+        S,
+        nsim
+      )
+      saveRDS(result, file = path, compress = "xz")
+    }
+    result
+  })
+}
