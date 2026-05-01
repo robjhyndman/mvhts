@@ -275,12 +275,12 @@ Generating a multivariate hierarchical time series first requires simulating the
 Let the series at node $i$ be denoted $\bm{b}_{i,t}$, and assume that it follows a sinusoidal with errors VAR(1):
 \begin{equation}
   \begin{aligned}
-    \bm{b}_{i,t} & = \alpha \seno\bigg(\frac{2\pi t}{p}\bigg) + \bm{\eta}_{i,t}, \\
+    \bm{b}_{i,t} & = \alpha_i \seno\bigg(\frac{2\pi t}{p}\bigg) + \bm{\eta}_{i,t}, \\
     \bm{\eta}_{i,t} & = \bm{\Phi} \bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t},
   \end{aligned}
   \label{eq:b_it}
 \end{equation}
-where $\bm{\varepsilon}_{i,t}$ is multivariate Gaussian white noise, $p$ represents the seasonal period, and $\bm{\Phi}$ is an $m \times m$ matrix of autoregressive coefficients. By combining the noise vectors $\bm{\varepsilon}_{1,t}, \dots, \bm{\varepsilon}_{n_b,t} $ to form the rows of the matrix $\bm{E}_t$, we obtain a noise matrix of dimension $n_b \times
+where $\alpha_i \sim \text{Uniform}(0,4)$ is drawn independently for each node $i$, $\bm{\varepsilon}_{i,t}$ is multivariate Gaussian white noise, $p$ represents the seasonal period, and $\bm{\Phi}$ is an $m \times m$ matrix of autoregressive coefficients. By combining the noise vectors $\bm{\varepsilon}_{1,t}, \dots, \bm{\varepsilon}_{n_b,t} $ to form the rows of the matrix $\bm{E}_t$, we obtain a noise matrix of dimension $n_b \times
 m$. The covariance matrix of $\bm{E}_t$ can be written as:
 \begin{equation*}
   \bm{W} = \cov(\vetor(\bm{E}_t)) = \bm{V} \otimes \bm{\Sigma},
