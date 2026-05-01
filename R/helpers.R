@@ -53,11 +53,11 @@ make_array <- function(object, variable = "value") {
   }
   nodes <- order_nodes(raw_nodes)
   n <- length(nodes)
-  # Make sure result is ordered correctly
-  object <- object |> arrange(factor(node, levels = nodes), series, time)
-  # Create array output
-  Y <- array(object[[variable]], dim = c(len_T, m, n))
-  dimnames(Y) <- list(time = as.character(times), series = series, node = nodes)
+  # Make sure result is ordered as time, then node within each series
+  object <- object |> arrange(series, factor(node, levels = nodes), time)
+  # Create array output with dimensions matching vec(Y_t): node varies within series
+  Y <- array(object[[variable]], dim = c(len_T, n, m))
+  dimnames(Y) <- list(time = as.character(times), node = nodes, series = series)
   return(Y)
 }
 
@@ -94,11 +94,12 @@ make_matrix2 <- function(object, variable = "value") {
     as_tibble() |>
     select(-any_of(c(".model", "Região", ".id"))) |>
     filter(node %in% nodes) |>
+    mutate(node = factor(node, levels = nodes)) |>
     pivot_wider(names_from = node, values_from = all_of(variable)) |>
     pivot_wider(
       names_from = series,
       values_from = all_of(nodes),
-      names_sep = "."
+      names_glue = "{series}.{.value}"
     ) |>
     select(-time) |>
     as.matrix()
@@ -145,7 +146,7 @@ ytilde_to_tsibble <- function(
     rownames_to_column("time") |>
     pivot_longer(
       cols = -time,
-      names_to = c("node", "series"),
+      names_to = c("series", "node"),
       names_pattern = "(.*)\\.(.*)",
       values_to = col_name
     ) |>
@@ -171,21 +172,21 @@ residuals_matrix <- function(res) {
     res <- res |>
       select(-.model) |>
       # Transform from long to wide format:
-      # Each column becomes: node.variable (e.g., Total.A, Total.B, agg_1.A, agg_1.B ...)
+      # Each column becomes: variable.node (e.g., A.Total, A.agg_1, ..., B.Total, B.agg_1, ...)
       pivot_wider(
         names_from = node,
         values_from = c(A, B),
-        names_glue = "{node}.{.value}"
+        names_glue = "{.value}.{node}"
       )
   } else {
     ## ARIMA and ETS
     res <- res |>
       select(-.model) |>
       # Transform from long to wide format:
-      # Each column becomes: node.variable (e.g., Total.A, Total.B, agg_1.A, agg_1.B ...)
+      # Each column becomes: variable.node (e.g., A.Total, A.agg_1, ..., B.Total, B.agg_1, ...)
       pivot_wider(
-        names_from = c(node, series),
-        names_glue = "{node}.{series}",
+        names_from = c(series, node),
+        names_glue = "{series}.{node}",
         values_from = .resid
       )
   }

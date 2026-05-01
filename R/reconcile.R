@@ -12,8 +12,8 @@ mv_reconcile <- function(
   # Turn forecasts into matrix
   Yhat <- t(make_matrix(fc, ".mean"))
   m <- length(unique(fc$series))
-  # Summing matrix
-  SI <- kronecker(S, diag(m))
+  # Summing matrix, matching vec(Y_t) = (I_m \otimes S) vec(B_t)
+  SI <- kronecker(diag(m), S)
   # Residual matrix
   res <- get_residuals(fit)
   # Covariance matrix
@@ -43,7 +43,7 @@ uv_reconcile <- function(
   # Residual matrix
   res <- get_residuals(fit)
   # Select columns corresponding to serie A or B
-  res <- res[, grep(paste0(serie, "$"), colnames(res)), drop = FALSE]
+  res <- res[, grep(paste0("^", serie, "\\."), colnames(res)), drop = FALSE]
   W <- cov_fn(res)
   Winv <- solve(W)
   # Reconciliation
