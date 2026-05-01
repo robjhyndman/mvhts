@@ -143,7 +143,7 @@ is an $n_b$-dimensional vector of all observations of variable $j$ from the most
 
 The notation is applied to each variable individually. Thus, for a multivariate hierarchical time series with $m$ variables there exist $m$ vectors $\bm{b}_{1,t},\dots,\bm{b}_{m,t}$ and $m$ vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$. We can combine the latter $m$ vectors into a matrix $\bm{B}_t$ with dimension $n_b \times m$, for each time $t$. Similarly, we can combine the $m$ vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$ into a matrix $\bm{Y}_t$ with dimension $n \times m$, for each time $t$. Therefore, we can express this as:
 \begin{equation}
-  \vetor(\bm{Y}_t) = (\bm{S} \otimes \bm{I}_m)\vetor(\bm{B}_t),
+  \vetor(\bm{Y}_t) = (\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t),
   \label{eq:vec}
 \end{equation}
 where $\otimes$ denotes the Kronecker product, and $\vetor(\cdot)$ vectorizes the matrices by stacking their columns. Considering the hierarchy presented in Figure \ref{fig:HTS_M.ex} and $m = 2$, therefore, \eqref{eq:vec} is equivalent to:
@@ -232,21 +232,21 @@ Just like \eqref{eq:rec_2}, \eqref{eq:rec_3} will have better computational perf
 
 When $\bm{W}_h$ is the covariance matrix of $\widehat{\bm{y}}_{T+h|T}$, the resulting forecasts are optimal in the sense that the sum of the variances of the reconciled forecasts is minimized \citep{wickramasuriya2019optimal}. This method is known as MinT (minimum trace) reconciliation.
 
-Now we will extend the reconciliation process to the multivariate case. Let $\bm{S}_* = (\bm{S} \otimes \bm{I}_m)$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written in one of the following three equivalent ways:
+Now we will extend the reconciliation process to the multivariate case. Let $\bm{S}_* = (\bm{I}_m \otimes \bm{S})$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written in one of the following three equivalent ways:
 \begin{align}
   \vetor(\widetilde{\bm{Y}}_{T+h|T}) &= \bm{S}_* [\bm{S}_*^\prime \bm{W}_h^{-1} \bm{S}_*]^{-1} \bm{S}_*^\prime \bm{W}_h^{-1} \vetor(\widehat{\bm{Y}}_{T+h|T});
   \label{eq:rec_MV} \\
-  &= \bm{S}_* [(\bm{J}\otimes \bm{I}_m) - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
+  &= \bm{S}_* [(\bm{I}_m\otimes\bm{J}) - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
   \label{eq:rec_MV2} \\
   & = \bm{M} \vetor(\widehat{\bm{Y}}_{T+h|T}),
   \label{eq:rec_MV3}
 \end{align}
 where
 $$
-\bm{N}_h = (\bm{J}\otimes \bm{I}_m)\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)[(\bm{C}^\prime\otimes \bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes \bm{I}_m)]^{-1}(\bm{C}^\prime\otimes \bm{I}_m)^\prime,
+\bm{N}_h = (\bm{I}_m\otimes\bm{J})\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)[(\bm{I}_m\otimes\bm{C}^\prime)^\prime\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)]^{-1}(\bm{I}_m\otimes\bm{C}^\prime)^\prime,
 $$
 $$
-\bm{M} = \bm{I}_{nm} - \bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)[(\bm{C}^\prime\otimes\bm{I}_m)^\prime\bm{W}_h(\bm{C}^\prime\otimes\bm{I}_m)]^{-1}(\bm{C}^\prime\otimes\bm{I}_m)^\prime,
+\bm{M} = \bm{I}_{nm} - \bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)[(\bm{I}_m\otimes\bm{C}^\prime)^\prime\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)]^{-1}(\bm{I}_m\otimes\bm{C}^\prime)^\prime,
 $$
 and $\bm{W}_h = \Var[\vetor(\bm{Y}_t) - \vetor(\widehat{\bm{Y}}_{t|t-h})]$ is the covariance matrix of the $h$-step base forecast errors, structured in the same way as the data.
 
@@ -292,7 +292,7 @@ where $\bm{V}$ is an $m \times m$ covariance matrix that contains the correlatio
   \item Unstack these vectors into matrices $\bm{E}_1, \dots, \bm{E}_t$, each of size $n_b \times m$;
   \item Simulate $\bm{b}_{i,t}$ using \eqref{eq:b_it}, where $\bm{\varepsilon}_{i,t}$ is the $i$th row of $\bm{E}_t$, $i=1,\dots,n_b$;
   \item Combine the $m$-vectors $\bm{b}_{i,t}$ in a matrix $\bm{B}_t$, of size $n_b \times m$, and apply $\vetor(\bm{B}_t)$;
-  \item Create $\bm{Y}_t$ using the $(\bm{S} \otimes \bm{I}_m)\vetor(\bm{B}_t)$ operation, seen in \eqref{eq:vec}.
+  \item Create $\bm{Y}_t$ using the $(\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t)$ operation, seen in \eqref{eq:vec}.
 \end{enumerate}
 
 We conducted a simulation for a bivariate series ($m = 2$) with the same hierarchical structure as shown in Figure \ref{fig:HTS_M.ex}. Different structures were tested for the matrices $\bm{V}$ and $\bm{\Sigma}$. For $\bm{V}$, we can consider the following three cases: there is no correlation between the series at each node; there exists a positive correlation between series; there exists a negative correlation between series. For $\bm{\Sigma}$, we can consider the following three cases: there is no correlation between nodes; there is a positive correlation between nodes connected in the hierarchy; or there is a negative correlation between nodes connected in the hierarchy. Considering these structures, we specify the following matrices:
