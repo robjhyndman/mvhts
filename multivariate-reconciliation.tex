@@ -252,7 +252,7 @@ and $\bm{W}_h = \Var[\vetor(\bm{Y}_t) - \vetor(\widehat{\bm{Y}}_{t|t-h})]$ is th
 
 To estimate $\bm{W}_h$ we can use the same two approaches that are employed in the univariate case \citep{wickramasuriya2019optimal}:
 \begin{itemize}
-  \item\textbf{Sample covariance:} Let $\bm{W}_h = k_h\hat{\bm{W}}_1$ for all $h$, where $k_h > 0$ and $\widehat{\bm{W}}_1$ is the sample covariance  matrix of the one-step base forecast errors. In this approach, the covariance matrices of the errors are considered proportional to each other.
+  \item\textbf{Sample covariance:} Let $\bm{W}_h = k_h\hat{\bm{W}}_1$ for all $h$, where $k_h > 0$ and $\widehat{\bm{W}}_1$ is the sample covariance matrix of the one-step base forecast errors. In this approach, the covariance matrices of the errors are considered proportional to each other.
   \item\textbf{Shrinkage estimator:} Let $\bm{W}_h = k_h\hat{\bm{W}}_{1,D}^*$, for all $h$, where $k_h > 0$, $\hat{\bm{W}}_{1,D}^* = \lambda_D\hat{\bm{W}}_{1,D}+(1-\lambda_D)\hat{\bm{W}}_{1}$ is the shrinkage estimator, $\hat{\bm{W}}_{1,D}$ a diagonal matrix composed of the diagonal of $\hat{\bm{W}}_{1}$, and $\lambda_D$ is the shrinkage intensity parameter \citep{wickramasuriya2019optimal}. This estimator aims to shrink the sample covariance towards a diagonal matrix. The quantity $\lambda_D$ is estimated using the sample correlation of the residuals \citep{schafer2005shrinkage}, being computed as follows:
     \begin{equation*}
       \hat{\lambda}_D = \frac{\sum_{i\ne j}\widehat{\Var(\hat{r}_{ij}})}{\sum_{i\ne j}\hat{r}_{ij}^2},

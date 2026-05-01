@@ -108,7 +108,8 @@ make_matrix2 <- function(object, variable = "value") {
 
 # Sample estimator for covariance matrix
 sample_cov <- function(res) {
-  cov(res, use = "complete.obs")
+  e <- stats::na.omit(res)
+  crossprod(e) / nrow(e)
 }
 
 # Shrinkage estimator for covariance matrix
@@ -116,8 +117,8 @@ shrinkage_cov <- function(res) {
   res <- stats::na.omit(res)
   t <- nrow(res)
   # Sample covariance matrix
-  covm <- crossprod(res) / t
-  tar <- diag(apply(res, 2, crossprod) / t)
+  covm <- sample_cov(res)
+  tar <- diag(diag(covm))
   corm <- cov2cor(covm)
   xs <- scale(res, center = FALSE, scale = sqrt(diag(covm)))
   v <- (1 / (t * (t - 1))) * (crossprod(xs^2) - 1 / t * (crossprod(xs))^2)
