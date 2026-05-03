@@ -97,7 +97,7 @@ sim_mvhts <- function(len_T, Phi, V, Sigma, start_year = 2000) {
 
   # Generate noise with N(0,W) distribution
   noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), W)
-  E <- array(noise, dim = c(m, n_b, len_T))
+  E <- array(t(noise), dim = c(m, n_b, len_T))
 
   # Generate bottom level series
   for (i in seq(n_b)) {
