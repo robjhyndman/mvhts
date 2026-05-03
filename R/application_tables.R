@@ -1,4 +1,5 @@
 library(fpp3)
+source(here::here("R/application_data.R"))
 source(here::here("R/tables.R"))
 
 if (!fs::file_exists(here::here("Saida/app_relrmse.rds"))) {
@@ -11,12 +12,9 @@ all_nodes <- unique(app_relrmse$node)
 app_agg_nodes <- sort(all_nodes[startsWith(all_nodes, "agg_")])
 app_states <- sort(all_nodes[!all_nodes %in% c("Total", app_agg_nodes)])
 app_node_order <- c("Total", app_agg_nodes, app_states)
-region_english <- c(
-  "agg_Centro-Oeste" = "Midwest",
-  "agg_Nordeste" = "Northeast",
-  "agg_Norte" = "North",
-  "agg_Sudeste" = "Southeast",
-  "agg_Sul" = "South"
+region_english <- setNames(
+  region_meta$region_label[-1],
+  paste0("agg_", region_meta$Região[-1])
 )
 app_node_labels <- c(
   Total = "Total",

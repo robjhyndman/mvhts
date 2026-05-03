@@ -1,4 +1,47 @@
-read_data <- function() {
+# Brazilian geographical meta data
+
+state_meta <- tibble::tribble(
+  ~UF  , ~State                , ~Região        ,
+  "AC" , "Acre"                , "Norte"        ,
+  "AL" , "Alagoas"             , "Nordeste"     ,
+  "AM" , "Amazonas"            , "Norte"        ,
+  "AP" , "Amapá"               , "Norte"        ,
+  "BA" , "Bahia"               , "Nordeste"     ,
+  "CE" , "Ceará"               , "Nordeste"     ,
+  "DF" , "Distrito Federal"    , "Centro-Oeste" ,
+  "ES" , "Espírito Santo"      , "Sudeste"      ,
+  "GO" , "Goiás"               , "Centro-Oeste" ,
+  "MA" , "Maranhão"            , "Nordeste"     ,
+  "MG" , "Minas Gerais"        , "Sudeste"      ,
+  "MS" , "Mato Grosso do Sul"  , "Centro-Oeste" ,
+  "MT" , "Mato Grosso"         , "Centro-Oeste" ,
+  "PA" , "Pará"                , "Norte"        ,
+  "PB" , "Paraíba"             , "Nordeste"     ,
+  "PE" , "Pernambuco"          , "Nordeste"     ,
+  "PI" , "Piauí"               , "Nordeste"     ,
+  "PR" , "Paraná"              , "Sul"          ,
+  "RJ" , "Rio de Janeiro"      , "Sudeste"      ,
+  "RN" , "Rio Grande do Norte" , "Nordeste"     ,
+  "RO" , "Rondônia"            , "Norte"        ,
+  "RR" , "Roraima"             , "Norte"        ,
+  "RS" , "Rio Grande do Sul"   , "Sul"          ,
+  "SC" , "Santa Catarina"      , "Sul"          ,
+  "SE" , "Sergipe"             , "Nordeste"     ,
+  "SP" , "São Paulo"           , "Sudeste"      ,
+  "TO" , "Tocantins"           , "Norte"
+)
+
+region_meta <- tibble::tribble(
+  ~Região        , ~region_label , ~order , ~map_color ,
+  "Total"        , "Brazil"      ,      1 , NA         ,
+  "Centro-Oeste" , "Midwest"     ,      2 , "#f2972c"  ,
+  "Nordeste"     , "Northeast"   ,      3 , "#f13f31"  ,
+  "Norte"        , "North"       ,      4 , "#98a54b"  ,
+  "Sudeste"      , "Southeast"   ,      5 , "#0b7374"  ,
+  "Sul"          , "South"       ,      6 , "#54bebe"
+)
+
+read_data <- function(state_meta, region_meta) {
   Dados <- read.csv2(
     here::here("Dados/Dados_emprego_rgi.csv"),
     fileEncoding = "latin1"
@@ -10,72 +53,11 @@ read_data <- function() {
   Dados$cod_rgi <- as.character(Dados$cod_rgi)
 
   # ============================================================
-  # Create table mapping states (UF) to regions
+  # Add state and region information by joining with metadata tables
   # ============================================================
-
-  regioes <- data.frame(
-    UF = c(
-      "AC",
-      "AL",
-      "AM",
-      "AP",
-      "BA",
-      "CE",
-      "DF",
-      "ES",
-      "GO",
-      "MA",
-      "MG",
-      "MS",
-      "MT",
-      "PA",
-      "PB",
-      "PE",
-      "PI",
-      "PR",
-      "RJ",
-      "RN",
-      "RO",
-      "RR",
-      "RS",
-      "SC",
-      "SE",
-      "SP",
-      "TO"
-    ),
-    Região = c(
-      "Norte",
-      "Nordeste",
-      "Norte",
-      "Norte",
-      "Nordeste",
-      "Nordeste",
-      "Centro-Oeste",
-      "Sudeste",
-      "Centro-Oeste",
-      "Nordeste",
-      "Sudeste",
-      "Centro-Oeste",
-      "Centro-Oeste",
-      "Norte",
-      "Nordeste",
-      "Nordeste",
-      "Nordeste",
-      "Sul",
-      "Sudeste",
-      "Nordeste",
-      "Norte",
-      "Norte",
-      "Sul",
-      "Sul",
-      "Nordeste",
-      "Sudeste",
-      "Norte"
-    )
-  )
-
-  # Merge region information into the dataset
-  Dados <- merge(Dados, regioes, by = "UF")
+  Dados <- Dados |>
+    left_join(state_meta, by = "UF") |>
+    left_join(region_meta, by = "Região")
 
   # ============================================================
   # Aggregate data by state within each region and month

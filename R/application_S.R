@@ -1,68 +1,46 @@
-compute_S <- function(Dados) {
-  if (!("node" %in% names(Dados))) {
-    stop("Dados must contain a 'node' column")
-  }
-  if (!("Região" %in% names(Dados))) {
-    stop("Dados must contain a 'Região' column")
-  }
+compute_S <- function(Dados, state_meta, region_meta) {
+  # ------------------------------------------------------------
+  # Use metadata (single source of truth)
+  # ------------------------------------------------------------
+  bottom_nodes <- state_meta$UF
 
-  all_nodes <- unique(Dados$node)
+  # keep region order consistent with plots/tables
+  regions <- region_meta |>
+    dplyr::filter(Região != "Total") |>
+    dplyr::arrange(order) |>
+    dplyr::pull(Região)
 
-  agg_nodes <- sort(all_nodes[startsWith(all_nodes, "agg_")])
-  bottom_nodes <- sort(setdiff(all_nodes, c("Total", agg_nodes)))
+  # ------------------------------------------------------------
+  # validation
+  # ------------------------------------------------------------
+  missing_UF <- setdiff(bottom_nodes, unique(Dados$node))
 
-  if (length(bottom_nodes) == 0) {
-    stop("No bottom-level nodes detected (states).")
-  }
-
-  # Map each bottom node (state) to exactly one region.
-  mapping <- Dados |>
-    as_tibble() |>
-    select(node, Região) |>
-    distinct() |>
-    filter(node %in% bottom_nodes)
-
-  check_map <- mapping |>
-    count(node, name = "n_region") |>
-    filter(n_region != 1)
-
-  if (nrow(check_map) > 0) {
-    stop(
-      "Some bottom nodes map to zero or multiple regions: ",
-      paste(check_map$node, collapse = ", ")
+  if (length(missing_UF) > 0) {
+    warning(
+      "States in metadata but missing from data: ",
+      paste(missing_UF, collapse = ", ")
     )
   }
 
-  # Expected agg nodes based on mapping
-  regions <- sort(unique(mapping$Região))
-  expected_agg <- sort(paste0("agg_", regions))
-
-  if (!all(expected_agg %in% agg_nodes)) {
-    missing <- setdiff(expected_agg, agg_nodes)
-    stop(
-      "Missing aggregated nodes for some regions. Expected but not found: ",
-      paste(missing, collapse = ", ")
-    )
-  }
-
-  # Use deterministic region/agg order (sorted by agg node name).
-  agg_nodes <- sort(intersect(agg_nodes, expected_agg))
-
-  # Region -> state incidence matrix
+  # ------------------------------------------------------------
+  # Region → state incidence matrix
+  # ------------------------------------------------------------
   matrix_agg <- matrix(
     0,
-    nrow = length(agg_nodes),
+    nrow = length(regions),
     ncol = length(bottom_nodes),
-    dimnames = list(agg_nodes, bottom_nodes)
+    dimnames = list(paste0("agg_", regions), bottom_nodes)
   )
 
-  for (i in seq_len(nrow(mapping))) {
-    r <- paste0("agg_", mapping$Região[[i]])
-    c <- mapping$node[[i]]
+  for (i in seq_len(nrow(state_meta))) {
+    r <- paste0("agg_", state_meta$Região[i])
+    c <- state_meta$UF[i]
     matrix_agg[r, c] <- 1
   }
 
+  # ------------------------------------------------------------
   # Full summing matrix: Total, region aggregations, identity for bottom nodes
+  # ------------------------------------------------------------
   S <- rbind(
     Total = rep(1, length(bottom_nodes)),
     matrix_agg,
@@ -75,5 +53,5 @@ compute_S <- function(Dados) {
   bottom_row_idx <- (nrow(S) - length(bottom_nodes) + 1):nrow(S)
   rownames(S)[bottom_row_idx] <- bottom_nodes
 
-  S
+  return(S)
 }

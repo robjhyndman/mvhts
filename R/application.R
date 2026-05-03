@@ -9,12 +9,12 @@ source(here::here("R/tables.R"))
 # ==============================================================
 # Read employment data (Admissions and Dismissals)
 # ==============================================================
-Dados <- read_data()
+Dados <- read_data(state_meta, region_meta)
 
 # ==============================================================
 # Hierarchy information
 # ==============================================================
-S <- compute_S(Dados)
+S <- compute_S(Dados, state_meta, region_meta)
 
 # ==============================================================
 # Multivariate reconciliation using covariance and shrinkage

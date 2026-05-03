@@ -9,260 +9,148 @@ source(here::here("R/application_data.R"))
 fs::dir_create(here::here("Imagens"))
 
 # ============================================================
+# Shared settings and helper functions
+# ============================================================
+
+save_cropped_pdf <- function(plot, filename, width, height) {
+  pdf(here::here("Imagens", filename), width = width, height = height)
+  print(plot)
+  crop::dev.off.crop(here::here("Imagens", filename))
+}
+
+employment_plot <- function(
+  data,
+  facet_var,
+  facet_labels,
+  ncol = 1,
+  linewidth = 0.6,
+  series_colors = c("Admissions" = "#064179", "Dismissals" = "#c3170b"),
+  plot_start = as.Date("2004-01-01"),
+  plot_end = as.Date("2023-12-31")
+) {
+  data |>
+    mutate(
+      series = recode(
+        series,
+        "Admissões" = "Admissions",
+        "Demissões" = "Dismissals"
+      )
+    ) |>
+    ggplot(aes(x = as.Date(time), y = value, color = series)) +
+    geom_line(linewidth = linewidth) +
+    labs(y = "Totals", x = "Month", color = "") +
+    scale_x_date(
+      date_breaks = "2 years",
+      date_labels = "%b %Y",
+      limits = c(plot_start, plot_end)
+    ) +
+    scale_y_continuous(labels = label_number()) +
+    facet_wrap(
+      vars({{ facet_var }}),
+      ncol = ncol,
+      scales = "free_y",
+      labeller = as_labeller(facet_labels)
+    ) +
+    scale_color_manual(values = series_colors) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+      legend.position = "bottom",
+      strip.background = element_rect(
+        fill = "white",
+        linetype = "solid",
+        color = "black"
+      )
+    )
+}
+
+# ============================================================
 # Read employment data (Admissions and Dismissals)
 # ============================================================
-Dados <- read_data()
+
+Dados <- read_data(state_meta, region_meta)
 
 # ============================================================
-# Create descriptive labels for each Brazilian state (used in plots)
+# Labels, ordering, and palettes from metadata
 # ============================================================
 
-state_labels <- c(
-  "AC" = "Acre - AC (North)",
-  "AL" = "Alagoas - AL (Northeast)",
-  "AM" = "Amazonas - AM (North)",
-  "AP" = "Amapá - AP (North)",
-  "BA" = "Bahia - BA (Northeast)",
-  "CE" = "Ceará - CE (Northeast)",
-  "DF" = "Distrito Federal - DF (Midwest)",
-  "ES" = "Espírito Santo - ES (Southeast)",
-  "GO" = "Goiás - GO (Midwest)",
-  "MA" = "Maranhão - MA (Northeast)",
-  "MG" = "Minas Gerais - MG (Southeast)",
-  "MS" = "Mato Grosso do Sul - MS (Midwest)",
-  "MT" = "Mato Grosso - MT (Midwest)",
-  "PA" = "Pará - PA (North)",
-  "PB" = "Paraíba - PB (Northeast)",
-  "PE" = "Pernambuco - PE (Northeast)",
-  "PI" = "Piauí - PI (Northeast)",
-  "PR" = "Paraná - PR (South)",
-  "RJ" = "Rio de Janeiro - RJ (Southeast)",
-  "RN" = "Rio Grande do Norte - RN (Northeast)",
-  "RO" = "Rondônia - RO (North)",
-  "RR" = "Roraima - RR (Norte)",
-  "RS" = "Rio Grande do Sul - RS (South)",
-  "SC" = "Santa Catarina - SC (South)",
-  "SE" = "Sergipe - SE (Northeast)",
-  "SP" = "São Paulo - SP (Southeast)",
-  "TO" = "Tocantins - TO (North)"
-)
+state_labels <- state_meta |>
+  left_join(region_meta, by = "Região") |>
+  transmute(UF, label = paste0(State, " - ", UF, " (", region_label, ")")) |>
+  deframe()
 
-# ===============================================================================
-# Define the order in which states will appear in the facets (grouped by region)
-# ===============================================================================
+state_order <- state_meta |>
+  left_join(region_meta, by = "Região") |>
+  arrange(order, UF) |>
+  pull(UF)
 
-state_order <- c(
-  # Centro-Oeste
-  "DF",
-  "GO",
-  "MS",
-  "MT",
-  # Nordeste
-  "AL",
-  "BA",
-  "CE",
-  "MA",
-  "PB",
-  "PE",
-  "PI",
-  "RN",
-  "SE",
-  # Norte
-  "AC",
-  "AM",
-  "AP",
-  "PA",
-  "RO",
-  "RR",
-  "TO",
-  # Sudeste
-  "ES",
-  "MG",
-  "RJ",
-  "SP",
-  # Sul
-  "PR",
-  "RS",
-  "SC"
-)
+reg_labels <- setNames(region_meta$region_label, region_meta$Região)
 
-# ============================================================
-# Define region order and labels for plots
-# ============================================================
+reg_order <- region_meta |>
+  arrange(order) |>
+  pull(Região)
 
-reg_order <- c("Total", "Centro-Oeste", "Nordeste", "Norte", "Sudeste", "Sul")
-
-reg_labels <- c(
-  "Total" = "Brazil",
-  "Centro-Oeste" = "Midwest",
-  "Nordeste" = "Northeast",
-  "Norte" = "North",
-  "Sudeste" = "Southeast",
-  "Sul" = "South"
-)
+region_colors <- region_meta |>
+  filter(!is.na(map_color)) |>
+  arrange(order) |>
+  transmute(region_label, map_color) |>
+  deframe()
 
 # ============================================================
 # Plot 1 — Top hierarchical level (Brazil Total)
 # ============================================================
 
-pdf(here::here("Imagens/fig_emprego_br.pdf"), width = 9, height = 4.5)
 p <- Dados |>
-  filter(str_starts(node, "Total")) |>
-  pivot_wider(names_from = series, values_from = value) |>
-  ggplot() +
-  geom_line(
-    aes(y = Admissões, x = as.Date(time), color = "Admissions"),
-    linewidth = 0.6
-  ) +
-  geom_line(
-    aes(y = Demissões, x = as.Date(time), color = "Dismissals"),
-    linewidth = 0.6
-  ) +
-  labs(y = "Totals", x = "Month", color = "") +
-  scale_x_date(
-    date_breaks = "2 years",
-    date_labels = "%b %Y",
-    limits = c(as.Date("2004-01-01"), as.Date("2023-12-31"))
-  ) +
-  scale_y_continuous(labels = label_number()) +
-  facet_wrap(
-    vars(Região),
-    ncol = 1,
-    scales = "free_y",
-    labeller = labeller(Região = reg_labels)
-  ) +
-  scale_color_manual(
-    values = c("Admissions" = "#064179", "Dismissals" = "#c3170b")
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-    legend.position = "bottom"
-  ) +
-  theme(
-    strip.background = element_rect(
-      fill = "white",
-      linetype = "solid",
-      color = "black"
-    )
-  )
-print(p)
-crop::dev.off.crop(here::here("Imagens/fig_emprego_br.pdf"))
+  filter(node == "Total") |>
+  employment_plot(Região, reg_labels, ncol = 1)
+
+save_cropped_pdf(p, "fig_emprego_br.pdf", width = 9, height = 4.5)
 
 # ============================================================
 # Plot 2 — Intermediate hierarchical level (Regions)
 # ============================================================
 
-Dados_reg <- Dados |>
-  mutate(Região = factor(Região, levels = reg_order))
+p <- Dados |>
+  filter(str_starts(node, "agg_")) |>
+  mutate(Região = factor(Região, levels = reg_order)) |>
+  employment_plot(Região, reg_labels, ncol = 2)
 
-pdf(here::here("Imagens/fig_emprego_reg.pdf"), width = 9, height = 6)
-p <- Dados_reg |>
-  filter(str_starts(node, "agg")) |>
-  pivot_wider(names_from = series, values_from = value) |>
-  ggplot() +
-  geom_line(
-    aes(y = Admissões, x = as.Date(time), color = "Admissions"),
-    linewidth = 0.6
-  ) +
-  geom_line(
-    aes(y = Demissões, x = as.Date(time), color = "Dismissals"),
-    linewidth = 0.6
-  ) +
-  labs(y = "Totals", x = "Month", color = "") +
-  scale_x_date(
-    date_breaks = "2 years",
-    date_labels = "%b %Y",
-    limits = c(as.Date("2004-01-01"), as.Date("2023-12-31"))
-  ) +
-  scale_y_continuous(labels = label_number()) +
-  facet_wrap(
-    vars(Região),
-    ncol = 2,
-    scales = "free_y",
-    labeller = labeller(Região = reg_labels)
-  ) +
-  scale_color_manual(
-    values = c("Admissions" = "#064179", "Dismissals" = "#c3170b")
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-    legend.position = "bottom"
-  ) +
-  theme(
-    strip.background = element_rect(
-      fill = "white",
-      linetype = "solid",
-      color = "black"
-    )
-  )
-print(p)
-crop::dev.off.crop(here::here("Imagens/fig_emprego_reg.pdf"))
+save_cropped_pdf(p, "fig_emprego_reg.pdf", width = 9, height = 6)
 
 # ============================================================
 # Plot 3 — Bottom hierarchical level (States)
 # ============================================================
 
-Dados_state <- Dados |>
-  mutate(node = factor(node, levels = state_order))
+p <- Dados |>
+  filter(!str_starts(node, "agg_"), node != "Total") |>
+  mutate(node = factor(node, levels = state_order)) |>
+  employment_plot(node, state_labels, ncol = 3)
 
-pdf(here::here("Imagens/fig_emprego_uf.pdf"), width = 9, height = 12)
-p <- Dados_state |>
-  filter(!str_starts(node, "agg")) |>
-  filter(!str_starts(node, "Total")) |>
-  pivot_wider(names_from = series, values_from = value) |>
-  ggplot() +
-  geom_line(aes(y = Admissões, x = as.Date(time), color = "Admissions")) +
-  geom_line(aes(y = Demissões, x = as.Date(time), color = "Dismissals")) +
-  labs(y = "Totals", x = "Month", color = "") +
-  scale_x_date(
-    date_breaks = "2 years",
-    date_labels = "%b %Y",
-    limits = c(as.Date("2004-01-01"), as.Date("2023-12-31"))
-  ) +
-  scale_y_continuous(labels = label_number()) +
-  facet_wrap(
-    vars(node),
-    ncol = 3,
-    scales = "free_y",
-    labeller = labeller(node = state_labels)
-  ) +
-  scale_color_manual(
-    values = c("Admissions" = "#064179", "Dismissals" = "#c3170b")
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-    legend.position = "bottom"
-  ) +
-  theme(
-    strip.background = element_rect(
-      fill = "white",
-      linetype = "solid",
-      color = "black"
-    )
+save_cropped_pdf(p, "fig_emprego_uf.pdf", width = 9, height = 12)
+
+# ============================================================
+# Plot 4 — Map: location of Brazilian regions and states
+# ============================================================
+
+uf <- read_state(year = 2020) |>
+  left_join(
+    state_meta |>
+      select(abbrev_state = UF, Região) |>
+      left_join(region_meta, by = "Região"),
+    by = "abbrev_state"
   )
-print(p)
-crop::dev.off.crop(here::here("Imagens/fig_emprego_uf.pdf"))
 
-# ============================================================
-# Plot 4 — Map: location of brazilian regions and states
-# ============================================================
-
-uf <- read_state(year = 2020)
 world <- ne_countries(scale = "medium", returnclass = "sf")
 world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
 world_points$name[world_points$name == "Brazil"] <- NA
 
-pdf(here::here("Imagens/mapa_reg.pdf"), width = 9, height = 9)
-ggplot() +
+p <- ggplot() +
   geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
-  geom_sf(data = uf, aes(fill = as.character(code_region)), color = "#e6e7e8") +
+  geom_sf(data = uf, aes(fill = region_label), color = "#e6e7e8") +
   scale_fill_manual(
-    values = c("#98a54b", "#f13f31", "#0b7374", "#54bebe", "#f2972c"),
+    values = region_colors,
     name = "Region",
-    labels = c("North", "Northeast", "Southeast", "South", "Midwest")
+    breaks = names(region_colors)
   ) +
   geom_sf_text(
     data = uf,
@@ -315,7 +203,7 @@ ggplot() +
     size = 5.5
   ) +
   labs(x = "", y = "") +
-  coord_sf(xlim = c(-30, -75), ylim = c(-35, 5)) +
+  coord_sf(xlim = c(-75, -30), ylim = c(-35, 5)) +
   theme_bw() +
   theme(
     panel.background = element_rect(fill = "#d7f9f8"),
@@ -324,5 +212,5 @@ ggplot() +
     legend.key.size = unit(0.6, "cm"),
     panel.grid.major = element_line(color = "#dadad9")
   )
-print(p)
-crop::dev.off.crop(here::here("Imagens/mapa_reg.pdf"))
+
+save_cropped_pdf(p, "mapa_reg.pdf", width = 9, height = 9)
