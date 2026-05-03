@@ -145,7 +145,7 @@ sim_aggregate <- function(Y) {
     # First aggregated level: sum of nodes 1 and 2
     Y |>
       filter(node %in% c(1, 2)) |>
-      group_by(time, series) |>
+      group_by(series) |>
       summarise(value = sum(value), .groups = "drop") |>
       mutate(node = "agg_1"),
 
