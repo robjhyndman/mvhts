@@ -126,7 +126,12 @@ shrinkage_cov <- function(res) {
   diag(v) <- 0
   corapn <- cov2cor(tar)
   d <- (corm - corapn)^2
-  lambda <- sum(v) / sum(d)
+  denom <- sum(d)
+  lambda <- if (denom <= .Machine$double.eps) {
+    1
+  } else {
+    sum(v) / denom
+  }
   lambda <- max(min(lambda, 1), 0)
   # Shrinkage estimator
   lambda * tar + (1 - lambda) * covm
