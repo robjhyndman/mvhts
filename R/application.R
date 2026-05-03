@@ -25,7 +25,7 @@ if (fs::file_exists(here::here("Saida/mod_arima_regiao.rds"))) {
   mod <- readRDS(here::here("Saida/mod_arima_regiao.rds"))
 } else {
   mod <- Dados |>
-    filter_index(~"2022 Q12") |>
+    filter_index(~"2022 Dec") |>
     stretch_tsibble(.init = 217, .step = 1) |>
     model(arima = ARIMA(value))
   saveRDS(mod, file = here::here("Saida/mod_arima_regiao.rds"), compress = "xz")
@@ -59,7 +59,7 @@ if (fs::file_exists(here::here("Saida/mod_var_regiao.rds"))) {
 } else {
   mod_var <- Dados |>
     pivot_wider(names_from = series, values_from = value) |>
-    filter_index(~"2022 Q12") |>
+    filter_index(~"2022 Dec") |>
     stretch_tsibble(.init = 217, .step = 1) |>
     model(var = VAR(vars(Admissões, Demissões)))
   saveRDS(
