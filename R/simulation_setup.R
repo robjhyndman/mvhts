@@ -7,6 +7,8 @@ S <- rbind(
   c(0, 0, 1, 1, 1),
   diag(5)
 )
+colnames(S) <- seq(5)
+rownames(S) <- c("Total", "agg_1", "agg_2", colnames(S))
 
 # ============================================================
 # Autoregressive parameter

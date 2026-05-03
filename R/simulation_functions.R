@@ -15,27 +15,16 @@ simulacao <- function(
   V,
   Sigma,
   S,
-  n_sim = 1000,
-  batch_size = 20
+  n_sim = 1000
 ) {
-  successes <- list()
-  attempt <- 1
-  while (length(successes) < n_sim) {
-    needed <- n_sim - length(successes)
-    results <- furrr::future_map(
-      seq_len(batch_size),
-      \(j) run_one_simulation(Phi, V, Sigma, S, sim_id = attempt + j - 1),
-      .options = furrr::furrr_options(seed = TRUE)
-    )
-    attempt <- attempt + batch_size
-    new_successes <- Filter(Negate(is.null), results)
-    n_new <- min(length(new_successes), needed)
-    successes <- c(successes, new_successes[seq_len(n_new)])
-    message(length(successes), " / ", n_sim, " simulations complete.")
-  }
+  results <- furrr::future_map(
+    seq_len(n_sim),
+    \(sim_id) run_one_simulation(Phi, V, Sigma, S, sim_id = sim_id),
+    .options = furrr::furrr_options(seed = TRUE)
+  )
   list(
-    fc_sim = bind_rows(lapply(successes, `[[`, "fc")),
-    Y_sim = bind_rows(lapply(successes, `[[`, "Y2"))
+    fc_sim = bind_rows(lapply(results, `[[`, "fc")),
+    Y_sim = bind_rows(lapply(results, `[[`, "Y2"))
   )
 }
 
@@ -188,20 +177,20 @@ make_forecasts <- function(fits) {
 # Returns a data frame with both reconciled columns, or NULL on error.
 # --------------------------------------------------------------------
 reconcile_mv_one <- function(fit, fc, S) {
-  fc_cov <- try(
+  fc_cov <- #try(
     mv_reconcile(
       fit,
       fc,
       S,
       time_fn = tsibble::yearquarter,
       simulated = TRUE
-    ),
-    silent = TRUE
-  )
-  if (inherits(fc_cov, "try-error")) {
-    return(NULL)
-  }
-  fc_shrink <- try(
+    ) #,
+  #silent = TRUE
+  #)
+  #if (inherits(fc_cov, "try-error")) {
+  #  return(NULL)
+  #}
+  fc_shrink <- #try(
     mv_reconcile(
       fit,
       fc,
@@ -209,12 +198,12 @@ reconcile_mv_one <- function(fit, fc, S) {
       cov_fn = shrinkage_cov,
       time_fn = tsibble::yearquarter,
       simulated = TRUE
-    ),
-    silent = TRUE
-  )
-  if (inherits(fc_shrink, "try-error")) {
-    return(NULL)
-  }
+    ) #,
+  #silent = TRUE
+  #)
+  #if (inherits(fc_shrink, "try-error")) {
+  #  return(NULL)
+  #}
   fc_cov$.reconciled_mean_shrink <- fc_shrink$.reconciled_mean_cov
   fc_cov
 }
