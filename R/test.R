@@ -1,16 +1,10 @@
 # Unit tests for ordering consistency in multivariate reconciliation
-#
-# Save this file as: tests/testthat/test-ordering.R
-# Run with: testthat::test_file("tests/testthat/test-ordering.R")
-# or from the project root: testthat::test_dir("tests/testthat")
 
 library(testthat)
 library(dplyr)
 library(tidyr)
 library(tsibble)
 
-# These paths assume the test is run from the project root.
-# If your project uses an R package structure, you can replace these with devtools::load_all().
 source(here::here("R/helpers.R"))
 source(here::here("R/reconcile.R"))
 
