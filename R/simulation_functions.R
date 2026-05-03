@@ -189,7 +189,13 @@ make_forecasts <- function(fits) {
 # --------------------------------------------------------------------
 reconcile_mv_one <- function(fit, fc, S) {
   fc_cov <- try(
-    mv_reconcile(fit, fc, S, time_fn = tsibble::yearquarter),
+    mv_reconcile(
+      fit,
+      fc,
+      S,
+      time_fn = tsibble::yearquarter,
+      simulated = TRUE
+    ),
     silent = TRUE
   )
   if (inherits(fc_cov, "try-error")) {
@@ -201,7 +207,8 @@ reconcile_mv_one <- function(fit, fc, S) {
       fc,
       S,
       cov_fn = shrinkage_cov,
-      time_fn = tsibble::yearquarter
+      time_fn = tsibble::yearquarter,
+      simulated = TRUE
     ),
     silent = TRUE
   )
@@ -250,7 +257,8 @@ reconcile_uv <- function(fits, fcs, S) {
         S,
         series,
         cov_fn = shrinkage_cov,
-        time_fn = tsibble::yearquarter
+        time_fn = tsibble::yearquarter,
+        simulated = TRUE
       )
     ) |>
       select(-value)

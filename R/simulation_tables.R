@@ -75,7 +75,6 @@ write_relrmse_tables(
   metric_col = "RelRMSE_sh",
   metric_tex = "\\RelRMSE_{\\Base}",
   cov_phrase = "the shrinkage approach to estimate $\\boldsymbol{W}$",
-  tab_start = 1,
   file = here::here("Tabelas/Tabs_sh.tex")
 )
 
@@ -84,7 +83,6 @@ write_relrmse_tables(
   metric_col = "RelRMSE_uni",
   metric_tex = "\\RelRMSE_{\\Uni}",
   cov_phrase = "the shrinkage approach to estimate $\\boldsymbol{W}$",
-  tab_start = 10,
   file = here::here("Tabelas/Tabs_uni.tex")
 )
 
@@ -93,7 +91,6 @@ write_relrmse_tables(
   metric_col = "RelRMSE_cov",
   metric_tex = "\\RelRMSE_{\\Base}",
   cov_phrase = "the sample covariance to estimate $\\boldsymbol{W}$",
-  tab_start = 10,
   file = here::here("Tabelas/Tabs_cov.tex")
 )
 

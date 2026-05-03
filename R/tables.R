@@ -101,7 +101,6 @@ write_rmsse_table <- function(rmsse_df, file) {
 #   metric_col  — column to use: "RelRMSE_sh", "RelRMSE_cov", "RelRMSE_uni"
 #   metric_tex  — LaTeX string for the metric name in captions
 #   cov_phrase  — description of the covariance method for the caption
-#   tab_start   — number of first supplementary table (e.g. 1 or 10)
 #   file        — output path
 # ============================================================
 
@@ -110,7 +109,6 @@ write_relrmse_tables <- function(
   metric_col,
   metric_tex,
   cov_phrase,
-  tab_start,
   file
 ) {
   model_order <- c("arima", "ets", "var")

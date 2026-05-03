@@ -1,5 +1,5 @@
 order_nodes <- function(nodes) {
-  nodes <- unique(nodes)
+  nodes <- unique(as.character(nodes))
   agg <- sort(grep("^agg", nodes, value = TRUE))
   bottom <- sort(nodes[!grepl("^agg", nodes) & nodes != "Total"])
   c("Total", agg, bottom)
@@ -56,6 +56,10 @@ make_array <- function(object, variable = "value") {
   # Make sure result is ordered as time, then node within each series
   object <- object |> arrange(series, factor(node, levels = nodes), time)
   # Create array output with dimensions matching vec(Y_t): node varies within series
+  # First check that object has the expected number of combinations of time, node, and series
+  object <- object |>
+    arrange(series, factor(node, levels = nodes), time)
+  stopifnot(nrow(object) == len_T * n * m)
   Y <- array(object[[variable]], dim = c(len_T, n, m))
   dimnames(Y) <- list(time = as.character(times), node = nodes, series = series)
   return(Y)
@@ -98,7 +102,7 @@ make_matrix2 <- function(object, variable = "value") {
     pivot_wider(names_from = node, values_from = all_of(variable)) |>
     pivot_wider(
       names_from = series,
-      values_from = all_of(nodes),
+      values_from = any_of(nodes),
       names_glue = "{series}.{.value}"
     ) |>
     select(-time) |>
@@ -108,6 +112,7 @@ make_matrix2 <- function(object, variable = "value") {
 }
 
 # Sample estimator for covariance matrix
+# Computes uncentred second moments as errors should have zero mean
 sample_cov <- function(res) {
   e <- stats::na.omit(res)
   crossprod(e) / nrow(e)
@@ -201,16 +206,20 @@ residuals_matrix <- function(res) {
     as.matrix()
 }
 
-get_residuals <- function(fit) {
+get_residuals <- function(fit, simulated = TRUE) {
   if (!is_mable(fit)) {
     stop("fit must be a mable object")
   }
   res <- fit |> residuals()
 
-  if ("agg_1" %in% res$node) {
+  model_name <- unique(res$.model)
+  if (length(model_name) != 1) {
+    stop("residuals must contain only one model type")
+  }
+  if (simulated) {
     # fit from simulation
     return(residuals_matrix(res))
-  } else if (unique(res$.model) == "var") {
+  } else if (identical(model_name, "var")) {
     res |>
       pivot_longer(
         -c(node, .model, time, .id, Região),

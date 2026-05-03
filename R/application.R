@@ -5,6 +5,7 @@ source(here::here("R/application_S.R"))
 source(here::here("R/helpers.R"))
 source(here::here("R/reconcile.R"))
 source(here::here("R/tables.R"))
+fs::dir_create(here::here("Saida"))
 
 # ==============================================================
 # Read employment data (Admissions and Dismissals)
@@ -42,7 +43,8 @@ fc_rec_arima_cov <- reconcile_over_id(
   mod_tbl = mod,
   fc_tbl = fc,
   S = S,
-  rec_fun = mv_reconcile
+  rec_fun = mv_reconcile,
+  simulated = FALSE
 )
 # Reconciliation using shrinkage estimator
 fc_rec_arima_sh <- reconcile_over_id(
@@ -50,7 +52,8 @@ fc_rec_arima_sh <- reconcile_over_id(
   fc_tbl = fc,
   S = S,
   rec_fun = mv_reconcile,
-  cov_fn = shrinkage_cov
+  cov_fn = shrinkage_cov,
+  simulated = FALSE
 )
 
 # Fit VAR model (bivariate: Admissions and Dismissals) ---------
@@ -85,7 +88,8 @@ fc_rec_var_cov <- reconcile_over_id(
   mod_tbl = mod_var,
   fc_tbl = fc_var,
   S = S,
-  rec_fun = mv_reconcile
+  rec_fun = mv_reconcile,
+  simulated = FALSE
 )
 # Reconciliation using shrinkage estimator
 fc_rec_var_s <- reconcile_over_id(
@@ -93,7 +97,8 @@ fc_rec_var_s <- reconcile_over_id(
   fc_tbl = fc_var,
   S = S,
   rec_fun = mv_reconcile,
-  cov_fn = shrinkage_cov
+  cov_fn = shrinkage_cov,
+  simulated = FALSE
 )
 
 # =========================================
@@ -128,5 +133,4 @@ app_relrmse <- app_rmse |>
   mutate(RelRMSE = 1 - reconciled / base) |>
   filter(type == "shrinkage")
 
-fs::dir_create(here::here("Saida"))
 saveRDS(app_relrmse, file = here::here("Saida/app_relrmse.rds"))

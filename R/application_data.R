@@ -45,12 +45,11 @@ read_data <- function(state_meta, region_meta) {
   Dados <- read.csv2(
     here::here("Dados/Dados_emprego_rgi.csv"),
     fileEncoding = "latin1"
-  )
-
-  # Convert date column to year-month format
-  Dados$Data <- yearmonth(Dados$Data)
-
-  Dados$cod_rgi <- as.character(Dados$cod_rgi)
+  ) |>
+    mutate(
+      Data = yearmonth(Data),
+      cod_rgi = as.character(cod_rgi)
+    )
 
   # ============================================================
   # Add state and region information by joining with metadata tables
@@ -58,7 +57,12 @@ read_data <- function(state_meta, region_meta) {
   Dados <- Dados |>
     left_join(state_meta, by = "UF") |>
     left_join(region_meta, by = "Região")
-
+  if (any(is.na(Dados$Região))) {
+    stop("Some UF values were not matched to state_meta.")
+  }
+  if (any(is.na(Dados$region_label))) {
+    stop("Some Região values were not matched to region_meta.")
+  }
   # ============================================================
   # Aggregate data by state within each region and month
   # ============================================================
@@ -105,24 +109,19 @@ read_data <- function(state_meta, region_meta) {
   # ============================================================
 
   Dados <- Dados |>
-    select(-c(UF)) |>
+    select(-UF) |>
     pivot_longer(
       -c(Data, Região, node),
       names_to = "series",
-      values_to = "Valor"
+      values_to = "value"
     ) |>
-    ungroup()
+    rename(time = Data)
 
   # ============================================================
   # Convert to tsibble format
   # ============================================================
 
-  Dados <- Dados |>
-    as_tsibble(key = c(Região, node, series), index = Data)
-
-  colnames(Dados) <- c("time", "Região", "node", "series", "value")
-
   Dados |>
-    arrange(Região) |>
-    ungroup()
+    as_tsibble(key = c(Região, node, series), index = time) |>
+    arrange(Região)
 }

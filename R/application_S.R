@@ -14,9 +14,8 @@ compute_S <- function(Dados, state_meta, region_meta) {
   # validation
   # ------------------------------------------------------------
   missing_UF <- setdiff(bottom_nodes, unique(Dados$node))
-
   if (length(missing_UF) > 0) {
-    warning(
+    stop(
       "States in metadata but missing from data: ",
       paste(missing_UF, collapse = ", ")
     )

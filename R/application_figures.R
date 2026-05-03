@@ -84,7 +84,9 @@ state_order <- state_meta |>
   arrange(order, UF) |>
   pull(UF)
 
-reg_labels <- setNames(region_meta$region_label, region_meta$Região)
+reg_labels <- region_meta |>
+  select(Região, region_label) |>
+  deframe()
 
 reg_order <- region_meta |>
   arrange(order) |>
@@ -93,7 +95,7 @@ reg_order <- region_meta |>
 region_colors <- region_meta |>
   filter(!is.na(map_color)) |>
   arrange(order) |>
-  transmute(region_label, map_color) |>
+  select(region_label, map_color) |>
   deframe()
 
 # ============================================================
