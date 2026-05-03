@@ -80,11 +80,11 @@ reconcile_over_id <- function(
   time_fn = tsibble::yearmonth,
   simulated = TRUE
 ) {
+  mod_n <- split(mod_tbl, mod_tbl$.id)
+  fc_n <- split(fc_tbl, fc_tbl$.id)
   if (!identical(names(mod_n), names(fc_n))) {
     stop("Model and forecast .id sets do not match.")
   }
-  mod_n <- split(mod_tbl, mod_tbl$.id)
-  fc_n <- split(fc_tbl, fc_tbl$.id)
   output <- purrr::map2(
     mod_n,
     fc_n,

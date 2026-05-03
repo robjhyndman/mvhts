@@ -116,7 +116,7 @@ data: simulation application
 
 simulation: $(SIM_RDS)
 
-$(SIM_RDS): $(SIM_SCRIPTS) | Saida
+$(SIM_RDS) &: $(SIM_SCRIPTS) | Saida
 	$(R) R/simulation.R
 
 application: $(APP_RDS)
