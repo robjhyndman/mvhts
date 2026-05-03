@@ -225,3 +225,12 @@ get_residuals <- function(fit) {
       make_matrix2(".resid")
   }
 }
+
+reorder_cols <- function(mat, nodes, series) {
+  target <- paste0(
+    rep(series, each = length(nodes)),
+    ".",
+    rep(nodes, times = length(series))
+  )
+  mat[, target, drop = FALSE]
+}

@@ -16,6 +16,9 @@ mv_reconcile <- function(
   SI <- kronecker(diag(m), S)
   # Residual matrix
   res <- get_residuals(fit)
+  nodes <- order_nodes(unique(fc$node))
+  series <- sort(unique(fc$series))
+  res <- reorder_cols(res, nodes, series)
   # Covariance matrix
   W <- cov_fn(res)
   Winv <- solve(W)
