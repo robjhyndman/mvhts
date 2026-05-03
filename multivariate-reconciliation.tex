@@ -52,7 +52,7 @@
   }
 
   \begin{abstract}
-    Some time series can be hierarchically organized into levels based on certain characteristics, such as geography or other attributes of interest. These series are referred to as hierarchical time series. Typically, forecasts are generated at all levels to ensure coherence, meaning that the forecasts should sum to the same value as the data. Various approaches have been proposed to guarantee this coherence by using a set of base forecasts. The process through which these forecasts are adjusted to become coherent is known as forecast reconciliation. Similar to the univariate case, multivariate time series can also be structured hierarchically. However, all existing approaches are limited to a single variable. That way, ensuring coherent forecasts requires reconciling each variable separately. Nonetheless, this process does not account for correlations among multiple variables. To address this limitation, this paper proposes a multivariate reconciliation methodology that ensures coherent forecasts and incorporates relationships among variables. The proposed methodology was tested through numerical simulations, considering distinct scenarios within the series hierarchy and across multiple variables. Additionally, some base forecasting models were evaluated. The methodology was also applied to real employment data of admissions and dismissals in Brazil. The results demonstrated that multivariate reconciliation yielded more accurate outcomes than the other methods considered, both in simulated data and in practical applications.
+    Some time series can be hierarchically organized into levels based on certain characteristics, such as geography or other attributes of interest. These series are referred to as hierarchical time series. Typically, forecasts are generated at all levels to ensure coherence, meaning that the forecasts should satisfy the same aggregation constraints as the observed data. Various approaches have been proposed to guarantee this coherence by using a set of base forecasts. The process through which these forecasts are adjusted to become coherent is known as forecast reconciliation. Similar to the univariate case, multivariate time series can also be structured hierarchically. However, all existing approaches are limited to a single variable. That way, ensuring coherent forecasts requires reconciling each variable separately. Nonetheless, this process does not account for correlations among multiple variables. To address this limitation, this paper proposes a multivariate reconciliation methodology that ensures coherent forecasts and incorporates relationships among variables. The proposed methodology was tested through numerical simulations, considering distinct scenarios within the series hierarchy and across multiple variables. Additionally, some base forecasting models were evaluated. The methodology was also applied to real employment data of admissions and dismissals in Brazil. The results demonstrated that multivariate reconciliation yielded more accurate outcomes than the other methods considered, both in simulated data and in practical applications.
   \end{abstract}
 
   \begin{keyword}
@@ -66,7 +66,7 @@ Collections of time series can often be aggregated at multiple levels based on g
 
 Traditionally, forecasting hierarchical time series involved selecting a specific level of aggregation, generating forecasts at that level, and then disaggregating or aggregating the forecasts to obtain forecasts for the remaining structure. These methods are generally classified as bottom-up, top-down, or middle-out \citep{athanasopoulos2023forecast}, and are limited to using information from only one level, disregarding the inherent correlation structure in aggregation.
 
-An alternative approach to forecasting hierarchical time series is to model all series separately, without considering the hierarchical structure. However, this has the undesirable consequence that the upper-level forecasts are not equal to the sum of the lower-level forecasts \citep{hyndman2011optimal}. For instance, the forecast of national sales may not equal the sum of the forecasts for each region or product category. The challenge, therefore, is to ensure that the forecasts are ``coherent'', meaning that the forecasts for the disaggregated series must exactly sum to the forecasts of the corresponding aggregated series.
+An alternative approach to forecasting hierarchical time series is to model all series separately, without considering the hierarchical structure. However, this has the undesirable consequence that the upper-level forecasts are not equal to the sum of the lower-level forecasts \citep{hyndman2011optimal}. For instance, the forecast of national sales may not equal the sum of the forecasts for each region or product category. The challenge, therefore, is to ensure that the forecasts are ``coherent'', meaning that they satisfy the aggregation constraints of the hierarchy: each aggregate forecast must equal the sum of its corresponding disaggregate forecasts.
 
 A solution to this problem was proposed by \citet{hyndman2011optimal}, who introduced an approach in which independent forecasts are made for all series at all levels; these forecasts are then reconciled to ensure they are coherent.
 
@@ -76,7 +76,7 @@ However, all the aforementioned approaches are limited to a single variable. Con
 
 The previously mentioned example illustrates that multivariate time series can also exhibit a hierarchical structure. However, existing models cannot incorporate relationships among multiple variables. To address this problem, the present study proposes a multivariate reconciliation method for hierarchical time series. The methodology will be tested through numerical simulations and applied to monthly data on worker admissions and dismissals in Brazil.
 
-This rest of this paper is organized as follows. Section \ref{sec2} presents the notation used and the proposed methodology, while Section \ref{sec3} describes, step-by-step, the conduction of numerical simulations and their results. The application of the proposed methodology to the multivariate hierarchical time series of worker admissions and dismissals in Brazil is described in Section \ref{sec4}. Finally, Section \ref{sec5} presents the concluding remarks.
+The rest of this paper is organized as follows. Section \ref{sec2} presents the notation used and the proposed methodology, while Section \ref{sec3} describes, step-by-step, the conduction of numerical simulations and their results. The application of the proposed methodology to the multivariate hierarchical time series of worker admissions and dismissals in Brazil is described in Section \ref{sec4}. Finally, Section \ref{sec5} presents the concluding remarks.
 
 \section{Multivariate Reconciliation}
 \label{sec2}
@@ -86,7 +86,7 @@ The following sections present the notation used in this study and the proposed 
 \subsection{Notation}
 \label{Notação}
 
-The notation used in this work is similar to that employed by \citet{athanasopoulos2023forecast}, but adapted for the multivariate case. Figure \ref{fig:HTS_M.ex} illustrates a multivariate hierarchical time series with three levels and with $m$ variables. Consider the variable $j$, so the $t$th observation of the total series is denoted by $y_{j,t}$, for $t = 1,\dots, T$ and $j = 1,\dots, m$. The series below the Total level is denoted by $y_{j,i,t}$, which corresponds to the $t$th observation of variable $j$ of the node series $i$.
+The notation used in this work is similar to that employed by \citet{athanasopoulos2023forecast}, but adapted for the multivariate case. Figure \ref{fig:HTS_M.ex} illustrates a multivariate hierarchical time series with three levels and with $m$ variables. Consider variable $j$, so the $t$th observation of the total series is denoted by $y_{j,t}$, for $t = 1,\dots, T$ and $j = 1,\dots, m$. The series below the Total level is denoted by $y_{i,j,t}$, which corresponds to the $t$th observation at node $i$ for variable $j$.
 
 \begin{figure}
   \centering
@@ -141,7 +141,7 @@ is the $n\times n_b$ summation matrix, and
 \end{equation*}
 is an $n_b$-dimensional vector of all observations of variable $j$ from the most disaggregated levels at time $t$.
 
-The notation is applied to each variable individually. Thus, for a multivariate hierarchical time series with $m$ variables there exist $m$ vectors $\bm{b}_{1,t},\dots,\bm{b}_{m,t}$ and $m$ vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$. We can combine the latter $m$ vectors into a matrix $\bm{B}_t$ with dimension $n_b \times m$, for each time $t$. Similarly, we can combine the $m$ vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$ into a matrix $\bm{Y}_t$ with dimension $n \times m$, for each time $t$. Therefore, we can express this as:
+The notation is applied to each variable individually. Thus, for a multivariate hierarchical time series with $m$ variables there exist $m$ bottom-level vectors $\bm{b}_{1,t},\dots,\bm{b}_{m,t}$ and $m$ all-level vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$. We combine the $m$ bottom-level vectors into the matrix $\bm{B}_t = [\bm{b}_{1,t},\dots,\bm{b}_{m,t}]$, with dimension $n_b \times m$, for each time $t$. Similarly, we combine the $m$ vectors $\bm{y}_{1,t},\dots,\bm{y}_{m,t}$ into the matrix $\bm{Y}_t = [\bm{y}_{1,t},\dots,\bm{y}_{m,t}]$, with dimension $n \times m$, for each time $t$. Therefore, we can express this as:
 \begin{equation}
   \vetor(\bm{Y}_t) = (\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t),
   \label{eq:vec}
@@ -200,7 +200,7 @@ where $\otimes$ denotes the Kronecker product, and $\vetor(\cdot)$ vectorizes th
 The first eight observations of $\vetor(\bm{Y}_t)$ correspond to all series in the hierarchy for variable 1, while the last eight observations correspond to variable 2. Similarly, the first five observations of $\vetor(\bm{B}_t)$ refer to the lower-level series for variable 1, while the remaining observations correspond to the lower-level series for variable 2.
 
 \subsection{Forecast reconciliation}
-\label{{Reconciliação multivariada}}
+\label{Reconciliação multivariada}
 
 To obtain coherent forecasts, we first forecast all series in the hierarchy independently, without considering the hierarchical structure. These forecasts are referred to as base forecasts. These are then reconciled to make them coherent.
 
@@ -221,46 +221,50 @@ where the $n \times n_b$ summation matrix is partitioned as $\bm{S}^\prime =
 \end{bmatrix}$, $\bm{C} =
 \begin{bmatrix} \bm{I}_{n_a} \ \ -\bm{A}
 \end{bmatrix}$, and $n_a = n - n_b$ (the number of aggregated series).
-Equation \eqref{eq:rec_2} is more efficient because it requires only the inversion of an $n_a \times n_a$ matrix, instead of two inversions of $n \times n$ and $n_b \times n_b$ matrices as in \eqref{eq:rec_1}.
+Equation \eqref{eq:rec_2} is computationally attractive because it requires solving a system involving an $n_a \times n_a$ matrix rather than one involving the larger $n_b \times n_b$ matrix in \eqref{eq:rec_1}, and it avoids the explicit use of $\bm{W}_h^{-1}$.
 
-It is possible to obtain another variation of \eqref{eq:rec_1} by representing the series $\bm{y}_h$ in the zero-constrained form $\bm{C}\bm{y}_t = \bm{0}_{(n_a \times 1)}$, which is equivalent to \eqref{eq:ysb}. From this, \citet{di2023cross} derived the following expression:
+It is possible to obtain another variation of \eqref{eq:rec_1} by representing the series $\bm{y}_t$ in the zero-constrained form $\bm{C}\bm{y}_t = \bm{0}_{(n_a \times 1)}$, which is equivalent to \eqref{eq:ysb}. From this, \citet{di2023cross} derived the following expression:
 \begin{equation}
-  \widetilde{\bm{y}}_{T+h|T} = \bm{M}\widehat{\bm{y}}_{T+h|T}, \quad \bm{M} = \bm{I}_n - \bm{W}_h\bm{C}^\prime(\bm{C}\bm{W}_h\bm{C}^\prime)^{-1}\bm{C}.
+  \widetilde{\bm{y}}_{T+h|T} = \bm{M}_h\widehat{\bm{y}}_{T+h|T}, \quad \bm{M}_h = \bm{I}_n - \bm{W}_h\bm{C}^\prime(\bm{C}\bm{W}_h\bm{C}^\prime)^{-1}\bm{C}.
   \label{eq:rec_3}
 \end{equation}
 Just like \eqref{eq:rec_2}, \eqref{eq:rec_3} will have better computational performance compared to \eqref{eq:rec_1}, as it also requires the computation of only one matrix inversion, in this case, an $n_a \times n_a$ matrix.
 
-When $\bm{W}_h$ is the covariance matrix of $\widehat{\bm{y}}_{T+h|T}$, the resulting forecasts are optimal in the sense that the sum of the variances of the reconciled forecasts is minimized \citep{wickramasuriya2019optimal}. This method is known as MinT (minimum trace) reconciliation.
+When $\bm{W}_h$ is the covariance matrix of the $h$-step-ahead base forecast errors, the resulting forecasts are optimal in the sense that the sum of the variances of the reconciled forecasts is minimized \citep{wickramasuriya2019optimal}. This method is known as MinT (minimum trace) reconciliation.
 
-Now we will extend the reconciliation process to the multivariate case. Let $\bm{S}_* = (\bm{I}_m \otimes \bm{S})$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written in one of the following three equivalent ways:
+Now we will extend the reconciliation process to the multivariate case. Let $\bm{S}_* = (\bm{I}_m \otimes \bm{S})$, where $\bm{S}$ is the summing matrix that represents the hierarchical structure, and $\bm{I}_m$ is an identity matrix of order $m$. Let $\bm{C}_* = \bm{I}_m \otimes \bm{C}$ and $\bm{J}_* = \bm{I}_m \otimes \bm{J}$. The multivariate coherence constraint can then be written as $\bm{C}_*\vetor(\bm{Y}_t) = \bm{0}_{(mn_a \times 1)}$. Let $\widehat{\bm{Y}}_{T+h|T}$ denote the $h$-step-ahead base forecasts of $\bm{Y}_{T+h}$, based on data up to time $T$. Then, the multivariate reconciled forecast can be written in one of the following three equivalent ways:
 \begin{align}
   \vetor(\widetilde{\bm{Y}}_{T+h|T}) &= \bm{S}_* [\bm{S}_*^\prime \bm{W}_h^{-1} \bm{S}_*]^{-1} \bm{S}_*^\prime \bm{W}_h^{-1} \vetor(\widehat{\bm{Y}}_{T+h|T});
   \label{eq:rec_MV} \\
-  &= \bm{S}_* [(\bm{I}_m\otimes\bm{J}) - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
+  &= \bm{S}_* [\bm{J}_* - \bm{N}_h] \vetor(\widehat{\bm{Y}}_{T+h|T}),
   \label{eq:rec_MV2} \\
-  & = \bm{M} \vetor(\widehat{\bm{Y}}_{T+h|T}),
+  & = \bm{M}_h^* \vetor(\widehat{\bm{Y}}_{T+h|T}),
   \label{eq:rec_MV3}
 \end{align}
 where
-$$
-\bm{N}_h = (\bm{I}_m\otimes\bm{J})\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)[(\bm{I}_m\otimes\bm{C}^\prime)^\prime\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)]^{-1}(\bm{I}_m\otimes\bm{C}^\prime)^\prime,
-$$
-$$
-\bm{M} = \bm{I}_{nm} - \bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)[(\bm{I}_m\otimes\bm{C}^\prime)^\prime\bm{W}_h(\bm{I}_m\otimes\bm{C}^\prime)]^{-1}(\bm{I}_m\otimes\bm{C}^\prime)^\prime,
-$$
-and $\bm{W}_h = \Var[\vetor(\bm{Y}_t) - \vetor(\widehat{\bm{Y}}_{t|t-h})]$ is the covariance matrix of the $h$-step base forecast errors, structured in the same way as the data.
+\[
+\bm{N}_h = \bm{J}_*\bm{W}_h\bm{C}_*^\prime(\bm{C}_*\bm{W}_h\bm{C}_*^\prime)^{-1}\bm{C}_*,
+\]
+\[
+\bm{M}_h^* = \bm{I}_{nm} - \bm{W}_h\bm{C}_*^\prime(\bm{C}_*\bm{W}_h\bm{C}_*^\prime)^{-1}\bm{C}_*,
+\]
+and the $h$-step base forecast error vector is
+\[
+\bm{e}_{t,h}=\vetor(\bm{Y}_t)-\vetor(\widehat{\bm{Y}}_{t|t-h}), \qquad \bm{W}_h=\Var(\bm{e}_{t,h}).
+\]
+Thus, $\bm{W}_h$ is the covariance matrix of the $h$-step base forecast errors, structured in the same way as the vectorized data.
 
 To estimate $\bm{W}_h$ we can use the same two approaches that are employed in the univariate case \citep{wickramasuriya2019optimal}:
 \begin{itemize}
   \item\textbf{Sample covariance:} Let $\bm{W}_h = k_h\hat{\bm{W}}_1$ for all $h$, where $k_h > 0$ and $\widehat{\bm{W}}_1$ is the sample covariance matrix of the one-step base forecast errors. In this approach, the covariance matrices of the errors are considered proportional to each other.
-  \item\textbf{Shrinkage estimator:} Let $\bm{W}_h = k_h\hat{\bm{W}}_{1,D}^*$, for all $h$, where $k_h > 0$, $\hat{\bm{W}}_{1,D}^* = \lambda_D\hat{\bm{W}}_{1,D}+(1-\lambda_D)\hat{\bm{W}}_{1}$ is the shrinkage estimator, $\hat{\bm{W}}_{1,D}$ a diagonal matrix composed of the diagonal of $\hat{\bm{W}}_{1}$, and $\lambda_D$ is the shrinkage intensity parameter \citep{wickramasuriya2019optimal}. This estimator aims to shrink the sample covariance towards a diagonal matrix. The quantity $\lambda_D$ is estimated using the sample correlation of the residuals \citep{schafer2005shrinkage}, being computed as follows:
+  \item\textbf{Shrinkage estimator:} Let $\bm{W}_h = k_h\hat{\bm{W}}_{1,D}^*$, for all $h$, where $k_h > 0$, $\hat{\bm{W}}_{1,D}^* = \lambda_D\hat{\bm{W}}_{1,D}+(1-\lambda_D)\hat{\bm{W}}_{1}$ is the shrinkage estimator, $\hat{\bm{W}}_{1,D}$ is a diagonal matrix composed of the diagonal of $\hat{\bm{W}}_{1}$, and $\lambda_D$ is the shrinkage intensity parameter \citep{wickramasuriya2019optimal}. This estimator aims to shrink the sample covariance towards a diagonal matrix. The quantity $\lambda_D$ is estimated using the sample correlation of the residuals \citep{schafer2005shrinkage}, being computed as follows:
     \begin{equation*}
-      \hat{\lambda}_D = \frac{\sum_{i\ne j}\widehat{\Var(\hat{r}_{ij}})}{\sum_{i\ne j}\hat{r}_{ij}^2},
+      \hat{\lambda}_D = \frac{\sum_{i\ne j}\widehat{\Var}(\hat{r}_{ij})}{\sum_{i\ne j}\hat{r}_{ij}^2},
     \end{equation*}
-    where $\hat{r}_{ij}$ is the $(i,j)$th entry of $\hat{\bm{R}}_1$, which represents the one-step-ahead sample correlation matrix.
+    where $\hat{r}_{ij}$ is the $(i,j)$th entry of $\hat{\bm{R}}_1$, which represents the one-step-ahead sample correlation matrix. When necessary, $\hat{\lambda}_D$ is restricted to the interval $[0,1]$.
 \end{itemize}
 
-In the multivariate case, the matrix $\bm{W}$ contains the relationships among all series in the hierarchy, including the $m$ variables. Thus, reconciliation using \eqref{eq:rec_MV} and the two approaches described previously is referred to as multivariate reconciliation in this paper.
+In the multivariate case, the matrix $\bm{W}_h$ contains the relationships among all series in the hierarchy, including the $m$ variables. Thus, reconciliation using \eqref{eq:rec_MV} and the two approaches described previously is referred to as multivariate reconciliation in this paper.
 
 Forecast reconciliation can be interpreted as optimally combining the base forecasts under the coherence constraint \citep{hyndman2011optimal}. In the multivariate case \eqref{eq:rec_MV}--\eqref{eq:rec_MV3}, the reconciliation process involves all series across all nodes, and so it can be seen as an optimal combination of forecasts across all series and variables in the hierarchy, accounting for relationships between and within nodes.
 
@@ -272,25 +276,25 @@ To evaluate the performance of multivariate reconciliation, numerical simulation
 \label{sec3.1}
 Generating a multivariate hierarchical time series first requires simulating the lower-level series that are correlated over time, across nodes, and among multivariate observations. A Vector Autoregressive (VAR) model can be used for this purpose, with the error term incorporating relevant cross-node correlations via a Kronecker-product-based covariance matrix. What follows describes a VAR(1) simulation of $m$ series across $n_b$ bottom-level nodes.
 
-Let the series at node $i$ be denoted $\bm{b}_{i,t}$, and assume that it follows a sinusoidal with errors VAR(1):
+Let the series at node $i$ be denoted $\bm{b}_{i,t}$, and assume that it follows a sinusoidal model with VAR(1) errors:
 \begin{equation}
   \begin{aligned}
-    \bm{b}_{i,t} & = \alpha_i \seno\bigg(\frac{2\pi t}{p}\bigg) + \bm{\eta}_{i,t}, \\
+    \bm{b}_{i,t} & = \alpha_i \seno\bigg(\frac{2\pi t}{p}\bigg)\bm{1}_m + \bm{\eta}_{i,t}, \\
     \bm{\eta}_{i,t} & = \bm{\Phi} \bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t},
   \end{aligned}
   \label{eq:b_it}
 \end{equation}
-where $\alpha_i \sim \text{Uniform}(0,4)$ is drawn independently for each node $i$, $\bm{\varepsilon}_{i,t}$ is multivariate Gaussian white noise, $p$ represents the seasonal period, and $\bm{\Phi}$ is an $m \times m$ matrix of autoregressive coefficients. By combining the noise vectors $\bm{\varepsilon}_{1,t}, \dots, \bm{\varepsilon}_{n_b,t} $ to form the rows of the matrix $\bm{E}_t$, we obtain a noise matrix of dimension $n_b \times
-m$. The covariance matrix of $\bm{E}_t$ can be written as:
+where $\bm{1}_m$ denotes an $m$-dimensional vector of ones, $\alpha_i \sim \text{Uniform}(0,4)$ is drawn independently for each node $i$, $\bm{\varepsilon}_{i,t}$ is multivariate Gaussian white noise, $p$ represents the seasonal period, and $\bm{\Phi}$ is an $m \times m$ matrix of autoregressive coefficients. By combining the transposed noise vectors $\bm{\varepsilon}_{1,t}^\prime, \dots, \bm{\varepsilon}_{n_b,t}^\prime$ to form the rows of the matrix $\bm{E}_t$, we obtain a noise matrix of dimension $n_b \times m$. Equivalently, $\bm{\varepsilon}_{i,t}=\bm{E}_{t,i\cdot}^\prime$, where $\bm{E}_{t,i\cdot}$ is the $i$th row of $\bm{E}_t$. The covariance matrix of $\vetor(\bm{E}_t)$ can be written as:
 \begin{equation*}
   \bm{W} = \cov(\vetor(\bm{E}_t)) = \bm{V} \otimes \bm{\Sigma},
 \end{equation*}
-where $\bm{V}$ is an $m \times m$ covariance matrix that contains the correlation structure between series at each node, and $\bm{\Sigma}$ is an $n_b \times n_b$ covariance matrix that represents the nodal correlation structure between nodes. Then, proceed as follows to simulate a realization of this structure:
+where $\bm{V}$ is an $m \times m$ covariance matrix that contains the correlation structure between series at each node, and $\bm{\Sigma}$ is an $n_b \times n_b$ covariance matrix that represents the nodal correlation structure between nodes. Since $\vetor(\cdot)$ stacks columns, this implies that $\cov(E_{i,j,t},E_{k,\ell,t})=\Sigma_{ik}V_{j\ell}$.
+Then, proceed as follows to simulate a realization of this structure:
 \begin{enumerate}
   \item Generate or specify the covariance matrices: an $m \times m$ matrix $\bm{V}$ and an $n_b \times n_b$ matrix $\bm{\Sigma}$;
-  \item Simulate $T$ random vectors, each of length $n_b m$, from $N(\bm{0}, \bm{V} \otimes \bm{\Sigma})$;
-  \item Unstack these vectors into matrices $\bm{E}_1, \dots, \bm{E}_t$, each of size $n_b \times m$;
-  \item Simulate $\bm{b}_{i,t}$ using \eqref{eq:b_it}, where $\bm{\varepsilon}_{i,t}$ is the $i$th row of $\bm{E}_t$, $i=1,\dots,n_b$;
+  \item Simulate $T+H$ random vectors, each of length $n_b m$, from $N(\bm{0}, \bm{V} \otimes \bm{\Sigma})$;
+  \item Unstack these vectors into matrices $\bm{E}_1, \dots, \bm{E}_{T+H}$, each of size $n_b \times m$;
+  \item Simulate $\bm{b}_{i,t}$ using \eqref{eq:b_it}, where $\bm{\varepsilon}_{i,t}=\bm{E}_{t,i\cdot}^\prime$, $i=1,\dots,n_b$;
   \item Combine the $m$-vectors $\bm{b}_{i,t}$ in a matrix $\bm{B}_t$, of size $n_b \times m$, and apply $\vetor(\bm{B}_t)$;
   \item Create $\bm{Y}_t$ using the $(\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t)$ operation, seen in \eqref{eq:vec}.
 \end{enumerate}
@@ -360,7 +364,7 @@ Thus, there are nine possible combinations of $\bm{V}$ and $\bm{\Sigma}$. Table 
   \label{tab:v_sigma}
 \end{table}
 
-For each scenario in Table \ref{tab:v_sigma}, 1,000 simulations were conducted, with $T = 120$ and a period of $p = 4$, with forecasts computed for 1 to 12 steps ahead. For $\bm{\Phi}$ we considered the following matrix:
+For each scenario in Table \ref{tab:v_sigma}, 1,000 simulations were conducted with total sample length $T+H = 120$ and a period of $p = 4$, with forecasts computed from the first $T$ observations for 1 to $H=12$ steps ahead. For $\bm{\Phi}$ we considered the following matrix:
 \begin{equation*}
   \bm{\Phi} =
   \begin{bmatrix}
@@ -379,7 +383,7 @@ All forecasts were computed using the \texttt{fable} package in {\sf R}. The aut
 \subsection{Evaluation metrics}
 \label{sec3.3}
 
-The dataset was split into training and test sets, with the first 108 observations used for training and the last 12 for testing. For each series, base forecasts from 1 to 12 steps ahead were generated using the models described in Section \ref{sec3.2}.
+The simulated dataset of length 120 was split into training and test sets, with the first $T=108$ observations used for training and the last 12 for testing. For each series, base forecasts from 1 to 12 steps ahead were generated using the models described in Section \ref{sec3.2}.
 
 We are interested in evaluating whether the forecasts obtained through multivariate reconciliation outperform the base forecasts, disregarding any hierarchical structure. Additionally, we want to assess whether multivariate reconciliation outperforms univariate reconciliation when applied to each variable separately.
 
@@ -388,7 +392,11 @@ To compare multivariate reconciliation with base forecasts, we can use the follo
   \RelRMSE^{\Base}_{i,j,h} = 1 - \frac{\RMSE^{\Rec}_{i,j,h}}{\RMSE^{\Base}_{i,j,h}},
   \label{eq:RelRMSE_base}
 \end{equation}
-where $\RMSE^{\Rec}_{i,j,h}$ is the Root Mean Squared Error (RMSE) of forecasts obtained with multivariate reconciliation for node $i$ and variable $j$ at horizon $h = 1, \dots, 12$, and $\RMSE^{\Base}_{i,j, h}$ is the $\RMSE$ of the corresponding base forecasts. A $\RelRMSE^{\Base}$ value less than 0 indicates that the base forecasts were more accurate than those obtained through multivariate reconciliation.
+where $\RMSE^{\Rec}_{i,j,h}$ is the Root Mean Squared Error (RMSE) of forecasts obtained with multivariate reconciliation for node $i$ and variable $j$ at horizon $h = 1, \dots, 12$, and $\RMSE^{\Base}_{i,j, h}$ is the $\RMSE$ of the corresponding base forecasts. In the simulation study, for $R=1000$ replications,
+\begin{equation*}
+\RMSE^{\Rec}_{i,j,h}=\sqrt{\frac{1}{R}\sum_{r=1}^{R}\left(y^{(r)}_{i,j,T+h}-\widetilde{y}^{(r)}_{i,j,T+h|T}\right)^2},
+\end{equation*}
+with analogous definitions for the base and univariate reconciled forecasts. A $\RelRMSE^{\Base}$ value less than 0 indicates that the base forecasts were more accurate than those obtained through multivariate reconciliation.
 
 Similar to \eqref{eq:RelRMSE_base}, we can compare multivariate reconciliation with univariate reconciliation using the following skill score:
 \begin{equation}
@@ -403,9 +411,9 @@ To assess which base forecasting model generates the most accurate reconciled fo
 \end{equation*}
 where
 \begin{equation*}
-  q^2_{i,j,h} = \frac{(y_{i,j,T+h} - \hat{y}_{i,j,T+h|T})^2}{\frac{1}{T - p}\sum_{t = p+1}^{T}(y_{i,j,t} - y_{i,j,t-p})^2},
+  q^2_{i,j,h} = \frac{(y_{i,j,T+h} - \widetilde{y}_{i,j,T+h|T})^2}{\frac{1}{T - p}\sum_{t = p+1}^{T}(y_{i,j,t} - y_{i,j,t-p})^2},
 \end{equation*}
-for $i=1,\dots,n$ and $j=1,\dots,m$,  where the denominator represents the mean of the squared differences in the training data for node $i$ and variable $j$, with a seasonal period of $p$.
+for $i=1,\dots,n$ and $j=1,\dots,m$,  where the denominator represents the mean of the squared differences in the training data for node $i$ and variable $j$, with a seasonal period of $p$. In the simulation results, these RMSSE values are averaged over the replications.
 
 Figure \ref{fig:diagrama_sim} presents the detailed flowchart of the numerical simulation adopted for the nine scenarios in Table \ref{tab:v_sigma}.
 
@@ -425,28 +433,24 @@ This section presents the results of the numerical simulations, conducted accord
   \item A hierarchical multivariate time series is simulated with the same structure as Figure \ref{fig:HTS_M.ex}, and with $m = 2$;
   \item The resulting 16 series are divided into training and test sets;
   \item Base forecasts from 1 to 12 steps ahead are generated for each series using the ARIMA, ETS, and VAR models;
-  \item For each set of forecasts, multivariate reconciliation is applied, using both the sample covariance and the shrinkage estimator to estimate $\bm{W}$;
+  \item For each set of forecasts, multivariate reconciliation is applied, using both the sample covariance and the shrinkage estimator to estimate $\bm{W}_h$;
   \item For comparison purposes, univariate reconciliation is also applied using the same estimators.
 \end{enumerate}
 These steps are repeated 1,000 times for each scenario presented in Table \ref{tab:v_sigma}.
 
 Figures S1 to S9 of the supplementary material present examples of the simulation of a hierarchical multivariate time series, with the same structure as Figure \ref{fig:HTS_M.ex} and with $m=2$, under scenarios 1 to 9, respectively.
 
-Tables S1 to S9 of the supplementary material present the $\RelRMSE^{\Base}$ for all 16 hierarchical series across each forecast horizon, using ARIMA, ETS, and VAR models for base forecasts and the shrinkage approach to estimate $\bm{W}$ in scenarios 1 to 9, respectively. Values highlighted in red indicate a $\RelRMSE^{\Base}$ less than 0, meaning that the base forecasts achieved a lower RMSE than forecasts obtained through multivariate reconciliation.
+Tables S1 to S9 of the supplementary material present the $\RelRMSE^{\Base}$ for all 16 hierarchical series across each forecast horizon, using ARIMA, ETS, and VAR models for base forecasts and the shrinkage approach to estimate $\bm{W}_h$ in scenarios 1 to 9, respectively. Values highlighted in red indicate a $\RelRMSE^{\Base}$ less than 0, meaning that the base forecasts achieved a lower RMSE than forecasts obtained through multivariate reconciliation.
 
 \input{Tabelas/Tabs_sh_mean}
 
 \input{Tabelas/Tabs_porc_sh}
 
-Another summary of Tables S1 to S9 can be made by considering the percentage of non-negative $\RelRMSE^{\Base}$ values for each of the nine scenarios and base forecasting models (Table \ref{tab:porc_sh}). The ARIMA model exhibited 100\% of values greater than or equal to 0 in the three scenarios, 2, 3, 4, 5, 6 and 8. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In the ETS case, the lowest percentages occurred in scenarios 1, 4, and 7, which use $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1} with a correlation of 0 between the series at the lowest level. Table \ref{tab:porc_sh} shows that all values exceeded 50\%, highlighting the advantages of multivariate reconciliation using the shrinkage approach across all three models and nine scenarios. The ARIMA model achieved the best overall results when combined with multivariate reconciliation.
-
-\todo[inline]{Why do you think this happens? The DGP should most closely match the VAR model, so perhaps it has less room for improvement. The ETS model should be the furthest from the DGP, so it should have more room for improvement due to reconciliation. Yet it improves the least. What's going on?}
+Another summary of Tables S1 to S9 can be made by considering the percentage of non-negative $\RelRMSE^{\Base}$ values for each of the nine scenarios and base forecasting models (Table \ref{tab:porc_sh}). The ARIMA model exhibited 100\% of values greater than or equal to 0 in six scenarios: 2, 3, 4, 5, 6, and 8. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In the ETS case, the lowest percentages occurred in scenarios 1, 4, and 7, which use $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1} with a correlation of 0 between the series at the lowest level. Table \ref{tab:porc_sh} shows that all values exceeded 50\%, highlighting the advantages of multivariate reconciliation using the shrinkage approach across all three models and nine scenarios. The ARIMA model achieved the best overall results when combined with multivariate reconciliation.
 
 Table \ref{tab:sh_mean} provides a summary of these results by presenting the average $\RelRMSE^{\Base}$ values across the 16 hierarchical series for each model, forecast horizon, and scenario. All values in the table are greater than 0, indicating that forecasts obtained through multivariate reconciliation performed better or at least as well as the base forecasts. Among the nine scenarios analyzed, scenarios 2, 5, and 8 showed the best performance with multivariate reconciliation, as indicated by the highest average $\RelRMSE^{\Base}$ values shown in Table \ref{tab:sh_mean}. These scenarios used a correlation of 0.7 between the series at the lowest level, with $\bm{\Sigma}_2$ defined in \eqref{eq:Sigma2}.
 
-Among the three base forecasting models, ARIMA stood out across all scenarios and for nearly all forecast horizons, showing the highest average $\RelRMSE^{\Base}$ values. The VAR model was then followed, with results close to those of the ARIMA model. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In contrast, although the ETS model also produced positive averages, most of these values were very close to zero, indicating that, when used as the base forecasting method, multivariate reconciliation yielded results similar to incoherent forecasts that do not account for any hierarchical structure.
-
-\todo[inline]{Perhaps remove the sample covariance results, and just include a comment that we also tried it and it didn't work as well. The sample covariance is not a good estimator of the covariance matrix, so it's not surprising that it doesn't perform well. In fact, I'm surprised that it was even possible to invert the matrices in this case.}
+Among the three base forecasting models, ARIMA stood out across all scenarios and for nearly all forecast horizons, showing the highest average $\RelRMSE^{\Base}$ values. The VAR model followed, with results close to those of the ARIMA model. For the VAR, the best results were also observed in scenarios 2, 5, and 8. In contrast, although the ETS model also produced positive averages, most of these values were very close to zero, indicating that, when used as the base forecasting method, multivariate reconciliation yielded results similar to incoherent forecasts that do not account for any hierarchical structure.
 
 %The results using the sample covariance to estimate $\bm{W}$ are presented in the supplementary material. Tables S10 to S18 provide the $\RelRMSE^{\Base}$ for scenarios 1-9, respectively, using the ARIMA, ETS, and VAR models for base forecasts. Table \ref{tab:cov_mean} summarizes these tables, where the average $\RelRMSE^{\Base}$ of the 16 series was calculated, considering the different models, horizons, and scenarios.
 
@@ -454,32 +458,29 @@ Among the three base forecasting models, ARIMA stood out across all scenarios an
 
 %Table \ref{tab:porc_cov} summarizes the results from Tables S10 to S18, presenting the percentages of $\RelRMSE^{\Base}$ values greater than or equal to 0 for each of the nine scenarios and base forecasting models. Using the ARIMA model, the best results were obtained in scenarios 2, 5, 8, and 9. Scenarios 2, 5, and 8 assume a correlation of 0.7 between the nodes. The RMSE of the reconciled forecasts with diagonal matrices for $\bm{V}$ and $\bm{\Sigma}$ (scenario 1) was higher than the RMSE of the base forecasts, which was expected since there is no correlation between the bivariate series or between the nodes. For the ETS and VAR models, multivariate reconciliation did not yield significant improvements over base forecasts, as in most scenarios, more than 50\% of the $\RelRMSE^{\Base}$ values were greater than 0.
 
-\textcolor{red}{We have also considered the sample covariance approach for estimating $\bm{W}$. However, the shrinkage approach yields better results in all scenarios. Multivariate reconciliation using sample covariance did not improve base forecasts in certain scenarios and models. Because of that, the results for the sample covariance are now shown.}
+We also considered the sample covariance approach for estimating $\bm{W}_h$. However, the shrinkage approach yields better results in all scenarios.
 
-The multivariate reconciliation using shrinkage was compared with the univariate reconciliation with the same approach.
-Tables S10 to S18 of the supplementary material present the $\RelRMSE^{\Uni}$ for each series in the hierarchy and for each forecasting horizon in scenarios 1 to 9, comparing these methodologies.
+The multivariate reconciliation using shrinkage was compared with the univariate reconciliation with the same approach. Tables S10 to S18 of the supplementary material present the $\RelRMSE^{\Uni}$ for each series in the hierarchy and for each forecasting horizon in scenarios 1 to 9, comparing these methodologies.
 
 \input{Tabelas/Tabs_sh_uni_mean}
 
 \input{Tabelas/Tabs_porc_sh_uni}
 
-Table \ref{tab:sh_uni_mean} provides a summary of these results by presenting the average $\RelRMSE^{\Uni}$ values across the 16 hierarchical series for each model, forecast horizon, and scenario. The ETS model did not present mean values less than 0, indicating results that were better or similar to those of Univariate Reconciliation (Table \ref{tab:sh_uni_mean}). In scenario 1, most of the values were approximately 0, indicating that the results of multivariate and univariate reconciliation were similar. This scenario uses diagonal matrices for $\bm{V}$ and $\bm{\Sigma}$, implying that there is no correlation between variables or nodes. In scenarios 7 and 9, most of the ARIMA model means were negative, whereas in scenarios 6 and 4, all were positive. The VAR model showed good results in scenarios 2, 5, and 8, which used a correlation of 0.7 between the nodes with $\bm{\Sigma}_2$ defined in \eqref{eq:Sigma2}. The highest values observed in Table \ref{tab:sh_uni_mean} correspond to the ARIMA model, indicating a more pronounced improvement in univariate reconciliation compared to the other models.
+Table \ref{tab:sh_uni_mean} provides a summary of these results by presenting the average $\RelRMSE^{\Uni}$ values across the 16 hierarchical series for each model, forecast horizon, and scenario. The ETS model did not present mean values less than 0, indicating results that were better or similar to those of Univariate Reconciliation (Table \ref{tab:sh_uni_mean}). In scenario 1, most of the values were approximately 0, indicating that the results of multivariate and univariate reconciliation were similar. This scenario uses diagonal matrices for $\bm{V}$ and $\bm{\Sigma}$, implying that there is no correlation between variables or nodes. In scenarios 7 and 9, most of the ARIMA model means were negative, whereas in scenarios 6 and 4, all were positive. The VAR model showed good results in scenarios 2, 5, and 8, which used a correlation of 0.7 between the nodes with $\bm{\Sigma}_2$ defined in \eqref{eq:Sigma2}. The highest values observed in Table \ref{tab:sh_uni_mean} correspond to the ARIMA model, indicating a more pronounced improvement of multivariate reconciliation relative to univariate reconciliation compared to the other models.
 
-Table \ref{tab:porc_sh_uni} summarizes the results from Tables S9 to S18, presenting the percentages of values greater than or equal to 0 for each scenario and model. The ETS model achieved the highest percentages in most scenarios, except for scenario 5. The lowest percentages for ARIMA were recorded in the two scenarios that use the matrix $\bm{V}_3$ given in \eqref{eq:V3}, which assumes a correlation of $-0.4$ between the hierarchical variables (scenarios 7 and 9). For ETS, the lowest values were observed in scenarios 4, 5, and 6, which use the matrix $\bm{V}_2$ given in \eqref{eq:V2}. The VAR model exhibited the lowest percentages in scenarios 1, 4, and 7, which assume no correlation between the series at the lowest level, using $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma2}.
+Table \ref{tab:porc_sh_uni} summarizes the results from Tables S10 to S18, presenting the percentages of values greater than or equal to 0 for each scenario and model. The ETS model achieved the highest percentages in most scenarios, except for scenario 5. The lowest percentages for ARIMA were recorded in the two scenarios that use the matrix $\bm{V}_3$ given in \eqref{eq:V3}, which assumes a correlation of $-0.7$ between the hierarchical variables (scenarios 7 and 9). For ETS, the lowest values were observed in scenarios 4, 5, and 6, which use the matrix $\bm{V}_2$ given in \eqref{eq:V2}. The VAR model exhibited the lowest percentages in scenarios 1, 4, and 7, which assume no correlation between the series at the lowest level, using $\bm{\Sigma}_1$ defined in \eqref{eq:Sigma1}.
 
 So far, all metrics have been used to compare the proposed methodology with already established approaches. However, they do not indicate which base forecasting model produces the best multivariate reconciled forecasts. For this analysis, we consider the multivariate reconciled forecasts using the shrinkage approach for the 16 series in the hierarchy. Table \ref{tab:RMSSE} presents the average of the 16 RMSSEs per forecasting horizon for the ARIMA, ETS, and VAR models across the nine scenarios.
 
 The lowest values for each horizon and scenario are highlighted in bold. In scenarios 1, 3, 7, 8, and 9, the VAR model exhibited the lowest average values for most forecasting horizons. In scenarios 2, 4, 5, and 6, the lowest average errors were observed for the ARIMA model. The ETS model presented the highest average RMSSE across nearly all scenarios and forecasting horizons (Table \ref{tab:RMSSE}).
 
-The best results for multivariate reconciled forecasts were obtained with the ARIMA and VAR models. The ARIMA model excelled in scenarios with a positive correlation of 0.7 between the hierarchical variables (Scenarios 4, 5, and 6), while ETS performed better in scenarios with a negative correlation of 0.4 (Scenarios 7, 8 and 9). In these latter scenarios, the lowest average RMSSE values were recorded across the 12 forecasting horizons, indicating that the proposed multivariate reconciliation achieved its best performance in these three cases.
+The best results for multivariate reconciled forecasts were obtained with the ARIMA and VAR models. The ARIMA model excelled in scenarios with a positive correlation of 0.7 between the hierarchical variables (Scenarios 4, 5, and 6), while ETS performed better in scenarios with a negative correlation of 0.7 (Scenarios 7, 8 and 9). In these latter scenarios, the lowest average RMSSE values were recorded across the 12 forecasting horizons, indicating that the proposed multivariate reconciliation achieved its best performance in these three cases.
 
 \input{Tabelas/Tabs_RMSSE}
 
 We conclude that, for this simulation study, the shrinkage approach outperforms the sample covariance. Moreover, multivariate reconciliation using the shrinkage approach yields superior results compared to those obtained solely from base forecasts, particularly for the ARIMA model, which demonstrated improvements in over 89\% of the values across all scenarios. The results also surpass or are equivalent to the forecasts generated by univariate reconciliation. Finally, the ARIMA and VAR models stood out, presenting the best reconciled forecasts.
 
-\todo[inline]{Rather than just stating what works best, can we shed some light on these results? For example, reconciliation often mimics multivariate modelling by borrowing strength across the series indirectly. So, it is not surprising that the ARIMA model, which is univariate, benefits more from reconciliation than the VAR model, which already accounts for multivariate relationships. Is there something about negatively correlated series that makes reconciliation more effective for some models?}
-
-\textcolor{red}{These results provide some insight into the role of cross-series dependence in reconciliation. Since reconciliation borrows strength across series, it can partially mimic multivariate modelling, which helps explain why univariate models such as ARIMA tend to benefit more than models like VAR that already capture cross-dependencies. Regarding negatively correlated series, our results do not suggest a systematic advantage or disadvantage. For instance, scenarios 7 and 9 (with correlation $-0.7$) show weaker performance compared to other scenarios and even to the base forecasts, whereas scenario 8 shows improved results. Nevertheless, the average RMSSE of multivariate reconciliation is consistently lower across these scenarios and models (Table 6), indicating that the benefits of reconciliation are present but may depend on the specific data structure rather than the sign of the correlation alone.}
+These results provide some insight into the role of cross-series dependence in reconciliation. Since reconciliation borrows strength across series, it can partially mimic multivariate modelling, which helps explain why univariate models such as ARIMA tend to benefit more than models like VAR that already capture cross-dependencies. Regarding negatively correlated series, our results do not suggest a systematic advantage or disadvantage. For instance, scenarios 7 and 9 (with correlation $-0.7$) show weaker performance compared to other scenarios and even to the base forecasts, whereas scenario 8 shows improved results. Nevertheless, the average RMSSE of multivariate reconciliation is consistently lower across these scenarios and models (Table 6), indicating that the benefits of reconciliation are present but may depend on the specific data structure rather than the sign of the correlation alone.
 
 \FloatBarrier
 
@@ -528,7 +529,11 @@ Figure \ref{fig:validacao} illustrates this procedure: the blue observations rep
   \label{fig:validacao}
 \end{figure}
 
-In this study, for the employment admission and dismissal dataset, cross-validation was implemented with forecasts generated for 12 origins, starting from the observation corresponding to January 2022. Forecasts were produced from 1 to 12 steps ahead.
+In this study, for the employment admission and dismissal dataset, cross-validation was implemented with forecasts generated for 12 origins, starting from the observation corresponding to January 2022. Forecasts were produced from 1 to 12 steps ahead. Therefore, in the empirical application, the RMSE values in \eqref{eq:RelRMSE_base} and \eqref{eq:RelRMSE_uni} are computed over the forecast origins. For example, if $t_1,\dots,t_K$ are the forecast origins, with $K=12$, then
+\begin{equation*}
+\RMSE^{\Rec}_{i,j,h}=\sqrt{\frac{1}{K}\sum_{k=1}^{K}\left(y_{i,j,t_k+h}-\widetilde{y}_{i,j,t_k+h|t_k}\right)^2},
+\end{equation*}
+with analogous definitions for base and univariate reconciled forecasts.
 
 To evaluate the accuracy of bivariate reconciliation, we used the metrics $\RelRMSE^{\Base}$ and $\RelRMSE^{\Uni}$, defined by \eqref{eq:RelRMSE_base} and \eqref{eq:RelRMSE_uni}, respectively.
 
@@ -558,7 +563,7 @@ Figures \ref{fig:serie_emprego_br}, \ref{fig:serie_emprego_reg}, and \ref{fig:se
   \label{fig:serie_emprego_uf}
 \end{figure}
 
-The admission and dismissal series for the Midwest, Northeast, North, Southeast, and South regions exhibit similar patterns, differing only in scale (Figure \ref{fig:serie_emprego_reg}). The Southeast stands out as the region with the highest numbers of admissions and dismissals. Although the Southeast comprises only four states, three of them — São Paulo, Minas Gerais, and Rio de Janeiro — are the most populous in Brazil, which explains the high volume of employment admissions and dismissals. Conversely, the North, being the least populated region in the country, presents the lowest values for these series.
+The admission and dismissal series for the Midwest, Northeast, North, Southeast, and South regions exhibit similar patterns, differing only in scale (Figure \ref{fig:serie_emprego_reg}). The Southeast stands out as the region with the highest numbers of admissions and dismissals. Although the Southeast comprises only four states, three of them --- São Paulo, Minas Gerais, and Rio de Janeiro --- are the most populous in Brazil, which explains the high volume of employment admissions and dismissals. Conversely, the North, being the least populated region in the country, presents the lowest values for these series.
 
 The patterns observed in the Brazil series (Figure \ref{fig:serie_emprego_br}) and in regional series (Figure \ref{fig:serie_emprego_reg}) are also repeated in the admission and dismissal series of the federative units (Figure \ref{fig:serie_emprego_uf}). However, the series for the state of Alagoas stands out, as they exhibit a completely distinct trend and seasonality compared to the others.
 Additionally, São Paulo and Minas Gerais present the highest numbers of admissions and dismissals, which can be attributed to their status as the most populous states in Brazil. Conversely, Amapá and Roraima, having smaller populations, record the lowest values for these series.
@@ -568,7 +573,7 @@ Additionally, São Paulo and Minas Gerais present the highest numbers of admissi
 
 Through simulation, we observed that among the three models analyzed, ARIMA, ETS, and VAR, the ARIMA and VAR models yielded the best results when applying the proposed bivariate reconciliation approach. Therefore, these models were employed to generate the base forecasts for the 66 employment time series.
 
-Tables \ref{tab:adm_sh} and \ref{tab:dem_sh} show the results obtained using the shrinkage estimator for $\bm{W}$, with Table \ref{tab:adm_sh} dedicated to the admission series and Table \ref{tab:dem_sh} to the dismissal series.
+Tables \ref{tab:adm_sh} and \ref{tab:dem_sh} show the results obtained using the shrinkage estimator for $\bm{W}_h$, with Table \ref{tab:adm_sh} dedicated to the admission series and Table \ref{tab:dem_sh} to the dismissal series.
 
 %The bivariate reconciliation approach, when using the sample covariance to estimate $\bm{W}$, yielded for the admission series (Table \ref{tab:adm_cov}) 61.9\% of the values greater than or equal to 0. These values correspond to the 12 forecast horizons for each of the 33 series. This outcome indicates that the proposed methodology outperformed the base forecasts in more than half of the observations. Higher values, less than 0, were concentrated in the final horizons (10, 11, and 12). The methodology performed worse for some admission series, particularly in the South region and in PA and SC states. Conversely, improvements were observed across all horizons for forecasts in the Midwest region and the states of AC, GO, MA, and MT.
 
@@ -577,11 +582,11 @@ Tables \ref{tab:adm_sh} and \ref{tab:dem_sh} show the results obtained using the
 
 \input{Tabelas/Tabs_adm_sh}
 
-The proposed methodology, using the shrinkage estimator to estimate $\bm{W}$, yielded significantly better results for the admission series (Table \ref{tab:adm_sh}). In this table, 75.3\% of the values were greater than or equal to 0. Among the 33 series, 18 exhibited only one or no values less than 0 across the 12 forecast horizons. The worst results were observed in the South region and in the states of ES, PA, PE, RN, and SP. Overall, a substantial improvement was achieved by employing this methodology with the shrinkage estimator for the admission series.
+The proposed methodology, using the shrinkage estimator to estimate $\bm{W}_h$, yielded significantly better results for the admission series (Table \ref{tab:adm_sh}). In this table, 75.3\% of the values were greater than or equal to 0. Among the 33 series, 18 exhibited only one or no values less than 0 across the 12 forecast horizons. The worst results were observed in the South region and in the states of ES, PA, PE, RN, and SP. Overall, a substantial improvement was achieved by employing this methodology with the shrinkage estimator for the admission series.
 
 \input{Tabelas/Tabs_dem_sh}
 
-For the dismissal series, using the shrinkage estimator (Table \ref{tab:dem_sh}), the bivariate reconciliation outperformed the base forecasts in 54.8\% of the observations. The best results were observed in the series for the Midwest and South regions, as well as in the states of AL, AP, MG, MS, MT, PB, and SC, all of which presented two or fewer superior values below 0. Although the results for the dismissal series were not as satisfactory as those obtained for the admission series (Table \ref{tab:adm_sh}), improvements were still observed in more than half of the cases when compared to the base forecasts.
+For the dismissal series, using the shrinkage estimator (Table \ref{tab:dem_sh}), the bivariate reconciliation outperformed the base forecasts in 54.8\% of the observations. The best results were observed in the series for the Midwest and South regions, as well as in the states of AL, AP, MG, MS, MT, PB, and SC, all of which presented two or fewer values below 0. Although the results for the dismissal series were not as satisfactory as those obtained for the admission series (Table \ref{tab:adm_sh}), improvements were still observed in more than half of the cases when compared to the base forecasts.
 
 For the employment data application, the proposed bivariate reconciliation method using the ARIMA model and the shrinkage estimator demonstrated strong results for the admission series and moderate performance for the dismissal series, highlighting its advantages over the base forecasts. These findings align with the simulation results.
 
@@ -593,34 +598,34 @@ The proposed methodology was also tested using the VAR model to generate the bas
 
 %For both variables analyzed, the proposed methodology, when using this estimator for $\bm{W}$ along with the VAR model, did not outperform the base forecasts in most series and forecast horizons.
 
-Tables S19 and S20 present the $\RelRMSE^{\Base}$ for the admission and dismissal variables, respectively, both using the shrinkage approach to estimate $\bm{W}$. It can be seen that 49.2\% of the $\RelRMSE^{\Base}$ values were non-negative for the dismissal variable (Table S19), indicating that the shrinkage-based methodology and the VAR model perform similarly to the base forecasts. Only the states of AL, ES, and SC showed good results across all forecast horizons with this methodology.
+Tables S19 and S20 present the $\RelRMSE^{\Base}$ for the admission and dismissal variables, respectively, both using the shrinkage approach to estimate $\bm{W}_h$. It can be seen that 49.2\% of the $\RelRMSE^{\Base}$ values were non-negative for the admission variable (Table S19), indicating that the shrinkage-based methodology and the VAR model perform similarly to the base forecasts. Only the states of AL, ES, and SC showed good results across all forecast horizons with this methodology.
 
-A similar result was observed for the dismissal variable, with 51.3\% of the values of $\RelRMSE^{\Base}$ being greater than or equal to 0 (Table S20). Additionally, the multivariate reconciliation using the VAR model and the shrinkage approach outperformed the base forecasts in all horizons in the states of AL, MS, and RO for this variable. When the VAR model is used for base forecasts, multivariate reconciliation with the shrinkage estimator, the results are similar to those of the base forecasts.
+A similar result was observed for the dismissal variable, with 51.3\% of the values of $\RelRMSE^{\Base}$ being greater than or equal to 0 (Table S20). Additionally, the multivariate reconciliation using the VAR model and the shrinkage approach outperformed the base forecasts in all horizons in the states of AL, MS, and RO for this variable. When the VAR model is used for base forecasts, multivariate reconciliation with the shrinkage estimator produces results that are similar to those of the base forecasts.
 
 When comparing the ARIMA and VAR models, it is observed that multivariate reconciliation combined with ARIMA produced better results. This configuration led to significant improvements in the forecasts for both the admission and dismissal variables compared to the base forecasts.
 
 %These results are consistent with those from the simulations, where the methodology using sample covariance did not outperform the base forecasts, whereas the shrinkage estimator achieved better performance.
 
-The application of multivariate reconciliation to the data of worker admissions and dismissals in Brazil demonstrates its advantage in real data, specially when used with the ARIMA model and the shrinkage approach.
+The application of multivariate reconciliation to the data of worker admissions and dismissals in Brazil demonstrates its advantage in real data, especially when used with the ARIMA model and the shrinkage approach.
 
 \section{Conclusion}
 \label{sec5}
 
-Current methods for forecast reconciliation in hierarchical time series do not allow the incorporation of multiple variables, requiring reconciliation to be applied separately to each variable and thus neglecting the correlation among multivariate series. This study presented a multivariate reconciliation methodology capable of considering both the relationships within the hierarchy as the correlation among multiple variables.
+Current methods for forecast reconciliation in hierarchical time series do not allow the incorporation of multiple variables, requiring reconciliation to be applied separately to each variable and thus neglecting the correlation among multivariate series. This study presented a multivariate reconciliation methodology capable of considering both the relationships within the hierarchy and the correlation among multiple variables.
 
-The proposed methodology uses two estimators for the covariance matrix of baseline forecast errors, $\bm{W}$, the sample covariance, and the shrinkage estimator. Additionally, three base forecasting models were evaluated: ARIMA, ETS, and VAR. To validate the approach, simulations and an application using real data were conducted.
+The proposed methodology uses two estimators for the covariance matrix of base forecast errors, $\bm{W}_h$: the sample covariance and the shrinkage estimator. Additionally, three base forecasting models were evaluated: ARIMA, ETS, and VAR. To validate the approach, simulations and an application using real data were conducted.
 
 The simulations considered nine scenarios, representing different combinations of the matrices $\bm{V}$ and $\bm{\Sigma}$, which determine the correlation between pairs of variables and between the series at the last level of the hierarchy, respectively.
 
 The results show that multivariate reconciliation using sample covariance performed better when applied to the ARIMA model, outperforming the base forecasts in most scenarios. However, for the ETS and VAR models, this approach did not show superior results compared to individual forecasts.
 
-The shrinkage approach, when combined with multivariate reconciliation, showed to be effective in obtaining coherent forecasts. For the three models evaluated (ARIMA, ETS, and VAR), this methodology outperformed the base forecasts in all scenarios. The ARIMA model stood out, with over 89\% of the $\RelRMSE^{\Base}$ values exceeding 0, indicating significant improvements over the base forecasts. Thus, the shrinkage approach proved to be more suitable for estimating $\bm{W}$ in multivariate reconciliation.
+The shrinkage approach, when combined with multivariate reconciliation, was shown to be effective in obtaining coherent forecasts. For the three models evaluated (ARIMA, ETS, and VAR), this methodology outperformed the base forecasts in all scenarios. The ARIMA model stood out, with over 89\% of the $\RelRMSE^{\Base}$ values exceeding 0, indicating significant improvements over the base forecasts. Thus, the shrinkage approach proved to be more suitable for estimating $\bm{W}_h$ in multivariate reconciliation.
 
 When comparing multivariate reconciliation with univariate reconciliation, both using the shrinkage approach, it was found that multivariate reconciliation yielded better or similar results to the univariate approach for almost all scenarios.
 
-Among the three base forecasting models evaluated, ARIMA and VAR produced the smallest forecast errors when applied the multivariate reconciliation with the shrinkage approach.
+Among the three base forecasting models evaluated, ARIMA and VAR produced the smallest forecast errors when multivariate reconciliation was applied with the shrinkage approach.
 
-The application of the proposed methodology to employment data in Brazil demonstrated that it also works with empirical data. For these data, multivariate reconciliation with the ARIMA model and the shrinkage approach outperformed the VAR model and sample covariance-based reconciliation. Moreover, the errors of the reconciled forecasts were smaller than those of the base forecasts.
+The application of the proposed methodology to employment data in Brazil demonstrated that it can also be effective with empirical data. For these data, multivariate reconciliation with the ARIMA model and the shrinkage approach outperformed the VAR model and sample covariance-based reconciliation. Moreover, the errors of the reconciled forecasts were smaller than those of the base forecasts.
 
 Finally, the simulations were computationally intensive, preventing testing the methodology with a larger number of variables. Additionally, different scenarios could be explored, including variations in the $\bm{\Phi}$ matrix of autoregressive coefficients used in the simulation. Thus, for future studies, it is suggested to apply this methodology to multivariate hierarchical time series with three or more variables, as well as to test new configurations for the matrices $\bm{V}$, $\bm{\Sigma}$, and $\bm{\Phi}$.
 
