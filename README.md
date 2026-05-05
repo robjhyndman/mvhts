@@ -20,7 +20,31 @@ pak::pak(c(
 
 A standard LaTeX distribution (e.g. TeX Live or MiKTeX) with `latexmk` is required to compile the paper. The paper uses the Elsevier `elsarticle` class, which is bundled in this repository.
 
-## Reproducing the results
+## Using the Makefile
+
+The simplest approach is to use `make` as the main interface for reproducibility. It handles dependencies and only rebuilds stale outputs.
+
+```bash
+make          # same as: make all
+```
+
+Individual targets can also be specified:
+
+| Target                 | Action                                                      |
+| ---------------------- | ----------------------------------------------------------- |
+| `make paper`           | Build `multivariate-reconciliation.pdf`                     |
+| `make supplement`      | Build `supplementary_material.pdf`                          |
+| `make tables`          | Regenerate all LaTeX tables in `Tabelas/`                  |
+| `make figures`         | Regenerate all figures in `Imagens/`                       |
+| `make data`            | Regenerate cached R outputs in `Saida/`                    |
+| `make simulation`      | Run simulation scripts only                                 |
+| `make application`     | Run application scripts only                                |
+| `make pdf-only`        | Compile PDFs without regenerating R outputs                 |
+| `make clean`           | Remove LaTeX auxiliary files                                |
+| `make clean-generated` | Remove generated caches, tables, and figures               |
+
+
+## Not using the Makefile
 
 Run the following R scripts. Each script caches its output in `Saida/` so it can be resumed if interrupted.
 
@@ -64,7 +88,7 @@ source("R/application_figures.R")
 
 Generates figures in `Imagens`
 
-## Compiling the paper
+### Compiling the paper
 
 After running the R scripts, compile the paper and supplementary material:
 
