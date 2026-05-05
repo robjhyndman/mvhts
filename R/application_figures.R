@@ -134,85 +134,89 @@ save_cropped_pdf(p, "fig_emprego_uf.pdf", width = 9, height = 12)
 # Plot 4 — Map: location of Brazilian regions and states
 # ============================================================
 
-uf <- read_state(year = 2020) |>
-  left_join(
-    state_meta |>
-      select(abbrev_state = UF, Região) |>
-      left_join(region_meta, by = "Região"),
-    by = "abbrev_state"
-  )
+# geobr code is fragile and a little slow, so only run this if the file doesn't already exist. If you need to re-run it, just delete the mapa_reg.pdf file and run this section again.
+if (!fs::file_exists(here::here("Imagens", "mapa_reg.pdf"))) {
+  brazilian_states <- geobr::read_state(year = 2020, cache = FALSE)
+  uf <- brazilian_states |>
+    left_join(
+      state_meta |>
+        select(abbrev_state = UF, Região) |>
+        left_join(region_meta, by = "Região"),
+      by = "abbrev_state"
+    )
 
-world <- ne_countries(scale = "medium", returnclass = "sf")
-world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
-world_points$name[world_points$name == "Brazil"] <- NA
+  world <- ne_countries(scale = "medium", returnclass = "sf")
+  world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
+  world_points$name[world_points$name == "Brazil"] <- NA
 
-p <- ggplot() +
-  geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
-  geom_sf(data = uf, aes(fill = region_label), color = "#e6e7e8") +
-  scale_fill_manual(
-    values = region_colors,
-    name = "Region",
-    breaks = names(region_colors)
-  ) +
-  geom_sf_text(
-    data = uf,
-    aes(label = abbrev_state),
-    size = 3.3,
-    color = "#e6e7e8",
-    fontface = "bold"
-  ) +
-  geom_text(
-    data = world_points,
-    aes(x = X, y = Y, label = name),
-    color = "#9f9f9f",
-    fontface = "bold",
-    check_overlap = FALSE
-  ) +
-  annotate(
-    geom = "text",
-    x = -33,
-    y = -17.5,
-    label = "Atlantic",
-    fontface = "italic",
-    color = "#3a739c",
-    size = 5.5
-  ) +
-  annotate(
-    geom = "text",
-    x = -33,
-    y = -19,
-    label = "Ocean",
-    fontface = "italic",
-    color = "#3a739c",
-    size = 5.5
-  ) +
-  annotate(
-    geom = "text",
-    x = -74,
-    y = -21.5,
-    label = "Pacific",
-    fontface = "italic",
-    color = "#3a739c",
-    size = 5.5
-  ) +
-  annotate(
-    geom = "text",
-    x = -74,
-    y = -23,
-    label = "Ocean",
-    fontface = "italic",
-    color = "#3a739c",
-    size = 5.5
-  ) +
-  labs(x = "", y = "") +
-  coord_sf(xlim = c(-75, -30), ylim = c(-35, 5)) +
-  theme_bw() +
-  theme(
-    panel.background = element_rect(fill = "#d7f9f8"),
-    legend.position = c(.9, .13),
-    legend.background = element_rect(fill = "transparent"),
-    legend.key.size = unit(0.6, "cm"),
-    panel.grid.major = element_line(color = "#dadad9")
-  )
+  p <- ggplot() +
+    geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
+    geom_sf(data = uf, aes(fill = region_label), color = "#e6e7e8") +
+    scale_fill_manual(
+      values = region_colors,
+      name = "Region",
+      breaks = names(region_colors)
+    ) +
+    geom_sf_text(
+      data = uf,
+      aes(label = abbrev_state),
+      size = 3.3,
+      color = "#e6e7e8",
+      fontface = "bold"
+    ) +
+    geom_text(
+      data = world_points,
+      aes(x = X, y = Y, label = name),
+      color = "#9f9f9f",
+      fontface = "bold",
+      check_overlap = FALSE
+    ) +
+    annotate(
+      geom = "text",
+      x = -33,
+      y = -17.5,
+      label = "Atlantic",
+      fontface = "italic",
+      color = "#3a739c",
+      size = 5.5
+    ) +
+    annotate(
+      geom = "text",
+      x = -33,
+      y = -19,
+      label = "Ocean",
+      fontface = "italic",
+      color = "#3a739c",
+      size = 5.5
+    ) +
+    annotate(
+      geom = "text",
+      x = -74,
+      y = -21.5,
+      label = "Pacific",
+      fontface = "italic",
+      color = "#3a739c",
+      size = 5.5
+    ) +
+    annotate(
+      geom = "text",
+      x = -74,
+      y = -23,
+      label = "Ocean",
+      fontface = "italic",
+      color = "#3a739c",
+      size = 5.5
+    ) +
+    labs(x = "", y = "") +
+    coord_sf(xlim = c(-75, -30), ylim = c(-35, 5)) +
+    theme_bw() +
+    theme(
+      panel.background = element_rect(fill = "#d7f9f8"),
+      legend.position = c(.9, .13),
+      legend.background = element_rect(fill = "transparent"),
+      legend.key.size = unit(0.6, "cm"),
+      panel.grid.major = element_line(color = "#dadad9")
+    )
 
-save_cropped_pdf(p, "mapa_reg.pdf", width = 9, height = 9)
+  save_cropped_pdf(p, "mapa_reg.pdf", width = 9, height = 9)
+}
