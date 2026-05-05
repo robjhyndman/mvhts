@@ -1,6 +1,9 @@
 library(testthat)
 library(dplyr)
 library(tsibble)
+library(fable)
+library(tibble)
+library(tidyr)
 
 source(here::here("R/helpers.R"))
 source(here::here("R/reconcile.R"))
