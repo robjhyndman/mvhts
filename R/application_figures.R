@@ -146,17 +146,23 @@ if (!fs::file_exists(here::here("Imagens", "mapa_reg.pdf"))) {
     )
 
   world <- ne_countries(scale = "medium", returnclass = "sf")
+  # Extract centroid coordinates of each country (for labeling)
   world_points <- cbind(world, st_coordinates(st_centroid(world$geometry)))
+  # Remove label for Brazil to avoid overlapping with the main map
   world_points$name[world_points$name == "Brazil"] <- NA
 
   p <- ggplot() +
+    # Background world map
     geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
+    # Brazilian states filled by region
     geom_sf(data = uf, aes(fill = region_label), color = "#e6e7e8") +
+    # Manual color palette for the five Brazilian regions
     scale_fill_manual(
       values = region_colors,
       name = "Region",
       breaks = names(region_colors)
     ) +
+    # Add state abbreviations on the map
     geom_sf_text(
       data = uf,
       aes(label = abbrev_state),
@@ -164,6 +170,7 @@ if (!fs::file_exists(here::here("Imagens", "mapa_reg.pdf"))) {
       color = "#e6e7e8",
       fontface = "bold"
     ) +
+    # Add country names around Brazil
     geom_text(
       data = world_points,
       aes(x = X, y = Y, label = name),
@@ -171,6 +178,7 @@ if (!fs::file_exists(here::here("Imagens", "mapa_reg.pdf"))) {
       fontface = "bold",
       check_overlap = FALSE
     ) +
+    # Annotate oceans
     annotate(
       geom = "text",
       x = -33,
@@ -207,7 +215,9 @@ if (!fs::file_exists(here::here("Imagens", "mapa_reg.pdf"))) {
       color = "#3a739c",
       size = 5.5
     ) +
+    # Remove axis labels
     labs(x = "", y = "") +
+    # Adjust map window to focus on South America and Brazil
     coord_sf(xlim = c(-75, -30), ylim = c(-35, 5)) +
     theme_bw() +
     theme(
