@@ -88,7 +88,7 @@ source("R/application_figures.R")
 
 Generates figures in `Imagens`
 
-### Compiling the paper
+### 3. Compiling the paper and supplementary material
 
 After running the R scripts, compile the paper and supplementary material:
 
