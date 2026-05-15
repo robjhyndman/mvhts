@@ -296,7 +296,7 @@ Then, proceed as follows to simulate a realization of this structure:
   \item Unstack these vectors into matrices $\bm{E}_1, \dots, \bm{E}_{T+H}$, each of size $n_b \times m$;
   \item Simulate $\bm{b}_{i,t}$ using \eqref{eq:b_it}, where $\bm{\varepsilon}_{i,t}=\bm{E}_{t,i\cdot}^\prime$, $i=1,\dots,n_b$;
   \item Combine the $m$-vectors $\bm{b}_{i,t}$ in a matrix $\bm{B}_t$, of size $n_b \times m$, and apply $\vetor(\bm{B}_t)$;
-  \item Create $\bm{Y}_t$ using the $(\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t)$ operation, seen in \eqref{eq:vec}.
+  \item Apply \eqref{eq:vec} to create $\bm{Y}_t$ using the $(\bm{I}_m \otimes \bm{S})\vetor(\bm{B}_t)$ operation.
 \end{enumerate}
 
 We conducted a simulation for a bivariate series ($m = 2$) with the same hierarchical structure as shown in Figure \ref{fig:HTS_M.ex}. Different structures were tested for the matrices $\bm{V}$ and $\bm{\Sigma}$. For $\bm{V}$, we can consider the following three cases: there is no correlation between the series at each node; there exists a positive correlation between series; there exists a negative correlation between series. For $\bm{\Sigma}$, we can consider the following three cases: there is no correlation between nodes; there is a positive correlation between nodes connected in the hierarchy; or there is a negative correlation between nodes connected in the hierarchy. Considering these structures, we specify the following matrices:
