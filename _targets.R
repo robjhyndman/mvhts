@@ -96,5 +96,18 @@ list(
       batch = exp2_grid$batch
     ),
     pattern = map(exp2_grid)
-  )
+  ),
+
+  # Application: Brazilian admissions and dismissals, 2007-2019
+  # (R/application_analysis.R, R/application_prob.R)
+  tar_target(app_origin_list, app_origins(emprego)),
+  tar_target(
+    app_results,
+    app_origin(emprego, S_brazil, app_origin_list, K = 1000),
+    pattern = map(app_origin_list),
+    iteration = "list"
+  ),
+  tar_target(app_point, dplyr::bind_rows(purrr::map(app_results, "point"))),
+  tar_target(app_prob_scores, dplyr::bind_rows(purrr::map(app_results, "prob"))),
+  tar_target(app_diag, app_diagnostic(emprego, S_brazil, B = 999))
 )
