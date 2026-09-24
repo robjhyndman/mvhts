@@ -42,3 +42,6 @@ rubber.cache
 .positai
 .claude/
 CLAUDE.md
+
+# Raw PDET microdata (downloaded by R/pdet_download.R)
+Dados/pdet/

@@ -7,6 +7,8 @@
 #   make tables       Regenerate all LaTeX table fragments.
 #   make figures      Regenerate generated figures.
 #   make data         Regenerate cached simulation/application R outputs.
+#   make raw-data     Download raw CAGED microdata from PDET (several hours).
+#   make emprego      Rebuild Dados/emprego_uf.csv from the raw microdata.
 #   make clean        Remove LaTeX auxiliary files.
 #   make clean-generated
 #                     Remove generated R caches, tables, and figures listed below.
@@ -17,7 +19,7 @@ R := Rscript --vanilla
 LATEXMK := latexmk
 LATEXMKFLAGS := -pdf -interaction=nonstopmode -halt-on-error
 
-.PHONY: all pdf paper supplement data simulation application tables sim-tables app-tables figures sim-figures app-figures pdf-only clean clean-latex clean-generated help
+.PHONY: all pdf paper supplement data raw-data emprego simulation application tables sim-tables app-tables figures sim-figures app-figures pdf-only clean clean-latex clean-generated help
 
 all: pdf
 
@@ -109,6 +111,20 @@ Saida Tabelas Imagens:
 	mkdir -p $@
 
 # -----------------------------------------------------------------------------
+# Employment data from raw PDET microdata
+# Dados/emprego_uf.csv is tracked by git, so the slow download is only needed
+# to rebuild it. It is not a prerequisite of the other targets.
+# -----------------------------------------------------------------------------
+
+EMPREGO := Dados/emprego_uf.csv
+
+raw-data:
+	$(R) R/pdet_download.R
+
+emprego:
+	$(R) R/pdet_extract.R
+
+# -----------------------------------------------------------------------------
 # Cached data/model outputs
 # -----------------------------------------------------------------------------
 
@@ -121,7 +137,7 @@ $(SIM_RDS) &: $(SIM_SCRIPTS) | Saida
 
 application: $(APP_RDS)
 
-$(APP_RDS): $(APP_SCRIPTS) Dados/Dados_emprego_rgi.csv | Saida
+$(APP_RDS): $(APP_SCRIPTS) $(EMPREGO) | Saida
 	$(R) R/application.R
 
 # -----------------------------------------------------------------------------
@@ -155,7 +171,7 @@ $(SIM_FIGS) &: R/simulation_figures.R R/simulation_setup.R R/simulation_function
 
 app-figures: $(APP_FIGS)
 
-$(APP_FIGS) &: R/application_figures.R R/application_data.R Dados/Dados_emprego_rgi.csv | Imagens
+$(APP_FIGS) &: R/application_figures.R R/application_data.R $(EMPREGO) | Imagens
 	$(R) R/application_figures.R
 
 # -----------------------------------------------------------------------------
@@ -184,4 +200,4 @@ clean-generated:
 	rm -f $(SIM_FIGS) $(APP_FIGS)
 
 help:
-	@sed -n '1,18p' Makefile
+	@sed -n '1,14p' Makefile

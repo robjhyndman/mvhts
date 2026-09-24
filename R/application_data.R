@@ -1,34 +1,34 @@
 # Brazilian geographical meta data
 
 state_meta <- tibble::tribble(
-  ~UF  , ~State                , ~Região        ,
-  "AC" , "Acre"                , "Norte"        ,
-  "AL" , "Alagoas"             , "Nordeste"     ,
-  "AM" , "Amazonas"            , "Norte"        ,
-  "AP" , "Amapá"               , "Norte"        ,
-  "BA" , "Bahia"               , "Nordeste"     ,
-  "CE" , "Ceará"               , "Nordeste"     ,
-  "DF" , "Distrito Federal"    , "Centro-Oeste" ,
-  "ES" , "Espírito Santo"      , "Sudeste"      ,
-  "GO" , "Goiás"               , "Centro-Oeste" ,
-  "MA" , "Maranhão"            , "Nordeste"     ,
-  "MG" , "Minas Gerais"        , "Sudeste"      ,
-  "MS" , "Mato Grosso do Sul"  , "Centro-Oeste" ,
-  "MT" , "Mato Grosso"         , "Centro-Oeste" ,
-  "PA" , "Pará"                , "Norte"        ,
-  "PB" , "Paraíba"             , "Nordeste"     ,
-  "PE" , "Pernambuco"          , "Nordeste"     ,
-  "PI" , "Piauí"               , "Nordeste"     ,
-  "PR" , "Paraná"              , "Sul"          ,
-  "RJ" , "Rio de Janeiro"      , "Sudeste"      ,
-  "RN" , "Rio Grande do Norte" , "Nordeste"     ,
-  "RO" , "Rondônia"            , "Norte"        ,
-  "RR" , "Roraima"             , "Norte"        ,
-  "RS" , "Rio Grande do Sul"   , "Sul"          ,
-  "SC" , "Santa Catarina"      , "Sul"          ,
-  "SE" , "Sergipe"             , "Nordeste"     ,
-  "SP" , "São Paulo"           , "Sudeste"      ,
-  "TO" , "Tocantins"           , "Norte"
+  ~UF  , ~ibge , ~State                , ~Região        ,
+  "AC" ,    12 , "Acre"                , "Norte"        ,
+  "AL" ,    27 , "Alagoas"             , "Nordeste"     ,
+  "AM" ,    13 , "Amazonas"            , "Norte"        ,
+  "AP" ,    16 , "Amapá"               , "Norte"        ,
+  "BA" ,    29 , "Bahia"               , "Nordeste"     ,
+  "CE" ,    23 , "Ceará"               , "Nordeste"     ,
+  "DF" ,    53 , "Distrito Federal"    , "Centro-Oeste" ,
+  "ES" ,    32 , "Espírito Santo"      , "Sudeste"      ,
+  "GO" ,    52 , "Goiás"               , "Centro-Oeste" ,
+  "MA" ,    21 , "Maranhão"            , "Nordeste"     ,
+  "MG" ,    31 , "Minas Gerais"        , "Sudeste"      ,
+  "MS" ,    50 , "Mato Grosso do Sul"  , "Centro-Oeste" ,
+  "MT" ,    51 , "Mato Grosso"         , "Centro-Oeste" ,
+  "PA" ,    15 , "Pará"                , "Norte"        ,
+  "PB" ,    25 , "Paraíba"             , "Nordeste"     ,
+  "PE" ,    26 , "Pernambuco"          , "Nordeste"     ,
+  "PI" ,    22 , "Piauí"               , "Nordeste"     ,
+  "PR" ,    41 , "Paraná"              , "Sul"          ,
+  "RJ" ,    33 , "Rio de Janeiro"      , "Sudeste"      ,
+  "RN" ,    24 , "Rio Grande do Norte" , "Nordeste"     ,
+  "RO" ,    11 , "Rondônia"            , "Norte"        ,
+  "RR" ,    14 , "Roraima"             , "Norte"        ,
+  "RS" ,    43 , "Rio Grande do Sul"   , "Sul"          ,
+  "SC" ,    42 , "Santa Catarina"      , "Sul"          ,
+  "SE" ,    28 , "Sergipe"             , "Nordeste"     ,
+  "SP" ,    35 , "São Paulo"           , "Sudeste"      ,
+  "TO" ,    17 , "Tocantins"           , "Norte"
 )
 
 region_meta <- tibble::tribble(
@@ -42,13 +42,13 @@ region_meta <- tibble::tribble(
 )
 
 read_data <- function(state_meta, region_meta) {
-  Dados <- read.csv2(
-    here::here("Dados/Dados_emprego_rgi.csv"),
-    fileEncoding = "latin1"
-  ) |>
-    mutate(
-      Data = yearmonth(Data),
-      cod_rgi = as.character(cod_rgi)
+  # Built from raw PDET microdata by R/pdet_extract.R
+  Dados <- read.csv(here::here("Dados/emprego_uf.csv")) |>
+    transmute(
+      Data = yearmonth(month),
+      UF,
+      Admissões = admissions,
+      Demissões = dismissals
     )
 
   # ============================================================

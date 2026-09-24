@@ -20,6 +20,31 @@ pak::pak(c(
 
 A standard LaTeX distribution (e.g. TeX Live or MiKTeX) with `latexmk` is required to compile the paper. The paper uses the Elsevier `elsarticle` class, which is bundled in this repository.
 
+### Other tools
+
+`curl` and `7z` (p7zip) are needed only to rebuild the employment data from the raw microdata.
+
+## Employment data
+
+`Dados/emprego_uf.csv` holds monthly admissions and dismissals for the 27 Brazilian federative units. It is built entirely by script from the raw CAGED microdata published by PDET (Ministry of Labour and Employment):
+
+- 2007–2019: old CAGED, files `CAGEDEST_MMYYYY.7z`. PDET does not publish microdata for earlier years.
+- 2020–2023: Novo CAGED on-time declarations, files `CAGEDMOVYYYYMM.7z`.
+
+Records with no identified state (about 1% in Novo CAGED) are dropped.
+
+22 old-CAGED archives between 2008 and 2014 are damaged on the PDET server (listed in `R/pdet_download.R`). Those months are taken from `Dados/legacy/Dados_emprego_rgi.csv`, an earlier extract of the same data with its time order reversed within 2004–2010 and 2011–2019. The reversal is undone in code (`read_legacy()` in `R/pdet_extract.R`). For every intact month the remapped legacy file agrees with the raw microdata to within one record per state, and `R/test_data.R` checks this. The `source` column of `Dados/emprego_uf.csv` records where each month came from.
+
+To rebuild it:
+
+```bash
+make raw-data   # download ~5GB into Dados/pdet/ (not tracked; several hours, resumable)
+make emprego    # count admissions and dismissals by month and state
+Rscript -e 'testthat::test_file("R/test_data.R")'   # check national totals against IpeaData
+```
+
+`Dados/pdet_manifest.csv` records the size and MD5 checksum of every raw file used, since PDET occasionally re-issues files.
+
 ## Using the Makefile
 
 The simplest approach is to use `make` as the main interface for reproducibility. It handles dependencies and only rebuilds stale outputs.
@@ -74,7 +99,7 @@ Generates figures in `Imagens`
 source("R/application.R")
 ```
 
-Applies the methodology to the Brazilian employment data in `Dados/Dados_emprego_rgi.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`. Accuracy measures are saved to `Saida/app_relrmse.rds`.
+Applies the methodology to the Brazilian employment data in `Dados/emprego_uf.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`. Accuracy measures are saved to `Saida/app_relrmse.rds`.
 
 ```r
 source("R/application_tables.R")
