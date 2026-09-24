@@ -84,31 +84,46 @@ sim_var1 <- function(Phi, innov) {
 # ====================================================================
 
 sim_mvhts <- function(len_T, Phi, V, Sigma, start_year = 2000) {
+  if (NROW(Phi) != NROW(V)) {
+    stop("Phi must have the same number of rows as V")
+  }
+  n_b <- NROW(Sigma)
+  sim_mvhts_general(
+    len_T,
+    Phi_list = rep(list(Phi), n_b),
+    Omega = kronecker(Sigma, V),
+    start_year = start_year
+  )
+}
+
+# --------------------------------------------------------------------
+# General version: node i follows a VAR(1) with coefficient Phi_list[[i]],
+# and Omega is the (m n_b x m n_b) innovation covariance in node-major
+# order (variables vary fastest within each node). With a common Phi and
+# Omega = Sigma (x) V this is identical to sim_mvhts(), including the
+# random number stream.
+# --------------------------------------------------------------------
+sim_mvhts_general <- function(len_T, Phi_list, Omega, start_year = 2000) {
   if (len_T %% 4 != 0) {
     stop("len_T must be a multiple of 4 for quarterly indexing.")
   }
-
-  # Get dimensions
-  m <- NROW(V)
-  n_b <- NROW(Sigma)
-  if (NROW(Phi) != m) {
-    stop("Phi must have the same number of rows as V")
+  n_b <- length(Phi_list)
+  m <- NROW(Phi_list[[1]])
+  if (NROW(Omega) != m * n_b) {
+    stop("Omega must be (m n_b x m n_b)")
   }
-
-  # Covariance matrix for the whole system
-  W <- kronecker(Sigma, V)
 
   # Set up space for storing the simulation
   B <- array(dim = c(m, n_b, len_T))
 
-  # Generate noise with N(0,W) distribution
-  noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), W)
+  # Generate noise with N(0, Omega) distribution
+  noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), Omega)
   E <- array(t(noise), dim = c(m, n_b, len_T))
 
   # Generate bottom level series
   for (i in seq(n_b)) {
     B[, i, ] <- t(
-      sim_var1(Phi, innov = t(E[, i, ])) +
+      sim_var1(Phi_list[[i]], innov = t(E[, i, ])) +
         runif(1, 0, 4) * sin(2 * pi * seq(len_T) / 4)
     )
   }
