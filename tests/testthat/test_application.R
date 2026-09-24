@@ -39,6 +39,8 @@ test_that("psi weights reproduce fable's response to future innovations", {
     Psi <- psi_matrix(arima_psi(fit$m[[1]]$fit$model, h))
     expect_lt(max(abs(gen(e) - gen(rep(0, h)) - Psi %*% e)), 1e-8)
   }
+  # A single step has psi_0 = 1
+  expect_equal(arima_psi(fit$m[[1]]$fit$model, 1), 1)
 })
 
 test_that("wide_matrix orders columns as requested", {

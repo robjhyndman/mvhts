@@ -112,6 +112,9 @@ seasonal_poly <- function(coefs, s) {
 }
 
 arima_psi <- function(model, h) {
+  if (h == 1) {
+    return(1)
+  }
   arma <- model$arma # p, q, P, Q, s, d, D
   p <- arma[1]; q <- arma[2]; P <- arma[3]; Q <- arma[4]; s <- arma[5]; d <- arma[6]; D <- arma[7]
   cf <- model$coef
