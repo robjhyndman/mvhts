@@ -268,7 +268,8 @@ numbers_exp1 <- function(exp1_pop, exp1_summary, exp1_samp) {
     sepPenaltySmall = fmt(100 * (sep$ratio[sep$hierarchy == "small"] - 1), 1),
     sepPenaltyBrazil = fmt(100 * (sep$ratio[sep$hierarchy == "brazil"] - 1), 1),
     gainFthreeWeakBrazil = fmt(100 * (1 - weak$oracle_ratio), 1),
-    gainFthreeWeakBrazilEst = fmt(100 * (1 - weak$ratio), 1)
+    gainFthreeWeakBrazilEst = fmt(100 * (1 - weak$ratio), 1),
+    kappaNoiseSep = fmt(stats::median(exp1_samp$kappa_hat[exp1_samp$family == "F0" & exp1_samp$T %in% c(100, 200)]), 2)
   )
 }
 
