@@ -33,9 +33,9 @@ The second measure describes the value of the joint map. If $\bm{W}$ were the tr
 \end{equation}
 MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of Proposition~\ref{prop:equivalence} hold. The two measures differ in an important way. The gain from any reconciliation comes only from the incoherent component of the errors, so $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences. A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much.
 
-\subsection{Calibration}
+\subsection{Estimation and testing}
 
-Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are biased in finite samples. Sampling noise pushes them above zero even when the population covariance satisfies Proposition~\ref{prop:equivalence}. The shrinkage estimator pulls the other way, because its diagonal target has no cross-variable blocks (Section~\ref{sec:theory}), so it shrinks genuine departures towards zero. Figure~\ref{fig:noise} shows both effects: \todo{describe noise floor and crossing, from exp1 results}. The raw values of $\kappa$ and $\gamma$ therefore cannot be read on an absolute scale.
+Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are biased in finite samples. Sampling noise pushes them above zero even when the population covariance satisfies Proposition~\ref{prop:equivalence}. The shrinkage estimator pulls the other way, because its diagonal target has no cross-variable blocks (Section~\ref{sec:theory}), so it shrinks genuine departures towards zero. Figure~\ref{fig:noise} shows both effects. \todo{describe noise floor and crossing, from exp1 results} The estimates $\widehat\kappa$ and $\widehat\gamma$ are therefore useful as descriptions of what joint reconciliation would do with the estimated covariance, but their raw values cannot be read as evidence that the population conditions fail.
 
 \begin{figure}[!htb]
   \centering
@@ -44,18 +44,17 @@ Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are bia
   \label{fig:noise}
 \end{figure}
 
-We calibrate them with a parametric bootstrap that reproduces the estimation step:
-\begin{enumerate}
-  \item Estimate $\widehat{\bm{W}}$ from the $T$ residual vectors, and compute $\widehat\kappa$ and $\widehat\gamma$.
-  \item Form the null covariance $\bm{W}_0$, the nearest Kronecker approximation to $\widehat{\bm{W}}$, which satisfies Proposition~\ref{prop:equivalence}.
-  \item For $b = 1,\dots,B$, simulate $T$ vectors from $N(\bm{0}, \bm{W}_0)$, re-estimate the covariance with the same estimator, and compute $\kappa_b$ and $\gamma_b$.
-  \item Report $p$-values $(1 + \#\{\kappa_b \ge \widehat\kappa\})/(B+1)$ and similarly for $\gamma$.
-\end{enumerate}
-The null covariance is one member of the set on which $\kappa = \gamma = 0$. It is the natural choice because it is the separable matrix closest to the data, but other members of the null set would give somewhat different null distributions. Figure~\ref{fig:power} reports the size and power of both tests for the covariance families of Section~\ref{sec:simulation}. \todo{summarise size and power, from power results}
+A direct test of the conditions follows from the regression reading of Proposition~\ref{prop:equivalence}. Given its own incoherences $\bm{z}_j = \bm{C}\bm{e}_j$, the errors of variable $j$ are determined by their bottom-level part $\bm{e}_{j}^{b}$, since the aggregate errors equal $\bm{z}_j + \bm{A}\bm{e}_j^{b}$. Condition (d) says that, in the multivariate regression
+\begin{equation}\label{eq:test-regression}
+  \bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{B}_{jj}'\bm{z}_{j,t} + \sum_{k \ne j}\bm{B}_{jk}'\bm{z}_{k,t} + \bm{u}_{j,t},
+\end{equation}
+the other variables' incoherences add nothing: $\bm{B}_{jk} = \bm{0}$ for all $k \ne j$. This is a standard linear hypothesis in a multivariate regression with $n_b$ responses and $(m-1)n_a$ restrictions per response. We test it with Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution \citep{rao1951asymptotic}, applied to the one-step residuals of the base models. With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction. The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$, and it needs $T > n_b + m n_a + 1$.
+
+We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies Proposition~\ref{prop:equivalence} and is fitted to the data. Such procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error, and the regression test avoids simulation altogether. Figure~\ref{fig:power} reports its size and power for the covariance families of Section~\ref{sec:simulation}. \todo{summarise size and power, from power results}
 
 \begin{figure}[!htb]
   \centering
-  \includegraphics[width=\textwidth]{Imagens/gain_power.pdf}
-  \caption{Rejection rate at the 5\% level of the bootstrap test based on $\widehat\gamma$ ($B = 199$, 200 replications), by sample size.}
+  \includegraphics[width=\textwidth]{Imagens/test_power.pdf}
+  \caption{Rejection rate at the 5\% level of the test of condition (d), by sample size (1000 replications). For the separable and separable-plus-invisible covariances the rejection rate is the size of the test.}
   \label{fig:power}
 \end{figure}

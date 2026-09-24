@@ -161,18 +161,19 @@ tab_app_diag <- function(app_diag, file) {
   rows <- sprintf(
     "%s & %d & %s & %s & %s & %s & %s & %s & %s \\\\",
     toupper(app_diag$model), app_diag$T,
-    fmt(app_diag$kappa, 3), fmt(app_diag$kappa_null_q95, 3), fmt(app_diag$p_kappa, 3),
-    fmt(100 * app_diag$gain, 2), fmt(100 * app_diag$gain_null_q95, 2), fmt(app_diag$p_gain, 3),
-    fmt(100 * app_diag$incoherence, 1)
+    fmt(app_diag$kappa, 3), fmt(100 * app_diag$gain, 2),
+    fmt(app_diag$stat_adm, 2), fmt(app_diag$stat_dis, 2), fmt(app_diag$p_value, 3),
+    fmt(100 * app_diag$incoherence, 1), fmt(app_diag$kronecker_error, 3)
   )
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Application: diagnostics from the one-step residuals over 2007--2019. $\\widehat\\kappa$ and the plug-in gain $\\widehat\\gamma$ (\\%) with the 95th percentile of their bootstrap null distributions and $p$-values ($B = 999$), and the incoherent share of error variance (\\%).}",
+    sprintf("\\caption{Application: diagnostics from the one-step residuals over 2007--2019. Estimated $\\widehat\\kappa$ and plug-in gain $\\widehat\\gamma$ (\\%%); $F$ statistics ($%d$ and $%.0f$ degrees of freedom) for the other variable's incoherences in the regression of each variable's errors, and the Bonferroni $p$-value; incoherent share of error variance (\\%%); relative error of the nearest Kronecker product.}", app_diag$df1[1], app_diag$df2[1]),
     "\\label{tab:app-diag}",
     "\\begin{tabular}{lrrrrrrrr}",
     "\\hline",
-    "Base model & $T$ & $\\widehat\\kappa$ & 95\\% null & $p$ & $\\widehat\\gamma$ & 95\\% null & $p$ & Incoh. \\\\",
+    " & & & & \\multicolumn{2}{c}{$F$} & & & \\\\",
+    "Base model & $T$ & $\\widehat\\kappa$ & $\\widehat\\gamma$ & Adm. & Dis. & $p$ & Incoh. & Kron. \\\\",
     "\\hline",
     rows,
     "\\hline",

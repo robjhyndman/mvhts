@@ -41,6 +41,7 @@ list(
     pattern = map(exp1_scenarios)
   ),
   tar_target(exp1_summary, exp1_sample_summary(exp1_samp)),
+  tar_target(num_exp1, numbers_exp1(exp1_pop, exp1_summary, exp1_samp)),
   tar_target(fig_gain, fig_exp1_gain(exp1_pop, "Imagens/exp1_gain.pdf"), format = "file"),
   tar_target(
     fig_samplesize,
@@ -64,13 +65,11 @@ list(
       power_scenarios$family,
       power_scenarios$dial,
       power_scenarios$T,
-      reps = 200,
-      B = 199
+      reps = 1000
     ),
     pattern = map(power_scenarios)
   ),
-  tar_target(fig_power_kappa, fig_kappa_power(power, "Imagens/kappa_power.pdf", "kappa"), format = "file"),
-  tar_target(fig_power_gain, fig_kappa_power(power, "Imagens/gain_power.pdf", "gain"), format = "file"),
+  tar_target(fig_power, fig_kappa_power(power, "Imagens/test_power.pdf"), format = "file"),
 
   # Experiment 2: time-series DGPs with fitted base models (R/experiment2.R)
   tar_target(exp2_scenario_list, exp2_scenarios()),
@@ -109,5 +108,8 @@ list(
   ),
   tar_target(app_point, dplyr::bind_rows(purrr::map(app_results, "point"))),
   tar_target(app_prob_scores, dplyr::bind_rows(purrr::map(app_results, "prob"))),
-  tar_target(app_diag, app_diagnostic(emprego, S_brazil, B = 999))
+  tar_target(app_diag, app_diagnostic(emprego, S_brazil)),
+
+  # In-text numbers for the paper (R/results.R)
+  tar_target(numbers, write_numbers(c(num_exp1), "Tabelas/numbers.tex"), format = "file")
 )

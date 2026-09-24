@@ -218,11 +218,10 @@ fig_kappa_noise <- function(exp1_samp, file) {
 }
 
 # --------------------------------------------------------------------
-# Figure: rejection rate of the bootstrap test of kappa = 0
+# Figure: rejection rate of the likelihood ratio test of condition (d)
 # --------------------------------------------------------------------
-fig_kappa_power <- function(power, file, stat = "kappa") {
+fig_kappa_power <- function(power, file) {
   df <- power |>
-    dplyr::filter(statistic == stat) |>
     dplyr::group_by(hierarchy, family) |>
     dplyr::mutate(strength = paste0("s", dplyr::dense_rank(dial))) |>
     dplyr::ungroup() |>

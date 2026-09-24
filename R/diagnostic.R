@@ -1,53 +1,25 @@
 # ====================================================================
-# The kappa diagnostic in finite samples: bootstrap calibration and power
+# The diagnostic in finite samples
 #
-# kappa_hat is biased upwards: under an exactly separable truth it is
-# far from zero at realistic sample sizes. So the observed value is
-# compared with its distribution under a separable null fitted to the
-# data, simulated at the same sample size and re-estimated with the same
-# covariance estimator.
+# kappa_hat and the plug-in gain are biased in finite samples (upwards by
+# sampling noise, downwards by shrinkage), so they are reported as effect
+# sizes. Whether joint reconciliation can help at all is tested with a
+# likelihood ratio test of condition (d) of the proposition. (Bootstrap
+# calibration of kappa_hat was unreliable: any null generated from an
+# estimate of W inherits its estimation noise, which dominates when the
+# number of series is large relative to T.)
 # ====================================================================
 
-# Symmetrise and clip eigenvalues so a matrix is positive definite
-make_pd <- function(X, floor = 1e-8) {
-  X <- (X + t(X)) / 2
-  e <- eigen(X, symmetric = TRUE)
-  vals <- pmax(e$values, floor * max(e$values))
-  e$vectors %*% diag(vals) %*% t(e$vectors)
-}
-
-# Parametric bootstrap test that joint and separate reconciliation
-# coincide. Two statistics are calibrated from the same null draws:
-# kappa (how much the joint map leans on other variables' incoherences)
-# and the plug-in gain (how much MSE that is expected to save).
-# e: T x (m n) matrix of base forecast errors (variable-major columns).
-kappa_test <- function(e, S, m = 2, B = 999, estimator = shrinkage_cov) {
-  C <- make_C(S)
-  T <- NROW(e)
-  W_hat <- estimator(e)
-  obs <- c(kappa = kappa_mv(W_hat, C, m), gain = plugin_gain(W_hat, C, m))
-  W0 <- make_pd(nearest_kronecker(W_hat, m)$W)
-  null <- t(vapply(seq_len(B), \(b) {
-    W_b <- estimator(mvtnorm::rmvnorm(T, sigma = W0))
-    c(kappa = kappa_mv(W_b, C, m), gain = plugin_gain(W_b, C, m))
-  }, numeric(2)))
-  list(
-    kappa = obs[["kappa"]],
-    gain = obs[["gain"]],
-    null = null,
-    p_kappa = (1 + sum(null[, "kappa"] >= obs[["kappa"]])) / (B + 1),
-    p_gain = (1 + sum(null[, "gain"] >= obs[["gain"]])) / (B + 1)
-  )
-}
-
-# Rejection rates of both tests at level alpha for errors drawn from W
-kappa_power <- function(S, hierarchy, family, dial, T, reps = 200, B = 199, alpha = 0.05) {
+# Rejection rate of the likelihood ratio test (cross_test) at level alpha
+# for errors drawn from W, with the mean estimated kappa and plug-in gain
+kappa_power <- function(S, hierarchy, family, dial, T, reps = 1000, alpha = 0.05) {
   W <- exp1_covariance(S, family, dial)
-  p <- t(vapply(seq_len(reps), \(r) {
-    res <- kappa_test(mvtnorm::rmvnorm(T, sigma = W), S, B = B)
-    c(res$p_kappa, res$p_gain)
-  }, numeric(2)))
   C <- make_C(S)
+  res <- t(vapply(seq_len(reps), \(r) {
+    e <- mvtnorm::rmvnorm(T, sigma = W)
+    W_hat <- shrinkage_cov(e)
+    c(cross_test(e, S)$p_value, kappa_mv(W_hat, C, 2), plugin_gain(W_hat, C, 2))
+  }, numeric(3)))
   tibble::tibble(
     hierarchy = hierarchy,
     family = family,
@@ -56,10 +28,11 @@ kappa_power <- function(S, hierarchy, family, dial, T, reps = 200, B = 199, alph
     kappa = kappa_mv(W, C, 2),
     gain = plugin_gain(W, C, 2),
     reps = reps,
-    statistic = c("kappa", "gain"),
-    rejection = colMeans(p <= alpha)
-  ) |>
-    dplyr::mutate(rejection_se = sqrt(rejection * (1 - rejection) / reps))
+    rejection = mean(res[, 1] <= alpha),
+    rejection_se = sqrt(rejection * (1 - rejection) / reps),
+    kappa_hat = mean(res[, 2]),
+    gain_hat = mean(res[, 3])
+  )
 }
 
 # Scenarios for the size and power study: the separable null (size),
@@ -74,5 +47,54 @@ kappa_power_scenarios <- function() {
     ),
     hierarchy = c("small", "brazil"),
     T = c(100, 200, 500, 1000)
+  )
+}
+
+# --------------------------------------------------------------------
+# Likelihood ratio test of condition (d) of the proposition.
+#
+# MinT regresses each variable's errors on the incoherences. Given its
+# own incoherences z_j = C e_j, variable j's errors are determined by
+# their bottom-level part b_j, so condition (d) says that z_k (k != j)
+# adds nothing to the regression of b_j on z_j. That is a standard
+# multivariate linear hypothesis: in b_j = a + z_j B_j + z_k B_k + u,
+# test B_k = 0 with Wilks' lambda and Rao's F approximation. For more than two variables, all other variables'
+# incoherences are tested together. The m tests (one per variable) are
+# combined with a Bonferroni correction.
+# e: T x (m n) matrix of base forecast errors (variable-major columns).
+# --------------------------------------------------------------------
+cross_test <- function(e, S, m = 2) {
+  C <- make_C(S)
+  n <- NROW(S)
+  n_b <- NCOL(S)
+  n_a <- NROW(C)
+  T <- NROW(e)
+  z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
+  tests <- vapply(seq_len(m), \(j) {
+    Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
+    X_own <- cbind(1, z[[j]])
+    X_full <- cbind(X_own, do.call(cbind, z[-j]))
+    E <- crossprod(stats::lm.fit(X_full, Y)$residuals)
+    E0 <- crossprod(stats::lm.fit(X_own, Y)$residuals)
+    q <- NCOL(X_full) - NCOL(X_own)
+    nu <- T - NCOL(X_full)
+    lambda <- exp(as.numeric(determinant(E)$modulus - determinant(E0)$modulus))
+    # Rao's F approximation to Wilks' lambda (p = n_b responses, q
+    # hypothesis degrees of freedom, nu error degrees of freedom)
+    p <- n_b
+    a <- nu - (p - q + 1) / 2
+    b <- if (p^2 + q^2 - 5 > 0) sqrt((p^2 * q^2 - 4) / (p^2 + q^2 - 5)) else 1
+    df1 <- p * q
+    df2 <- a * b - (p * q - 2) / 2
+    lb <- lambda^(1 / b)
+    stat <- (1 - lb) / lb * df2 / df1
+    c(stat = stat, df1 = df1, df2 = df2, p = stats::pf(stat, df1, df2, lower.tail = FALSE))
+  }, numeric(4))
+  list(
+    stat = tests["stat", ],
+    df1 = tests["df1", ],
+    df2 = tests["df2", ],
+    p_each = tests["p", ],
+    p_value = min(1, m * min(tests["p", ]))
   )
 }

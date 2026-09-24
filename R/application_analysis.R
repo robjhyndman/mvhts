@@ -128,29 +128,30 @@ app_origins <- function(emprego, min_train = 108, last = tsibble::yearmonth("201
 # --------------------------------------------------------------------
 # Diagnostic on the full-sample residuals of each base model
 # --------------------------------------------------------------------
-app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec"), B = 999) {
+app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
   cols <- app_cols(S)
   train <- emprego |> dplyr::filter(time <= last)
   fits <- app_fit(train)
   C <- make_C(S)
+  C_star <- stack_matrix(C, 2)
   purrr::imap(fits, \(fit, name) {
     res <- app_residuals(fit, name, cols)
-    test <- kappa_test(res, S, B = B)
+    test <- cross_test(res, S)
     W_hat <- shrinkage_cov(res)
     tibble::tibble(
       model = name,
       T = NROW(res),
-      kappa = test$kappa,
-      gain = test$gain,
-      p_kappa = test$p_kappa,
-      p_gain = test$p_gain,
-      kappa_null_median = stats::median(test$null[, "kappa"]),
-      kappa_null_q95 = stats::quantile(test$null[, "kappa"], 0.95),
-      gain_null_median = stats::median(test$null[, "gain"]),
-      gain_null_q95 = stats::quantile(test$null[, "gain"], 0.95),
+      kappa = kappa_mv(W_hat, C, 2),
+      gain = plugin_gain(W_hat, C, 2),
+      stat_adm = test$stat[1],
+      stat_dis = test$stat[2],
+      df1 = test$df1[1],
+      df2 = test$df2[1],
+      p_adm = test$p_each[1],
+      p_dis = test$p_each[2],
+      p_value = test$p_value,
       kronecker_error = nearest_kronecker(W_hat, 2)$rel_error,
-      incoherence = sum(diag(stack_matrix(C, 2) %*% W_hat %*% t(stack_matrix(C, 2)))) / sum(diag(W_hat)),
-      null = list(test$null)
+      incoherence = sum(diag(C_star %*% W_hat %*% t(C_star))) / sum(diag(W_hat))
     )
   }) |>
     dplyr::bind_rows()

@@ -166,3 +166,15 @@ test_that("plug-in gain is zero exactly when kappa is zero, and positive otherwi
   W1 <- w_node_varying(sigma_one(), seq(-0.6, 0.9, length.out = n))
   expect_gt(plugin_gain(W1, C, m), 1e-4)
 })
+
+test_that("cross_test holds its size under the null and detects strong departures", {
+  source(here::here("R/helpers.R"))
+  source(here::here("R/experiment1.R"))
+  source(here::here("R/diagnostic.R"))
+  set.seed(10)
+  H <- small_hierarchy()
+  p_null <- replicate(300, cross_test(mvtnorm::rmvnorm(200, sigma = exp1_covariance(H, "F1", 2)), H)$p_value)
+  expect_lt(abs(mean(p_null <= 0.05) - 0.05), 0.04)
+  p_alt <- cross_test(mvtnorm::rmvnorm(500, sigma = exp1_covariance(H, "F3", 0.6)), H)$p_value
+  expect_lt(p_alt, 1e-4)
+})
