@@ -1,4 +1,27 @@
+% Section 6 draft: application. Numbers are macros from Tabelas/numbers.tex.
+
 \section{Application: admissions and dismissals in Brazil}
 \label{sec:application}
 
-\todo[inline]{Application.}
+\subsection{Data}
+
+Brazil's General Register of Employed and Unemployed (CAGED) records every admission and dismissal of formally employed workers. The two variables share a geographical hierarchy: 26 states and the Federal District (27 federative units) aggregate to five regions, which aggregate to the country (Figure~\ref{fig:mapa_reg_uf}). With two variables this gives $m = 2$, $n = 33$ and $n_b = 27$, so 66 series in all.
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=14.5cm]{Imagens/mapa_reg.pdf}
+  \caption{Brazilian regions and federative units.}
+  \label{fig:mapa_reg_uf}
+\end{figure}
+
+We built the monthly series directly from the CAGED microdata published by the Labour Statistics Dissemination Program (PDET) of the Ministry of Labour and Employment, counting admissions and dismissals by federative unit and month. Records without an identified federative unit (fewer than 0.1\% before 2020) are excluded. Microdata are available from January 2007. Twenty-two of the 156 monthly archives for 2007--2019 are damaged on the PDET server; for those months we used an earlier extract of the same data, which agrees with the microdata to within one record in every federative unit for all intact months. National totals agree with the official series published by IpeaData. The code that downloads the microdata and builds the series is part of the replication material.
+
+In January 2020 CAGED was replaced by the Novo CAGED, which draws on different administrative sources, and the COVID-19 pandemic began soon after. Both events change the joint behaviour of admissions and dismissals, and would contaminate an estimate of their forecast error covariance. Our main analysis therefore uses January 2007 to December 2019 (156 months). \todo{Robustness with 2020--2023 in the supplement, if done.}
+
+\todo[inline]{Figure of the data (national totals and regions).}
+
+\subsection{Forecasting set-up}
+
+We forecast all 66 series from rolling origins with an expanding window, starting with 108 months of training data (January 2007 to December 2015) and moving the origin forward one month at a time. This gives 48 origins, and 37 of them have all twelve horizons within the sample. Base forecasts come from an ARIMA model selected automatically for each series \citep{hyndman2021forecasting} and from a bivariate VAR for admissions and dismissals at each node. We compare the base forecasts with OLS, structurally weighted (WLS) and MinT reconciliation. MinT is applied separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate, which isolates the effect of the cross-variable blocks from that of the different shrinkage intensities.
+
+\todo[inline]{Results: accuracy (Table~\ref{tab:app-accuracy-arima}), diagnostic (Table~\ref{tab:app-diag}), net change (Table~\ref{tab:app-prob}).}
