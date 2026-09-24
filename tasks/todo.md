@@ -451,33 +451,48 @@ Phase 1 findings:
   the published SMA details for Girolimetto & Di Fonzo are missing. All three
   are marked TODO in `cas-refs.bib`.
 
-### Phase 2: Experiment 1
-- [ ] P2.1 Part (a) population grid, then Fig 4. **Checkpoint:** zero gain on
-      F0, F1 and F4 to machine precision, and gain increasing with kappa on F2
-      and F3.
-- [ ] P2.2 Part (b) finite sample, then Fig 5. **Checkpoint:** a clear
-      crossover `T*` that grows as kappa falls.
+### Phase 2: Experiment 1 (done)
+- [x] P2.1 Population grid, and Fig `Imagens/exp1_gain.pdf`. Checkpoint passed:
+      gain is exactly 0 for F0, F1 and F4, and rises with kappa for F2 and F3,
+      to at most about 16%.
+- [x] P2.2 Finite-sample study (1000 reps; T from 50 to 2000), and Fig
+      `Imagens/exp1_samplesize.pdf`. Under separability, joint is 1.7–2.9% worse
+      at T = 50. Weak departures are not recovered even at T = 2000.
+- Design change: covariances are built from a coherent part plus an
+  incoherent part. With diagonal incoherent noise, joint = separate exactly
+  when `rho_i sqrt(lambda_2i/lambda_1i)` is constant across series.
 
-### Phase 3: diagnostic tooling
-- [ ] P3.1 Settle the scale convention and verify it.
-- [ ] P3.2 Bootstrap null and power on the Experiment 1 families. Check that
-      the size is correct under F0 (rejection rate about 5%).
-- [ ] P3.3 Figs 2 and 3.
+### Phase 3: diagnostic (done, redesigned)
+- [x] Scale convention: standardise each variable by the square root of the
+      mean diagonal of its block (tested).
+- [x] **Plug-in gain gamma added.** Kappa alone is not enough: in Experiment 2,
+      kappa is 0.65–0.97 but the gain is under 2.5%, because only the small
+      incoherent component can be improved.
+- [x] **Bootstrap dropped.** The Kronecker-null and decoupling bootstraps were
+      mis-sized in the 33-series hierarchy, because any null built from W-hat
+      inherits its noise. Replaced by a likelihood ratio test of condition (d):
+      regress each variable's bottom-level errors on its own and the other
+      variable's incoherences, using Wilks' lambda with Rao's F and a
+      Bonferroni combination. Size is 4–6% at T = 100 and 200.
+- [ ] Figs `kronecker_vs_gain.pdf`, `kappa_noise.pdf` and `test_power.pdf`:
+      built by targets. The power target reruns with the LR test.
 
-### Phase 4: Experiment 2 (expensive; run in the background)
-- [ ] P4.1 Implement the new DGP scenarios, and run a smoke test with
-      `nsim = 20`.
-- [ ] P4.2 Compute population kappa per scenario. **Checkpoint:** kappa is
-      about 0 for the negative controls. If the non-separable scenarios give
-      tiny kappa, trigger the contingency in Section 3.
-- [ ] P4.3 Full runs, then Table 1.
+### Phase 4: Experiment 2 (running)
+- [x] P4.1–P4.2 Scenarios and exact population W (population-optimal AR(20)
+      forecasts). Controls are exactly coherent (incoherence 1e-16). The
+      non-separable scenarios have an incoherent share of 0.4–1.5%, kappa of
+      0.65–0.97, and a gain of 0.5–2.4%.
+- [ ] P4.3 Fitted ARIMA/VAR runs (6 scenarios × T in {108, 400} × 500 reps),
+      then Table `tab:exp2`.
 
-### Phase 5: application
-- [ ] P5.1 Update the data window and base forecasts, and add the uv, OLS and
-      WLS baselines. Produce Table 2.
-- [ ] P5.2 Diagnostic on the real ARIMA residuals: Table 3 and Fig 8.
-- [ ] P5.3 Net-change probabilistic comparison: Table 4.
-- [ ] P5.4 Robustness runs for the supplement.
+### Phase 5: application (code done; runs after Experiment 2)
+- [x] P5.1–P5.3 code: 48 origins, methods base / OLS / WLS / separate /
+      sep_blocks / joint, the LR diagnostic, and net-change CRPS from
+      psi-weight sample paths. Point forecast + Psi e is exact.
+      `fabletools::generate()` starts from a slightly wrong mean, so it is not
+      used.
+- [ ] Run, then write Tables 2–4 and Section 6.
+- [ ] P5.4 Robustness (2007–2023, ETS) for the supplement.
 
 ### Phase 6: writing
 Order: Sec 3, then Sec 4, then Sec 5, then Sec 6, then Sec 2, then Sec 7, then

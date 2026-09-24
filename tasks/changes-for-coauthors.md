@@ -25,3 +25,15 @@
   joint and separate reconciliation coincide. The known results
   (invariance, separability, OLS) appear as credited corollaries. A second
   proposition shows why the old simulation design could not show a difference.
+- **New simulations.** Experiment 1 simulates forecast errors directly, so the
+  gain from joint reconciliation can be computed exactly; Experiment 2 replaces
+  the old nine-scenario design with separable controls and three
+  non-separable scenarios, using fitted ARIMA and VAR models. The old design
+  could not show any difference (Proposition 2).
+- **A diagnostic for real data.** Two effect sizes: kappa (how much the joint
+  map uses the other variable) and the plug-in gain (how much it would save).
+  Plus a likelihood ratio test of whether joint reconciliation can help at all.
+  Bootstrap calibration was tried and dropped because it was mis-sized.
+- **Application redesigned.** 48 rolling origins over 2007–2019, univariate
+  and joint MinT compared with base, OLS and WLS, the diagnostic on the real
+  residuals, and a probabilistic comparison for net employment change.
