@@ -11,6 +11,32 @@ This plan builds on `tasks/revision-abstract-intro.md` (the theory, draft
 abstract and intro, and the kappa diagnostic). It does not repeat that material;
 it says what to build, in what order, and how to check each step.
 
+## Open items for Rob (as of 25 September 2026)
+
+A first full draft is built (`make`: 17-page paper plus supplement). Every
+number comes from the pipeline. Decisions needed:
+
+1. **Title (D5 revisited).** The paper now argues that separability is the
+   wrong target, and its positive result is about linear combinations (net
+   change). "Separability and the limits of multivariate forecast
+   reconciliation" still fits the negative half. An alternative is "When
+   does multivariate forecast reconciliation help?".
+2. **Kappa's standardisation.** It currently uses the mean diagonal of each
+   variable's block of W, which changes when coherent components are added
+   (the text now says so). Standardising by the mean diagonal of `C W_jj C'`
+   (the incoherence variances) would make kappa's value fully invariant. The
+   cost is about 8 h of pipeline reruns (Experiment 2 recomputes kappa_hat).
+   Recommended if the diagnostic is kept as a headline.
+3. **VAR base models.** The per-state VARs have no seasonal terms, and their
+   residuals are autocorrelated in 95% of series (so the LR test is invalid
+   for them). Keep them in the main text (D4) with the caveat, or move them to
+   the supplement.
+4. **D6 authorship.** Still open.
+5. **P7.1.** The Journal of Forecasting author guidelines could not be
+   fetched (the Wiley page is bot-protected): check length and format.
+6. **Not done:** the 2007–2023 robustness check (P5.4); the editing and
+   deslop pass (P6.9); the arXiv replacement (P7.6).
+
 ---
 
 ## 0. Two findings from planning that change the design
