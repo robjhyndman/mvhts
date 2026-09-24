@@ -242,9 +242,65 @@ exploitable non-separability. Experiment 1 carries the main message either way.
 
 ---
 
-## 6. Code changes (file by file)
+## 6. Code changes
 
 Do everything on a branch; don't edit the current files on `main`.
+
+### 6.1 Tooling: uvr for packages, targets for the workflow
+
+**uvr** (installed: 0.4.6) replaces the README's `pak::pak()` list with a
+locked, per-project library.
+
+- `uvr init` creates `uvr.toml` (the manifest); `uvr add <pkgs>` resolves and
+  writes `uvr.lock` (exact versions and checksums); `uvr sync` installs exactly
+  the lockfile into `.uvr/library/`; `uvr run <script.R>` runs R with that
+  library.
+- Pin R 4.6.1 in `.r-version`.
+- Commit `uvr.toml`, `uvr.lock` and `.r-version`; git-ignore `.uvr/`.
+- Packages: fable, feasts, tsibble, dplyr, tidyr, purrr, tibble, stringr,
+  ggplot2, scales, here, fs, mvtnorm, tsDyn, sf, geobr, rnaturalearth,
+  jsonlite, testthat, targets, tarchetypes, crew. Use explicit packages rather
+  than the `fpp3` metapackage. Drop `fable.prophet` (loaded in
+  `R/simulation.R` but never used), and drop furrr, future and parallelly once
+  crew handles parallelism.
+- Check that `uvr run` works from the IDE and from `Rscript`, and how to pass
+  an expression (for example `targets::tar_make()`), before relying on it. If
+  it can't take an expression, add a one-line `run.R`.
+
+**targets** replaces the Makefile and the manual `.rds` caching in `Saida/`.
+
+- `_targets.R` sets options and calls `tar_source()` on `R/`. **`R/` must then
+  contain only function definitions:** scripts with top-level side effects
+  (`simulation.R`, `application.R`, the `*_tables.R` and `*_figures.R`
+  scripts) are replaced by targets, not ported line by line, since most are
+  rewritten in Phases 2–5 anyway.
+- **Tests move to `tests/testthat/`** (`test_data.R`, the new
+  `test_theory.R`, and whatever survives of `test.R` and `test2.R`).
+  Otherwise `tar_source()` would run them.
+- **Data:** `Dados/emprego_uf.csv` enters the pipeline as a
+  `format = "file"` target. The PDET download and extraction stay outside the
+  pipeline, because they take hours and depend on an external server. They
+  remain standalone scripts, run with `uvr run R/pdet_download.R` and
+  `uvr run R/pdet_extract.R`. Their `sys.nframe()` guards stop `tar_source()`
+  from running them.
+- **Simulations:** `tarchetypes::tar_map()` over scenarios and
+  `tar_rep()` batches over replications, executed in parallel by a
+  `crew_controller_local()`. targets gives each target its own seed
+  (`tar_option_set(seed = ...)`), so results do not depend on the number of
+  workers. This replaces `furrr`, `future` and `mclapply` in the simulation
+  code.
+- **Outputs:** tables (`Tabelas/*.tex`) and figures (`Imagens/*.pdf`) are
+  `format = "file"` targets. The paper and supplement PDFs are final targets
+  that run `latexmk` and depend on those files.
+- **Makefile:** removed once targets builds everything, so there is one
+  orchestrator. The `raw-data` and `emprego` targets become the two `uvr run`
+  commands above. Git-ignore `_targets/`, and delete `Saida/` once nothing
+  reads it.
+- **Workflow:** `uvr sync`, then `uvr run -e 'targets::tar_make()'` (or
+  `run.R`). `tar_visnetwork()` gives a dependency graph worth including in the
+  README.
+
+### 6.2 File by file
 
 - [x] Create branch `jf-rewrite` from `main` (the rewrite happens there; `main`
       keeps the pre-rewrite version).
@@ -252,16 +308,16 @@ Do everything on a branch; don't edit the current files on `main`.
       `G_matrix(W, C_star)`, `kappa(W, C_star, m, scale = TRUE)`,
       `nearest_kronecker(W, m, n)`, `pop_mse(M, W)`, and the family
       constructors F0–F4.
-- [ ] **New file `R/test_theory.R` (testthat):**
+- [ ] **New file `tests/testthat/test_theory.R`:**
   - The Theorem: mv = uv exactly when `G` is block diagonal (random `W`).
   - Corollary 1 for random `V` and `Sigma_0`.
   - Invariance to `S* K S*'`.
   - Corollary 2.
   - Kappa scale invariance under the chosen convention.
   - Proposition 3 (coherent population forecasts under node-invariant filters).
-- [ ] **New file `R/experiment1.R`:** parts (a) and (b), cached to
-      `Saida/exp1_*.rds`.
-- [ ] **New file `R/experiment1_figures.R`:** Figures 4 and 5.
+- [ ] **New file `R/experiment1.R`:** functions for parts (a) and (b), with
+      targets in `_targets.R`.
+- [ ] **New file `R/experiment1_figures.R`:** functions for Figures 4 and 5.
 - [ ] **`R/simulation_setup.R`:** add the Experiment 2 scenarios (node-varying
       `V_i`, `Sigma_A` / `Sigma_B`, `Phi_i`) and the `diag` Φ control.
 - [ ] **`R/simulation_functions.R`:**
@@ -286,10 +342,12 @@ Do everything on a branch; don't edit the current files on `main`.
 - [ ] **Tables and figures scripts:** rewrite `R/simulation_tables.R`,
       `R/application_tables.R` and `R/tables.R` for the new tables. Delete the
       generators for tables that are no longer used.
-- [ ] **`Makefile`:** add targets for exp1, kappa and netchange, and update the
-      table and figure lists.
-- [ ] **`README.md`:** update to match.
-- [ ] Remove or fold in `R/test.R` and `R/test2.R` if they are superseded.
+- [ ] **`_targets.R`:** targets for Experiments 1 and 2, the kappa diagnostic,
+      the application, net change, tables, figures and PDFs (see 6.1).
+- [ ] **`README.md`:** replace the Makefile and `pak` instructions with
+      `uvr sync` and `tar_make()`.
+- [ ] Move `R/test.R` and `R/test2.R` to `tests/testthat/`, or delete them if
+      superseded.
 
 ---
 
@@ -311,6 +369,18 @@ Do everything on a branch; don't edit the current files on `main`.
   kappa, the noise floor and the application *before* writing anything.
 - [ ] P0.4 Update `revision-abstract-intro.md` for §0.1 and §0.2, or write the
       update into the new Section 3 draft.
+- [ ] P0.5 **uvr:** `uvr init`, pin R, `uvr add` the package list (6.1), and
+      commit `uvr.toml`, `uvr.lock` and `.r-version`. **Checkpoint:** a fresh
+      `uvr sync` followed by `uvr run R/pdet_extract.R` reproduces
+      `Dados/emprego_uf.csv` byte for byte.
+- [ ] P0.6 **targets skeleton:** create `_targets.R` with `tar_source()`, crew
+      and seed options, and the data file target. Move the tests to
+      `tests/testthat/`. **Checkpoint:** `tar_make()` runs and
+      `tar_visnetwork()` shows the data target. The remaining targets are added
+      phase by phase, as each piece is written.
+- [ ] P0.7 Retire the old pipeline: delete the Makefile and `Saida/`, remove the
+      `pak` instructions, and update the README. Do this only when targets
+      covers everything still in use, so every commit leaves a working build.
 
 ### Phase 1: theory and tests
 - [ ] P1.1 Write `R/theory.R`.
@@ -373,11 +443,12 @@ the Introduction, then the Abstract.
 - [ ] P7.1 Check the Journal of Forecasting (Wiley) author guidelines: length,
       abstract limit, reference style, required statements (data availability,
       conflicts, funding), whether a template is required at first submission.
-      Convert from `elsarticle` accordingly and update the Makefile.
+      Convert from `elsarticle` accordingly and update the PDF targets.
 - [ ] P7.2 Supplement: rebuild `supplementary_material.tex` around the new
       tables.
-- [ ] P7.3 Reproducibility: run `make clean-generated && make` from a clean
-      checkout and confirm the PDFs rebuild.
+- [ ] P7.3 Reproducibility: from a fresh clone, run `uvr sync`, then
+      `tar_destroy()` and `tar_make()`, and confirm the PDFs rebuild with
+      identical numbers.
 - [ ] P7.4 Coauthor review round.
 - [ ] P7.5 Cover letter: the contribution in three sentences.
 - [ ] P7.6 Decide whether to post an arXiv preprint.
