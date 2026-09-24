@@ -61,31 +61,24 @@ paper, does not exist for the real data. Also:
 
 ---
 
-## 1. Decisions needed from Rob before starting
+## 1. Decisions (settled 2026-09-24 unless marked open)
 
-- [ ] **D1. Sample period for the application.** Recommended: main analysis
-      2004–2019, which has a consistent CAGED definition (192 months), with
-      2004–2023 as a robustness check using intervention dummies for 2020.
-      The alternative is 2004–2023 throughout, with dummies.
-- [ ] **D2. Net-change constraint in or out.** Recommended: *out* of the main
-      paper and mentioned in the discussion as the case where joint
-      reconciliation is genuinely needed. It fits the general `C y = 0`
-      framework and would widen the paper's scope. Keep the *probabilistic*
-      net-change analysis (Section 5.4 below) *in*, because it shows where
-      cross-variable information actually matters.
-- [ ] **D3. Structured estimator in or out.** Optional extension: shrink `W_hat`
-      towards its nearest separable approximation, with a data-driven
-      intensity. That interpolates between univariate and multivariate
-      reconciliation. Recommended: *out* for this paper; one paragraph of
-      future work.
-- [ ] **D4. Base models.** Recommended: keep ARIMA and VAR, and move ETS to the
-      supplement. ETS added little in the current results and it lengthens
-      every table.
-- [ ] **D5. Title.** "Separability and the limits of multivariate forecast
-      reconciliation" (preferred in the revision notes).
-- [ ] **D6. Coauthor roles.** This is close to a new paper. Agree with Ana,
-      Rodrigo and Paulo who drafts which sections, and whether Ana stays first
-      author.
+- [x] **D1. Sample period:** main analysis **2007–2019** (156 months, a single
+      CAGED definition). PDET publishes no microdata before 2007. 2007–2023
+      with 2020 intervention dummies goes in the supplement as a robustness
+      check. Novo CAGED uses on-time declarations only (CAGEDMOV), matching
+      the old-CAGED "sem ajuste" definition.
+- [x] **D2. Net change:** include the *probabilistic* net-change analysis
+      (Section 5, item 4). The net-change *constraint* is mentioned in the
+      discussion only.
+- [x] **D3. Structured estimator:** out. One paragraph of future work.
+- [x] **D4. Base models:** ARIMA and a per-node VAR in the main text; ETS in the
+      supplement.
+- [x] **D5. Title:** "Separability and the limits of multivariate forecast
+      reconciliation".
+- [ ] **D6. Authorship (open):** to be settled with Rodrigo and Paulo, and Ana
+      informed, before submission. Ana is no longer working on the paper.
+      Drafting proceeds meanwhile.
 
 ---
 
@@ -217,15 +210,16 @@ exploitable non-separability. Experiment 1 carries the main message either way.
 
 ## 5. Application redesign
 
-1. **Data (D1):** 2004–2019 for the main analysis. Justify by the definitional
-   change and COVID, not by convenience.
+1. **Data (D1):** 2007–2019 for the main analysis, from raw PDET microdata
+   (`Dados/emprego_uf.csv`). Justify ending in 2019 by the definitional change
+   and COVID, not by convenience.
 2. **Base forecasts:** ARIMA per series (and VAR per node for comparison).
    Consider log or Box-Cox transforms: the state series differ by orders of
    magnitude and have heteroskedastic errors. If transformed, reconcile on the
    original scale, because coherence is linear in levels. Document the choice.
 3. **Evaluation:**
-   - Rolling origin with many more origins, for example 48 or more, with each
-     training window at least 120 months.
+   - Rolling origin with a 108-month minimum training window: 37 origins for
+     12-step forecasts (48 for one-step), against 12 in the current paper.
    - Methods: base, OLS, WLS-structural, uv-MinT-shrink, mv-MinT-shrink.
    - Metrics: MSE ratio mv/uv (headline) and RMSSE by level, plus
      Diebold–Mariano or a Model Confidence Set for mv vs uv at the aggregate
@@ -244,7 +238,7 @@ exploitable non-separability. Experiment 1 carries the main message either way.
    nearest-Kronecker error (**Table 3** and **Fig 8**). Use the actual ARIMA
    residuals. This replaces the provisional benchmark-residual numbers in the
    revision notes.
-6. **Robustness (supplement):** 2004–2023 with 2020 dummies; VAR base model; ETS.
+6. **Robustness (supplement):** 2007–2023 with 2020 dummies; ETS base models.
 
 ---
 
@@ -302,7 +296,7 @@ Do everything on a branch; don't edit the current files on `main`.
 ## 7. Work order, with checkpoints
 
 ### Phase 0: groundwork
-- [ ] P0.1 Make decisions D1–D6.
+- [x] P0.1 Make decisions D1–D5 (D6 open; see Section 1).
 - [x] P0.2 Create the `jf-rewrite` branch.
 - [ ] P0.3 **Literature gate.** Search for prior statements of the Theorem or
       Corollary 1:
@@ -398,7 +392,7 @@ the Introduction, then the Abstract.
 | Referees call the Theorem trivial | Present the package: the iff characterisation, the invariance explaining which departures matter, Proposition 3, and quantified finite-sample limits. |
 | Experiment 2 cannot generate meaningful non-separability | Expected given §0.1. Report it; Experiment 1 carries the argument. |
 | The kappa test has almost no power at the application's size | That is the finding (the noise floor). Show it with the power curve rather than hide it. |
-| 2004–2019 is too short once many origins are used | Use a minimum 120-month window, which still gives 72 origins. If needed, fall back to 2004–2023 with dummies. |
+| 2007–2019 (156 months) gives few origins | A 108-month minimum window gives 37 origins for 12-step forecasts (a 120-month window gives 25). If that is too few, add 2020–2023 with dummies. |
 | The paper grows too long | Main text: one table per experiment. Everything per-node goes to the supplement. |
 
 ---
