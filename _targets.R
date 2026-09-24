@@ -132,7 +132,7 @@ list(
     cue = tar_cue(mode = "never")
   ),
   tar_target(num_power, numbers_power(power)),
-  tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum, app_net)),
+  tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum, app_net, app_point)),
 
   # In-text numbers for the paper (R/results.R)
   tar_target(numbers, write_numbers(c(num_exp1, num_exp2, num_power, num_app), "Tabelas/numbers.tex"), format = "file")

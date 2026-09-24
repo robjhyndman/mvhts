@@ -157,7 +157,7 @@ tab_app_accuracy <- function(accuracy, file, base_model = "arima") {
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    sprintf("\\caption{Application: MSE relative to base forecasts (%s), geometric mean over the series at each level, averaged over %s forecast origins and horizons 1--12.}", toupper(base_model), "48"),
+    sprintf("\\caption{Application: MSE relative to base forecasts (%s), geometric mean over the series at each level, averaged over %s forecast origins (37 with all twelve horizons) and horizons 1--12.}", toupper(base_model), "48"),
     sprintf("\\label{tab:app-accuracy-%s}", base_model),
     "\\begin{tabular}{lrrrrrr}",
     "\\hline",
@@ -185,7 +185,7 @@ tab_app_diag <- function(app_diag, file) {
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    sprintf("\\caption{Application: diagnostics from the one-step residuals over 2007--2019. Estimated $\\widehat\\kappa$ and plug-in gain $\\widehat\\gamma$ (\\%%); $F$ statistics ($%d$ and $%.0f$ degrees of freedom) for the other variable's incoherences in the regression of each variable's errors, and the Bonferroni $p$-value; incoherent share of error variance (\\%%); relative error of the nearest Kronecker product.}", app_diag$df1[1], app_diag$df2[1]),
+    sprintf("\\caption{Application: diagnostics from the one-step residuals over 2007--2019. Estimated $\\widehat\\kappa$ and plug-in gain $\\widehat\\gamma$ (\\%%); Rao $F$ statistics for the other variable's incoherences in the regression of each variable's errors ($%d$ and $%.0f$ degrees of freedom for ARIMA, $%d$ and $%.0f$ for VAR), and the Bonferroni $p$-value; incoherent share of error variance (\\%%); relative error of the nearest Kronecker product.}", app_diag$df1[app_diag$model == "arima"], app_diag$df2[app_diag$model == "arima"], app_diag$df1[app_diag$model == "var"], app_diag$df2[app_diag$model == "var"]),
     "\\label{tab:app-diag}",
     "\\begin{tabular}{lrrrrrrrr}",
     "\\hline",
@@ -238,7 +238,7 @@ tab_app_prob <- function(prob_summary, net_point, file) {
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Application: forecasts of net employment change (admissions minus dismissals), ARIMA base models, geometric mean over the series at each level, 48 origins, horizons 1--12. Top: MSE of point forecasts relative to separate MinT. Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation.}",
+    "\\caption{Application: forecasts of net employment change (admissions minus dismissals), ARIMA base models, geometric mean over the series at each level, 48 origins (37 with all twelve horizons), horizons 1--12. Top: MSE of point forecasts relative to separate MinT. Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation.}",
     "\\label{tab:app-prob}",
     "\\begin{tabular}{lrrr}",
     "\\hline",
@@ -307,6 +307,7 @@ numbers_exp2 <- function(exp2_sum) {
     expTwoGainRange = rng(ns$pop_gain, 1, 100),
     expTwoSepVsBaseRange = rng(1 - ar$sep_vs_base, 0, 100),
     expTwoCtrlGainMax = fmt(100 * (1 - min(ctrl400$joint_vs_sep)), 1),
+    expTwoNonsepGainMax = fmt(100 * (1 - min(ar$joint_vs_sep[grepl("^N", ar$scenario) & ar$T == 400])), 1),
     expTwoArimaSmallRange = rng(ar$joint_vs_sep[ar$T == 108], 3),
     expTwoArimaLargeRange = rng(ar$joint_vs_sep[ar$T == 400], 3),
     expTwoVarMaxDiff = fmt(100 * max(abs(1 - va$joint_vs_sep)), 1),
@@ -320,11 +321,26 @@ numbers_exp2 <- function(exp2_sum) {
 numbers_power <- function(power) {
   null <- power |> dplyr::filter(family %in% c("F0", "F1"))
   list(
-    testSizeRange = paste0(fmt(100 * min(null$rejection), 1), "--", fmt(100 * max(null$rejection), 1))
+    testSizeMin = fmt(100 * min(null$rejection), 1),
+    testSizeMax = fmt(100 * max(null$rejection), 1)
   )
 }
 
-numbers_app <- function(app_diag, accuracy, prob_summary, net_point) {
+numbers_app <- function(app_diag, accuracy, prob_summary, net_point, app_point) {
+  # Correlation between admissions and dismissals errors (ARIMA), pooled
+  w <- app_point |>
+    dplyr::filter(model == "arima", method %in% c("separate", "joint")) |>
+    tidyr::pivot_wider(names_from = series, values_from = error)
+  err_cor <- vapply(c("separate", "joint"), \(m) {
+    x <- w[w$method == m, ]
+    stats::cor(x[["Admissões"]], x[["Demissões"]])
+  }, numeric(1))
+  # Base forecast MSE of VAR relative to ARIMA, geometric mean over series
+  base_mse <- accuracy |>
+    dplyr::filter(method == "base") |>
+    dplyr::select(model, series, node, mse) |>
+    tidyr::pivot_wider(names_from = model, values_from = mse)
+  var_vs_arima <- exp(mean(log(base_mse$var / base_mse$arima)))
   d <- split(app_diag, app_diag$model)
   acc <- app_accuracy_table(accuracy)
   js <- acc |>
@@ -364,7 +380,9 @@ numbers_app <- function(app_diag, accuracy, prob_summary, net_point) {
     appNetPlugTotal = fmt(100 * d$arima$net_gain_total, 1),
     appNetPlugRegions = fmt(100 * d$arima$net_gain_regions, 1),
     appNetPlugStates = fmt(100 * d$arima$net_gain_states, 1),
-    appSepVsBaseStatesAdm = fmt(100 * (1 - acc$rel[acc$model == "arima" & acc$method == "separate" & acc$series == "Admissões" & acc$level == "States"]), 1)
+    appErrCorSep = fmt(err_cor[["separate"]], 2),
+    appErrCorJoint = fmt(err_cor[["joint"]], 2),
+    appVarVsArimaBase = fmt(100 * (var_vs_arima - 1), 0)
   )
 }
 
@@ -469,7 +487,7 @@ tab_supp_nodes <- function(accuracy, file, base_model = "arima") {
   )
   write_table(c(
     "\\begin{longtable}{lrrrr}",
-    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
+    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins (37 with all twelve horizons) and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
     "\\hline",
     " & \\multicolumn{2}{c}{Admissions} & \\multicolumn{2}{c}{Dismissals} \\\\",
     "Series & Separate & Joint & Separate & Joint \\\\",
