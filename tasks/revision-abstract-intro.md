@@ -1,5 +1,26 @@
 # Reframing the paper: draft abstract and introduction
 
+> **Status (2026-09-24): partly superseded.** Read with `tasks/todo.md` §0–§1.
+>
+> - **The theory is mostly known** (todo §0.3). The invariance lemma is in
+>   Wickramasuriya (2021), the separability corollary is a special case of
+>   Girolimetto & Di Fonzo (2025, Thm 1(3)), and the OLS corollary is Hyndman
+>   et al. (2011) plus Rao/Zyskind. Paragraph 5 and the abstract must credit
+>   these and stop claiming the result as new. The headline moves to kappa, the
+>   noise floor, Proposition 3 and the empirical findings.
+> - **"Why the current simulations are separable" is incomplete** (todo §0.1).
+>   Under node-invariant dynamics the population base forecasts are *coherent*,
+>   so their error covariance lies entirely in the invisible `S* K S*'`
+>   component. What matters is the incoherent component.
+> - **The Brazilian numbers at the end are void.** They came from the
+>   time-reversed legacy data. The data are now rebuilt from raw PDET microdata
+>   for 2007–2023, and the main sample is 2007–2019 (todo D1).
+> - **The application never compared against univariate reconciliation**
+>   (todo §0.2). Paragraph 6's "nine-scenario design" point is about the
+>   simulations only.
+> - **Title decided:** "Separability and the limits of multivariate forecast
+>   reconciliation" (todo D5).
+
 ## The core problem with the current framing
 
 The paper claims novelty in the *estimator* ("we extend MinT to several variables").

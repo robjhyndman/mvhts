@@ -59,6 +59,41 @@ paper, does not exist for the real data. Also:
 - **Ridge inconsistency:** `mv_reconcile` adds a `1e-8` ridge and `uv_reconcile`
   does not (`R/reconcile.R`). Harmless, but the two should be consistent.
 
+### 0.3 Literature gate (P0.3): the theory is mostly known
+
+Checked 2026-09-24. Items marked "verified" were read in the full text.
+
+| Claim | Status | Source |
+|---|---|---|
+| Invariance of MinT to `S K S'` | **Known** (verified) | Wickramasuriya (2021, arXiv:2103.11129), Prop. 1 proof: `W_h = S Omega S' + Sigma_h`, and MinT depends only on `Sigma_h`. Classical in linear models: Rao (1967), Zyskind (1967). |
+| Separable `W` gives joint = separate | **Known as a special case** (verified) | Girolimetto & Di Fonzo (arXiv:2410.19407; SMA 2025), Thm 1(3): with covariance `W (x) Omega`, optimal combination equals sequential reconciliation. Our case has no constraints in the second dimension. |
+| `W = S K S' + delta I` gives OLS | **Known** | Hyndman et al. (2011); Wickramasuriya (2021). The full Rao/Zyskind condition also allows a `C' Gamma C` term. |
+| iff: joint = separate exactly when `G` is block diagonal | Not found as stated | New, but mathematically light (`C*` is block diagonal). |
+| kappa diagnostic with bootstrap calibration | **Not found** | Nearest relatives are covariance separability tests. |
+| Joint and separate reconciliation perform almost identically | Not found | No published empirical report. |
+| Zellner/SUR analogy in reconciliation | Not found | Framing only. |
+
+Also found: **arXiv:2605.17920** (18 May 2026) is the current paper, with the
+old framing and results based on the reversed data. The rewrite must replace it
+(P7.6).
+
+**Consequence: re-weight the contribution.** Section 3 of the paper presents
+the theory as a short unifying proposition that credits Wickramasuriya (2021),
+Hyndman et al. (2011), Girolimetto & Di Fonzo (2025) and Rao/Zyskind. The iff
+condition is the organising statement, the known results are its corollaries,
+and the Zellner analogy supplies the intuition. **The headline becomes
+practical:** when is joint reconciliation of several variables worth doing?
+Its parts are:
+- the kappa diagnostic with bootstrap calibration and the noise floor
+  (Section 4 of the paper);
+- Proposition 3 (the incoherent-component point in §0.1);
+- the simulation evidence;
+- the application's near-null result;
+- the probabilistic net-change result.
+
+Citations still to check before use: Rao (1967), Zyskind (1967), Kruskal
+(1968), and the SMA volume and pages for Girolimetto & Di Fonzo (2025).
+
 ---
 
 ## 1. Decisions (settled 2026-09-24 unless marked open)
@@ -91,7 +126,7 @@ of Forecasting limits (task P7.1).
 |---|---|---|---|
 | 1 | Introduction | Paragraphs 1–10 of the revision notes, updated for §0.1 | none |
 | 2 | Reconciling several variables | Notation (compress current Sec 2.1), `S* = I_m (x) S`, `C* = I_m (x) C`, MinT on the stacked system stated as a definition, not a contribution | Fig 1 (hierarchy diagram, keep) |
-| 3 | When does joint reconciliation matter? | Lemma (invariance), Theorem (iff block-diagonal `G`), Cor 1 (separability), Cor 2 (Zyskind/OLS), Prop 3 (coherent population forecasts under node-invariant dynamics, §0.1), remarks on shrinkage, horizon, and `m > 2`. Proofs in the Appendix | none |
+| 3 | When does joint reconciliation matter? | Short and credit-giving (§0.3). Proposition (iff block-diagonal `G`), with known results as corollaries: invariance (Wickramasuriya 2021; Rao/Zyskind), separability (Girolimetto & Di Fonzo 2025), OLS. Then Prop 3 (coherent population forecasts under node-invariant dynamics, §0.1), and remarks on shrinkage, horizon and `m > 2`. Proofs in the Appendix | none |
 | 4 | Measuring departure from block diagonality | kappa, scale convention, why the nearest-Kronecker error fails, bootstrap calibration, power | Fig 2 (kappa vs Kronecker error, the "wrong direction" example), Fig 3 (null distribution of kappa vs T) |
 | 5 | Simulations | Exp 1: controlled error design. Exp 2: time-series DGP | Fig 4 (gain vs population kappa), Fig 5 (gain vs T, the noise floor), Table 1 (Exp 2 summary) |
 | 6 | Application: Brazilian admissions and dismissals | Data, base forecasts, accuracy (base / OLS / WLS / uv-MinT / mv-MinT), kappa diagnostic, net-change distribution | Fig 6 (map, keep), Fig 7 (data, one combined figure), Table 2 (accuracy), Table 3 (diagnostic), Fig 8 (bootstrap null and power), Table 4 (net-change scores) |
@@ -356,31 +391,35 @@ locked, per-project library.
 ### Phase 0: groundwork
 - [x] P0.1 Make decisions D1–D5 (D6 open; see Section 1).
 - [x] P0.2 Create the `jf-rewrite` branch.
-- [ ] P0.3 **Literature gate.** Search for prior statements of the Theorem or
-      Corollary 1:
-  - multi-variable reconciliation;
-  - the SUR analogue in reconciliation;
-  - Kronecker covariance in cross-temporal work (Di Fonzo & Girolimetto;
-    Girolimetto et al. on cross-temporal probabilistic reconciliation);
-  - general linearly constrained reconciliation;
-  - the geometric view (Panagiotelis et al. 2021).
-
-  If the result is already stated somewhere, re-weight the contribution towards
-  kappa, the noise floor and the application *before* writing anything.
-- [ ] P0.4 Update `revision-abstract-intro.md` for §0.1 and §0.2, or write the
-      update into the new Section 3 draft.
-- [ ] P0.5 **uvr:** `uvr init`, pin R, `uvr add` the package list (6.1), and
+- [x] P0.3 **Literature gate.** Done: the theory is mostly known, so the
+      contribution is re-weighted (see §0.3).
+- [x] P0.4 Update `revision-abstract-intro.md` for §0.1–§0.3 (a status note at
+      the top lists what is superseded).
+- [x] P0.5 **uvr:** `uvr init`, pin R, `uvr add` the package list (6.1), and
       commit `uvr.toml`, `uvr.lock` and `.r-version`. **Checkpoint:** a fresh
       `uvr sync` followed by `uvr run R/pdet_extract.R` reproduces
       `Dados/emprego_uf.csv` byte for byte.
-- [ ] P0.6 **targets skeleton:** create `_targets.R` with `tar_source()`, crew
+- [x] P0.6 **targets skeleton:** create `_targets.R` with `tar_source()`, crew
       and seed options, and the data file target. Move the tests to
       `tests/testthat/`. **Checkpoint:** `tar_make()` runs and
       `tar_visnetwork()` shows the data target. The remaining targets are added
       phase by phase, as each piece is written.
-- [ ] P0.7 Retire the old pipeline: delete the Makefile and `Saida/`, remove the
-      `pak` instructions, and update the README. Do this only when targets
-      covers everything still in use, so every commit leaves a working build.
+- [ ] P0.7 Retire the old pipeline: delete the Makefile, `scripts/` and
+      `Saida/`. **Deferred to the end of Phase 5**, when targets covers
+      everything still in use, so every commit leaves a working build.
+
+Phase 0 notes (2026-09-24):
+- **tsDyn replaced.** It was archived from CRAN on 2026-08-21. It was used only
+  for `VAR.sim()`, which is replaced by `sim_var1()` in
+  `R/simulation_functions.R`. That gives identical output to tsDyn's own code
+  on 200 test paths.
+- **urca must be declared.** fable's `ARIMA()` needs it, but it is only a
+  suggested dependency. `uvr run` isolation exposed this.
+- **Isolation confirmed.** `uvr run` and the crew workers see only
+  `.uvr/library` and base R.
+- **File layout.** Driver scripts moved to `scripts/` and tests to
+  `tests/testthat/`, so `R/` holds only functions. Run the tests with
+  `uvr run tests/testthat.R` and the pipeline with `uvr run run.R`.
 
 ### Phase 1: theory and tests
 - [ ] P1.1 Write `R/theory.R`.
@@ -451,7 +490,9 @@ the Introduction, then the Abstract.
       identical numbers.
 - [ ] P7.4 Coauthor review round.
 - [ ] P7.5 Cover letter: the contribution in three sentences.
-- [ ] P7.6 Decide whether to post an arXiv preprint.
+- [ ] P7.6 Replace arXiv:2605.17920 (the current version) with the rewrite, as
+      a new version of the same arXiv entry, and say in the comments field that
+      the data and conclusions changed.
 
 ---
 
@@ -459,8 +500,9 @@ the Introduction, then the Abstract.
 
 | Risk | Mitigation |
 |---|---|
-| The Theorem is already known | P0.3 literature gate. The contribution then rests on kappa, the invariance, the noise floor and the net-change result. |
-| Referees call the Theorem trivial | Present the package: the iff characterisation, the invariance explaining which departures matter, Proposition 3, and quantified finite-sample limits. |
+| The theory is largely known (confirmed, §0.3) | Credit the known results explicitly. The headline is the diagnostic, the noise floor, Proposition 3 and the empirical findings. |
+| Referees call the iff proposition trivial | Present it as organising known results, not as the contribution. |
+| Referees find arXiv:2605.17920 with contradictory results | Replace it with the rewrite (P7.6), and explain the data error in the cover letter. |
 | Experiment 2 cannot generate meaningful non-separability | Expected given §0.1. Report it; Experiment 1 carries the argument. |
 | The kappa test has almost no power at the application's size | That is the finding (the noise floor). Show it with the power curve rather than hide it. |
 | 2007–2019 (156 months) gives few origins | A 108-month minimum window gives 37 origins for 12-step forecasts (a 120-month window gives 25). If that is too few, add 2020–2023 with dummies. |

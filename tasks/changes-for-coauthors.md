@@ -15,3 +15,8 @@
   targets (`_targets.R`). Driver scripts moved to `scripts/` and tests to
   `tests/testthat/`. `tsDyn` (archived from CRAN) is replaced by an equivalent
   VAR(1) simulator.
+- **The theory is largely known.** A literature check found the invariance
+  result in Wickramasuriya (2021) and the separability result as a special case
+  of Girolimetto & Di Fonzo (2025). The paper will credit these, and its main
+  contribution becomes the diagnostic and the empirical findings. The current
+  arXiv version (2605.17920) needs replacing.
