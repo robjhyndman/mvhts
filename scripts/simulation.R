@@ -1,5 +1,4 @@
 library(fpp3)
-library(fable.prophet)
 library(furrr)
 
 source(here::here("R/helpers.R"))

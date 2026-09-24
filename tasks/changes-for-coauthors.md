@@ -10,3 +10,8 @@
 - **Application sample now 2007–2019** (previously 2004–2023). PDET publishes
   no microdata before 2007, and ending in 2019 avoids the January 2020 switch
   to Novo CAGED and the COVID shock. 2020–2023 becomes a robustness check.
+- **Reproducible tooling.** R and package versions are now locked with uvr
+  (`uvr.toml`, `uvr.lock`), and the workflow is moving from the Makefile to
+  targets (`_targets.R`). Driver scripts moved to `scripts/` and tests to
+  `tests/testthat/`. `tsDyn` (archived from CRAN) is replaced by an equivalent
+  VAR(1) simulator.

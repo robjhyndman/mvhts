@@ -41,9 +41,13 @@ region_meta <- tibble::tribble(
   "Sul"          , "South"       ,      6 , "#54bebe"
 )
 
-read_data <- function(state_meta, region_meta) {
+read_data <- function(
+  state_meta,
+  region_meta,
+  path = here::here("Dados/emprego_uf.csv")
+) {
   # Built from raw PDET microdata by R/pdet_extract.R
-  Dados <- read.csv(here::here("Dados/emprego_uf.csv")) |>
+  Dados <- read.csv(path) |>
     transmute(
       Data = yearmonth(month),
       UF,

@@ -45,3 +45,8 @@ CLAUDE.md
 
 # Raw PDET microdata (downloaded by R/pdet_download.R)
 Dados/pdet/
+/.uvr/library/
+/.uvr/activate*
+
+# targets cache
+_targets/

@@ -60,6 +60,23 @@ run_one_simulation <- function(Phi, V, Sigma, S, sim_id) {
 }
 
 # ====================================================================
+# VAR(1) with zero starting value: eta_t = Phi eta_{t-1} + innov_t.
+# innov is an n x m matrix; returns an n x m matrix. Identical to
+# tsDyn::VAR.sim(Phi, n, include = "none", innov = innov), which was
+# used previously (tsDyn was archived from CRAN in August 2026).
+# ====================================================================
+
+sim_var1 <- function(Phi, innov) {
+  eta <- matrix(0, nrow(innov), ncol(innov))
+  prev <- numeric(ncol(innov))
+  for (t in seq_len(nrow(innov))) {
+    prev <- drop(Phi %*% prev) + innov[t, ]
+    eta[t, ] <- prev
+  }
+  eta
+}
+
+# ====================================================================
 # Simulation of multivariate series at the bottom level
 #
 # NOTE: Series names "A" and "B" and start at year 2000
@@ -91,12 +108,7 @@ sim_mvhts <- function(len_T, Phi, V, Sigma, start_year = 2000) {
   # Generate bottom level series
   for (i in seq(n_b)) {
     B[, i, ] <- t(
-      tsDyn::VAR.sim(
-        B = Phi,
-        n = len_T,
-        include = "none",
-        innov = t(E[, i, ])
-      ) +
+      sim_var1(Phi, innov = t(E[, i, ])) +
         runif(1, 0, 4) * sin(2 * pi * seq(len_T) / 4)
     )
   }

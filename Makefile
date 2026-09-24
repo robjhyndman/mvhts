@@ -15,7 +15,7 @@
 
 SHELL := /bin/bash
 
-R := Rscript --vanilla
+R := uvr run -q
 LATEXMK := latexmk
 LATEXMKFLAGS := -pdf -interaction=nonstopmode -halt-on-error
 
@@ -88,14 +88,14 @@ APP_FIGS := \
 #   Imagens/diagrama_mult.pdf, Imagens/Diagrama_sim.pdf, Imagens/validacao.pdf
 
 SIM_SCRIPTS := \
-	R/simulation.R \
+	scripts/simulation.R \
 	R/simulation_setup.R \
 	R/simulation_functions.R \
 	R/reconcile.R \
 	R/helpers.R
 
 APP_SCRIPTS := \
-	R/application.R \
+	scripts/application.R \
 	R/application_data.R \
 	R/application_S.R \
 	R/reconcile.R \
@@ -133,12 +133,12 @@ data: simulation application
 simulation: $(SIM_RDS)
 
 $(SIM_RDS) &: $(SIM_SCRIPTS) | Saida
-	$(R) R/simulation.R
+	$(R) scripts/simulation.R
 
 application: $(APP_RDS)
 
 $(APP_RDS): $(APP_SCRIPTS) $(EMPREGO) | Saida
-	$(R) R/application.R
+	$(R) scripts/application.R
 
 # -----------------------------------------------------------------------------
 # Tables
@@ -149,13 +149,13 @@ tables: sim-tables app-tables
 
 sim-tables: $(SIM_TABLES)
 
-$(SIM_TABLES) &: R/simulation_tables.R $(TABLE_SCRIPTS) $(SIM_SCRIPTS) $(SIM_RDS) | Tabelas
-	$(R) R/simulation_tables.R
+$(SIM_TABLES) &: scripts/simulation_tables.R $(TABLE_SCRIPTS) $(SIM_SCRIPTS) $(SIM_RDS) | Tabelas
+	$(R) scripts/simulation_tables.R
 
 app-tables: $(APP_TABLES)
 
-$(APP_TABLES) &: R/application_tables.R $(TABLE_SCRIPTS) $(APP_SCRIPTS) $(APP_RDS) | Tabelas
-	$(R) R/application_tables.R
+$(APP_TABLES) &: scripts/application_tables.R $(TABLE_SCRIPTS) $(APP_SCRIPTS) $(APP_RDS) | Tabelas
+	$(R) scripts/application_tables.R
 
 # -----------------------------------------------------------------------------
 # Figures
@@ -166,13 +166,13 @@ figures: sim-figures app-figures
 
 sim-figures: $(SIM_FIGS)
 
-$(SIM_FIGS) &: R/simulation_figures.R R/simulation_setup.R R/simulation_functions.R R/helpers.R | Imagens
-	$(R) R/simulation_figures.R
+$(SIM_FIGS) &: scripts/simulation_figures.R R/simulation_setup.R R/simulation_functions.R R/helpers.R | Imagens
+	$(R) scripts/simulation_figures.R
 
 app-figures: $(APP_FIGS)
 
-$(APP_FIGS) &: R/application_figures.R R/application_data.R $(EMPREGO) | Imagens
-	$(R) R/application_figures.R
+$(APP_FIGS) &: scripts/application_figures.R R/application_data.R $(EMPREGO) | Imagens
+	$(R) scripts/application_figures.R
 
 # -----------------------------------------------------------------------------
 # PDFs
