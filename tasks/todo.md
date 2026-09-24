@@ -339,11 +339,11 @@ locked, per-project library.
 
 - [x] Create branch `jf-rewrite` from `main` (the rewrite happens there; `main`
       keeps the pre-rewrite version).
-- [ ] **New file `R/theory.R`:** `make_C(S)`, `mint_map(W, S_star)`,
+- [x] **New file `R/theory.R`:** `make_C(S)`, `mint_map(W, S_star)`,
       `G_matrix(W, C_star)`, `kappa(W, C_star, m, scale = TRUE)`,
       `nearest_kronecker(W, m, n)`, `pop_mse(M, W)`, and the family
       constructors F0–F4.
-- [ ] **New file `tests/testthat/test_theory.R`:**
+- [x] **New file `tests/testthat/test_theory.R`:**
   - The Theorem: mv = uv exactly when `G` is block diagonal (random `W`).
   - Corollary 1 for random `V` and `Sigma_0`.
   - Invariance to `S* K S*'`.
@@ -422,13 +422,34 @@ Phase 0 notes (2026-09-24):
   `uvr run tests/testthat.R` and the pipeline with `uvr run run.R`.
 
 ### Phase 1: theory and tests
-- [ ] P1.1 Write `R/theory.R`.
-- [ ] P1.2 Write `R/test_theory.R`. **Checkpoint:** all identities hold to
-      about 1e-10.
-- [ ] P1.3 Write the proofs (Appendix) and the Section 3 statements in LaTeX.
-- [ ] P1.4 Verify Proposition 3 numerically: a long simulated path from the
-      current DGP, with the base forecasts using the true marginal filters, is
-      coherent.
+- [x] P1.1 Write `R/theory.R`: maps, `kappa_mv()` (renamed so it does not
+      mask `base::kappa`), `nearest_kronecker()`, the covariance families
+      F0–F4, and the Proposition 3 helpers.
+- [x] P1.2 Write `tests/testthat/test_theory.R` (61 checks). **Checkpoint
+      passed:** all identities hold to 1e-10. The exception is kappa = 0, which
+      holds to about 1.5e-8 (sqrt of machine epsilon), so it is tested at 1e-6.
+- [x] P1.3 Draft `sections/theory.tex` (Section 3) and
+      `sections/appendix-proofs.tex`. They compile in a test harness, and all
+      citations resolve. For the paper they need `amsthm`, plus `proposition`
+      and `corollary` environments in the preamble.
+- [x] P1.4 Proposition 3 verified numerically. Population AR(20) coefficients
+      are identical across all 8 nodes to 1e-12, and applying them to a
+      simulated path gives forecasts coherent to 1e-10.
+
+Phase 1 findings:
+- **Sharper proposition.** Joint = separate ⟺ M block diagonal ⟺ G block
+  diagonal ⟺ `M_j W_jk C' = 0` ⟺ `col(W_jk C')` ⊆ `col(W_jj C')`.
+  **Interpretation:** MinT regresses the errors on the observed incoherences.
+  Joint reconciliation helps only if, once each variable has been reconciled
+  on its own, its remaining errors are correlated with other variables'
+  incoherences. This framing organises Section 3.
+- **The kappa = 0 set is strictly larger** than separable plus invisible. A
+  test builds a `W` with neither structure that still gives joint = separate.
+- **Proposition numbering in the draft:** Prop 1 is the characterisation and
+  Prop 2 is the node-invariant result, called "Prop 3" elsewhere in this plan.
+- **Citations to check:** Rao (1967) and Zyskind (1967) are from memory, and
+  the published SMA details for Girolimetto & Di Fonzo are missing. All three
+  are marked TODO in `cas-refs.bib`.
 
 ### Phase 2: Experiment 1
 - [ ] P2.1 Part (a) population grid, then Fig 4. **Checkpoint:** zero gain on

@@ -1,0 +1,30 @@
+% Appendix draft: proofs for Section \ref{sec:theory}.
+
+\section{Proofs}
+\label{app:proofs}
+
+\begin{proof}[Proof of Proposition~\ref{prop:equivalence}]
+Let $\bm{P} = \bm{C}_*\bm{W}\bm{C}_*'$, with blocks $\bm{P}_{jk} = \bm{C}\bm{W}_{jk}\bm{C}'$. Because $\bm{W}$ is positive definite and $\bm{C}_*$ has full row rank, $\bm{P}$ is invertible, so $\bm{G}$ is the unique solution of $\bm{G}\bm{P} = \bm{W}\bm{C}_*'$. Block $(j,k)$ of the right-hand side is $\bm{W}_{jk}\bm{C}'$.
+
+(c)$\Rightarrow$(a). Let $\bm{G} = \operatorname{diag}(\bm{H}_1, \dots, \bm{H}_m)$. Block $(j,j)$ of $\bm{G}\bm{P} = \bm{W}\bm{C}_*'$ gives $\bm{H}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}'$, so $\bm{H}_j = \bm{G}_j$. Hence $\bm{M} = \bm{I} - \bm{G}\bm{C}_* = \operatorname{diag}(\bm{I} - \bm{G}_j\bm{C}) = \bm{M}^{\mathrm{sep}}$.
+
+(a)$\Rightarrow$(b) is immediate.
+
+(b)$\Rightarrow$(c). $\bm{G}\bm{C}_* = \bm{I} - \bm{M}$ is block diagonal. Since $\bm{C}_*$ is block diagonal with full row rank, it has the block diagonal right inverse $\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$, and $\bm{G} = (\bm{G}\bm{C}_*)\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$ is block diagonal.
+
+(c)$\Leftrightarrow$(d). By the argument for (c)$\Rightarrow$(a), $\bm{G}$ is block diagonal if and only if $\bm{G} = \bm{G}^{\mathrm{sep}} = \operatorname{diag}(\bm{G}_1, \dots, \bm{G}_m)$. By uniqueness, this holds if and only if $\bm{G}^{\mathrm{sep}}\bm{P} = \bm{W}\bm{C}_*'$. Blocks $(j,j)$ of this equation hold by the definition of $\bm{G}_j$. Blocks $(j,k)$ with $j \ne k$ read $\bm{G}_j\bm{C}\bm{W}_{jk}\bm{C}' = \bm{W}_{jk}\bm{C}'$, that is, $(\bm{I} - \bm{G}_j\bm{C})\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{0}$. Finally, $\cov(\bm{M}_j\bm{e}_j, \bm{C}\bm{e}_k) = \bm{M}_j\bm{W}_{jk}\bm{C}'$.
+
+(d)$\Leftrightarrow$(e). Condition (d) states $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{B}_{jk}$ with $\bm{B}_{jk} = (\bm{C}\bm{W}_{jj}\bm{C}')^{-1}\bm{C}\bm{W}_{jk}\bm{C}'$, so (d) implies (e). Conversely, if $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{B}$ for some $\bm{B}$, then $\bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jj}\bm{C}'\bm{B} = \bm{0}$, because $\bm{M}_j\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}' - \bm{G}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{0}$.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:invariance}]
+Since $\bm{C}\bm{S} = \bm{0}$, we have $\bm{C}_*\bm{S}_* = \bm{0}$, so $(\bm{W} + \bm{S}_*\bm{K}\bm{S}_*')\bm{C}_*' = \bm{W}\bm{C}_*'$ and $\bm{C}_*(\bm{W} + \bm{S}_*\bm{K}\bm{S}_*')\bm{C}_*' = \bm{C}_*\bm{W}\bm{C}_*'$. Hence $\bm{G}$, and so $\bm{M}$, is unchanged. The diagonal blocks change by $\bm{S}\bm{K}_{jj}\bm{S}'$, which leaves each $\bm{G}_j$, and so $\bm{M}^{\mathrm{sep}}$, unchanged by the same argument.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:separable}]
+Here $\bm{W}_{jk} = v_{jk}\bm{\Sigma}_0$, so $\bm{G}_j = \bm{\Sigma}_0\bm{C}'(\bm{C}\bm{\Sigma}_0\bm{C}')^{-1}$ and $\bm{M}_j = \bm{M}_0$ for every $j$. Then $\bm{W}_{jk}\bm{C}' = (v_{jk}/v_{jj})\bm{W}_{jj}\bm{C}'$, and condition (e) holds.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:coherent}]
+Let $\bm{s}_a'$ be row $a$ of $\bm{S}$, and let $\bm{\Gamma}_h$ be the lag-$h$ autocovariance matrix of a VAR(1) with coefficient $\bm{\Phi}$ and innovation covariance $\bm{V}$. Since $\cov(\bm{\eta}_{i,t+h}, \bm{\eta}_{i',t}) = \Sigma_{ii'}\bm{\Gamma}_h$, the stochastic component of series $(j,a)$, $x_{j,a,t} = \sum_i s_{ai}\eta_{i,j,t}$, has autocovariances $\cov(x_{j,a,t+h}, x_{j,a,t}) = (\bm{s}_a'\bm{\Sigma}\bm{s}_a)[\bm{\Gamma}_h]_{jj}$. These are proportional across $a$, so the best linear predictor of $x_{j,a,t+h}$ from $x_{j,a,t}, x_{j,a,t-1}, \dots$ applies the same linear filter $f_{j,h}$ at every node. A linear filter commutes with aggregation: $f_{j,h}(x_{j,a,\cdot}) = \sum_i s_{ai} f_{j,h}(\eta_{i,j,\cdot})$. The deterministic components also aggregate, so the base forecasts of variable $j$ equal $\bm{S}$ times its bottom-level base forecasts and are coherent. The errors of coherent forecasts lie in the column space of $\bm{S}_*$, and any projection onto that space leaves coherent forecasts unchanged.
+\end{proof}

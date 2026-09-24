@@ -1,0 +1,71 @@
+% Section 3 draft: when does joint reconciliation differ from separate reconciliation?
+% Proofs are in sections/appendix-proofs.tex.
+
+\section{When does joint reconciliation matter?}
+\label{sec:theory}
+
+\subsection{Joint and separate reconciliation}
+
+Stack the $m$ variables as in \eqref{eq:vec}, so that the summing and constraint matrices of the stacked system are $\bm{S}_* = \bm{I}_m \otimes \bm{S}$ and $\bm{C}_* = \bm{I}_m \otimes \bm{C}$. Let $\bm{W}$ be the $(mn \times mn)$ covariance matrix of the stacked base forecast errors $\bm{e} = (\bm{e}_1', \dots, \bm{e}_m')'$, where $\bm{e}_j$ holds the $n$ errors of variable $j$, and write $\bm{W}_{jk} = \cov(\bm{e}_j, \bm{e}_k)$ for its $(n \times n)$ blocks. We drop the horizon subscript $h$ throughout this section.
+
+Joint MinT reconciliation in zero-constrained form \citep{di2023cross} is $\widetilde{\bm{y}} = \bm{M}\widehat{\bm{y}}$ with
+\begin{equation}\label{eq:joint-map}
+  \bm{M} = \bm{I} - \bm{G}\bm{C}_*,
+  \qquad
+  \bm{G} = \bm{W}\bm{C}_*'(\bm{C}_*\bm{W}\bm{C}_*')^{-1}.
+\end{equation}
+Separate reconciliation applies univariate MinT to each variable using its own error covariance $\bm{W}_{jj}$. Its map is block diagonal, $\bm{M}^{\mathrm{sep}} = \operatorname{diag}(\bm{M}_1, \dots, \bm{M}_m)$, with
+\begin{equation}\label{eq:sep-map}
+  \bm{M}_j = \bm{I} - \bm{G}_j\bm{C},
+  \qquad
+  \bm{G}_j = \bm{W}_{jj}\bm{C}'(\bm{C}\bm{W}_{jj}\bm{C}')^{-1}.
+\end{equation}
+
+Both maps have a regression interpretation. The incoherence of the base forecasts, $\bm{C}_*\widehat{\bm{y}} = -\bm{C}_*\bm{e}$, is observable, and $\bm{G}$ is the matrix of population regression coefficients of the errors $\bm{e}$ on the incoherences $\bm{C}_*\bm{e}$, since $\cov(\bm{e}, \bm{C}_*\bm{e}) = \bm{W}\bm{C}_*'$. MinT subtracts the fitted value of this regression from the base forecasts. Separate reconciliation runs the same regression for each variable, using only its own incoherences $\bm{C}\bm{e}_j$. The off-diagonal blocks of $\bm{G}$ are the coefficients on the other variables' incoherences, and joint reconciliation can only improve on separate reconciliation through them.
+
+\subsection{A characterisation}
+
+\begin{proposition}\label{prop:equivalence}
+Let $\bm{W}$ be positive definite. The following statements are equivalent.
+\begin{enumerate}
+  \item[(a)] $\bm{M} = \bm{M}^{\mathrm{sep}}$: joint and separate reconciliation give the same forecasts for every base forecast.
+  \item[(b)] $\bm{M}$ is block diagonal by variable.
+  \item[(c)] $\bm{G}$ is block diagonal by variable.
+  \item[(d)] $\bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{0}$ for all $j \ne k$; that is, $\cov(\bm{M}_j\bm{e}_j, \bm{C}\bm{e}_k) = \bm{0}$.
+  \item[(e)] The column space of $\bm{W}_{jk}\bm{C}'$ is contained in that of $\bm{W}_{jj}\bm{C}'$ for all $j \ne k$.
+\end{enumerate}
+\end{proposition}
+
+Condition (d) has a direct reading. Joint reconciliation changes nothing exactly when, after each variable has been reconciled on its own, its remaining errors are uncorrelated with the incoherences of every other variable. Condition (b) shows that there is no intermediate case. If the reconciled forecasts of one variable depend on the base forecasts of another at all, they differ from the separately reconciled forecasts.
+
+Two known results are special cases of Proposition~\ref{prop:equivalence}.
+
+\begin{corollary}[Invariance]\label{cor:invariance}
+For any $\bm{K}$ such that $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ is positive definite, replacing $\bm{W}$ by $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ leaves $\bm{M}$, $\bm{M}^{\mathrm{sep}}$ and $\bm{G}$ unchanged.
+\end{corollary}
+
+This is the argument used by \citet[Proposition 1]{wickramasuriya2021properties} to show that the GLS reconciliation of \citet{hyndman2011optimal} and MinT coincide. It is an instance of the classical result that generalised least squares is unaffected by adding $\bm{X}\bm{\Lambda}\bm{X}'$ to the error covariance \citep{rao1967least,zyskind1967canonical}. The implication here is that only the part of the error covariance that is visible through the incoherences matters. Any cross-variable dependence of the form $\bm{S}\bm{K}_{jk}\bm{S}'$ is invisible to both joint and separate reconciliation.
+
+\begin{corollary}[Separability]\label{cor:separable}
+If $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0$ for a positive definite $(m \times m)$ matrix $\bm{V}$ and $(n \times n)$ matrix $\bm{\Sigma}_0$, then $\bm{M} = \bm{M}^{\mathrm{sep}} = \bm{I}_m \otimes \bm{M}_0$, where $\bm{M}_0 = \bm{I} - \bm{\Sigma}_0\bm{C}'(\bm{C}\bm{\Sigma}_0\bm{C}')^{-1}\bm{C}$, whatever the sign or strength of the cross-variable dependence in $\bm{V}$.
+\end{corollary}
+
+Corollary~\ref{cor:separable} is the special case of Theorem~1 of \citet{girolimetto2024insights} in which the second dimension carries no aggregation constraints. It is the reconciliation analogue of the result that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares \citep{zellner1962efficient}: every variable shares the same summing matrix, so cross-variable correlation alone cannot be exploited. Corollaries~\ref{cor:invariance} and~\ref{cor:separable} combine: every $\bm{W} = \bm{V}\otimes\bm{\Sigma}_0 + \bm{S}_*\bm{K}\bm{S}_*'$ satisfies the conditions of Proposition~\ref{prop:equivalence}, however far it is from a Kronecker product. The same invariance gives the known condition $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$ under which MinT reduces to OLS reconciliation \citep{hyndman2011optimal,wickramasuriya2021properties}.
+
+\subsection{Forecast errors from node-invariant dynamics}
+
+The structure of $\bm{W}$ is determined by how the base forecasts are produced, and a common simulation design produces a covariance that reconciliation cannot use at all.
+
+\begin{proposition}\label{prop:coherent}
+Suppose the bottom-level series at node $i$ is $\bm{b}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, where $\bm{\mu}_{i,t}$ is deterministic, $\bm{\eta}_{i,t} = \bm{\Phi}\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$ is a stationary VAR(1) with the same $\bm{\Phi}$ at every node, and $\cov(\vetor(\bm{E}_t)) = \bm{V}\otimes\bm{\Sigma}$ as in Section~\ref{sec3.1}. Let the base forecast of each series be the best linear predictor of its stochastic component from its own past, plus its deterministic component. Then the base forecasts are coherent, the base forecast errors lie in the column space of $\bm{S}_*$, and neither joint nor separate reconciliation changes them.
+\end{proposition}
+
+Proposition~\ref{prop:coherent} shows that in such designs the population error covariance is entirely of the form $\bm{S}_*\bm{K}\bm{S}_*'$. The differences between reconciliation methods seen in simulations then come only from the base models: their estimation error, and the different model specifications selected for different series. What matters for joint reconciliation is how this incoherent component of the base forecast errors is correlated across variables. The component is small when the base models are good, and its cross-variable structure is hard to estimate. Sections~\ref{sec:diagnostic} and~\ref{sec:simulation} quantify both points.
+
+\subsection{Remarks}
+
+\emph{Horizon.} Under the usual assumption $\bm{W}_h = k_h\bm{W}_1$, the maps $\bm{M}$ and $\bm{M}^{\mathrm{sep}}$ do not depend on $h$, and neither do the conditions of Proposition~\ref{prop:equivalence}.
+
+\emph{Shrinkage.} The diagonal target of the shrinkage estimator has zero cross-variable blocks and so satisfies condition (d). Full shrinkage therefore makes joint reconciliation identical to reconciling each variable separately with its own diagonal target, and partial shrinkage scales the estimated cross-variable blocks of $\bm{W}$ towards zero.
+
+\emph{More than two variables.} Proposition~\ref{prop:equivalence} holds for any $m$, and condition (d) can be checked pair by pair. Joint reconciliation of $m$ variables can be split into separate reconciliations of groups of variables whenever the off-diagonal blocks of $\bm{G}$ between groups vanish.

@@ -20,3 +20,8 @@
   of Girolimetto & Di Fonzo (2025). The paper will credit these, and its main
   contribution becomes the diagnostic and the empirical findings. The current
   arXiv version (2605.17920) needs replacing.
+- **New theory section drafted** (`sections/theory.tex`, proofs in
+  `sections/appendix-proofs.tex`). One proposition characterises exactly when
+  joint and separate reconciliation coincide. The known results
+  (invariance, separability, OLS) appear as credited corollaries. A second
+  proposition shows why the old simulation design could not show a difference.
