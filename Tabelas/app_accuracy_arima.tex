@@ -1,0 +1,18 @@
+\begin{table}[!htb]
+\centering\small
+\caption{Application: MSE relative to base forecasts (ARIMA), geometric mean over the series at each level, averaged over 48 forecast origins and horizons 1--12.}
+\label{tab:app-accuracy-arima}
+\begin{tabular}{lrrrrrr}
+\hline
+ & \multicolumn{3}{c}{Admissions} & \multicolumn{3}{c}{Dismissals} \\
+Method & Total & Regions & States & Total & Regions & States \\
+\hline
+Base & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+OLS & 0.955 & 1.439 & 1.804 & 0.977 & 1.151 & 1.491 \\
+WLS (structural) & 0.894 & 1.105 & 1.308 & 0.945 & 0.960 & 1.170 \\
+MinT, separate & 0.878 & 0.930 & 0.984 & 0.844 & 0.880 & 0.940 \\
+MinT, separate (joint estimate) & 0.873 & 0.928 & 0.981 & 0.853 & 0.886 & 0.943 \\
+MinT, joint & 0.880 & 0.937 & 1.003 & 0.832 & 0.872 & 0.952 \\
+\hline
+\end{tabular}
+\end{table}

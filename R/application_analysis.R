@@ -138,6 +138,14 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
     res <- app_residuals(fit, name, cols)
     test <- cross_test(res, S)
     W_hat <- shrinkage_cov(res)
+    # Plug-in gain for net change (admissions - dismissals) at each node
+    n <- NROW(S)
+    net_gain <- vapply(seq_len(n), \(i) {
+      a <- numeric(2 * n)
+      a[c(i, n + i)] <- c(1, -1)
+      plugin_gain_combination(W_hat, C, 2, a)
+    }, numeric(1))
+    level <- node_level(rownames(S))
     tibble::tibble(
       model = name,
       T = NROW(res),
@@ -151,7 +159,10 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       p_dis = test$p_each[2],
       p_value = test$p_value,
       kronecker_error = nearest_kronecker(W_hat, 2)$rel_error,
-      incoherence = sum(diag(C_star %*% W_hat %*% t(C_star))) / sum(diag(W_hat))
+      incoherence = sum(diag(C_star %*% W_hat %*% t(C_star))) / sum(diag(W_hat)),
+      net_gain_total = mean(net_gain[level == "Total"]),
+      net_gain_regions = mean(net_gain[level == "Regions"]),
+      net_gain_states = mean(net_gain[level == "States"])
     )
   }) |>
     dplyr::bind_rows()

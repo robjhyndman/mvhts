@@ -24,6 +24,8 @@ app_series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
 
 fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
 
+fmt_p <- function(p) ifelse(p < 0.001, "$<$0.001", fmt(p, 3))
+
 write_table <- function(lines, file) {
   fs::dir_create(dirname(file))
   writeLines(lines, file)
@@ -177,7 +179,7 @@ tab_app_diag <- function(app_diag, file) {
     "%s & %d & %s & %s & %s & %s & %s & %s & %s \\\\",
     toupper(app_diag$model), app_diag$T,
     fmt(app_diag$kappa, 3), fmt(100 * app_diag$gain, 2),
-    fmt(app_diag$stat_adm, 2), fmt(app_diag$stat_dis, 2), fmt(app_diag$p_value, 3),
+    fmt(app_diag$stat_adm, 2), fmt(app_diag$stat_dis, 2), fmt_p(app_diag$p_value),
     fmt(100 * app_diag$incoherence, 1), fmt(app_diag$kronecker_error, 3)
   )
   write_table(c(
@@ -212,28 +214,44 @@ app_prob_summary <- function(app_prob_scores) {
     dplyr::summarise(rel = exp(mean(log(rel))), .groups = "drop")
 }
 
-tab_app_prob <- function(prob_summary, file) {
+# Point forecasts of net change: MSE relative to separate MinT,
+# geometric mean over the series at each level
+app_net_point <- function(app_point) {
+  app_point |>
+    tidyr::pivot_wider(names_from = series, values_from = error) |>
+    dplyr::mutate(net = .data[["Admissões"]] - .data[["Demissões"]], level = node_level(node)) |>
+    dplyr::group_by(model, method, level, node) |>
+    dplyr::summarise(mse = mean(net^2), .groups = "drop") |>
+    dplyr::group_by(model, level, node) |>
+    dplyr::mutate(rel = mse / mse[method == "separate"]) |>
+    dplyr::group_by(model, method, level) |>
+    dplyr::summarise(rel = exp(mean(log(rel))), .groups = "drop")
+}
+
+tab_app_prob <- function(prob_summary, net_point, file) {
   lv <- c("Total", "Regions", "States")
-  meth <- c("independent + separate", "joint + separate", "joint + joint")
-  lab <- c(
-    "independent + separate" = "Independent innovations, separate reconciliation",
-    "joint + separate" = "Joint innovations, separate reconciliation",
-    "joint + joint" = "Joint innovations, joint reconciliation"
-  )
-  rows <- vapply(meth, \(m) {
-    v <- prob_summary$rel[match(paste(m, lv), paste(prob_summary$method, prob_summary$level))]
-    paste0(lab[[m]], " & ", paste(fmt(v), collapse = " & "), " \\\\")
-  }, character(1))
+  row <- function(label, df, m) {
+    v <- df$rel[match(paste(m, lv), paste(df$method, df$level))]
+    paste0(label, " & ", paste(fmt(v), collapse = " & "), " \\\\")
+  }
+  np <- net_point |> dplyr::filter(model == "arima")
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Application: CRPS of net employment change (admissions minus dismissals) relative to independent innovations with separate reconciliation, geometric mean over series at each level, from 1000 sample paths at each of 48 origins (ARIMA base models).}",
+    "\\caption{Application: forecasts of net employment change (admissions minus dismissals), ARIMA base models, geometric mean over the series at each level, 48 origins, horizons 1--12. Top: MSE of point forecasts relative to separate MinT. Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation.}",
     "\\label{tab:app-prob}",
     "\\begin{tabular}{lrrr}",
     "\\hline",
-    "Sample paths & Total & Regions & States \\\\",
+    " & Total & Regions & States \\\\",
     "\\hline",
-    rows,
+    "\\multicolumn{4}{l}{\\emph{Point forecasts (MSE)}} \\\\",
+    row("\\quad MinT, separate", np, "separate"),
+    row("\\quad MinT, separate (joint estimate)", np, "sep_blocks"),
+    row("\\quad MinT, joint", np, "joint"),
+    "\\multicolumn{4}{l}{\\emph{Sample paths (CRPS)}} \\\\",
+    row("\\quad Independent innovations, separate reconciliation", prob_summary, "independent + separate"),
+    row("\\quad Joint innovations, separate reconciliation", prob_summary, "joint + separate"),
+    row("\\quad Joint innovations, joint reconciliation", prob_summary, "joint + joint"),
     "\\hline",
     "\\end{tabular}",
     "\\end{table}"
@@ -306,7 +324,7 @@ numbers_power <- function(power) {
   )
 }
 
-numbers_app <- function(app_diag, accuracy, prob_summary) {
+numbers_app <- function(app_diag, accuracy, prob_summary, net_point) {
   d <- split(app_diag, app_diag$model)
   acc <- app_accuracy_table(accuracy)
   js <- acc |>
@@ -334,6 +352,15 @@ numbers_app <- function(app_diag, accuracy, prob_summary) {
     appNetJointSepStates = skill("joint + separate", "States"),
     appNetJointSepTotal = skill("joint + separate", "Total"),
     appNetJointJointStates = skill("joint + joint", "States"),
-    appNetJointJointTotal = skill("joint + joint", "Total")
+    appNetJointJointTotal = skill("joint + joint", "Total"),
+    appNetJointJointRegions = skill("joint + joint", "Regions"),
+    appNetJointSepRegions = skill("joint + separate", "Regions"),
+    appNetPointTotal = fmt(100 * (1 - net_point$rel[net_point$model == "arima" & net_point$method == "joint" & net_point$level == "Total"]), 0),
+    appNetPointRegions = fmt(100 * (1 - net_point$rel[net_point$model == "arima" & net_point$method == "joint" & net_point$level == "Regions"]), 0),
+    appNetPointStates = fmt(100 * (1 - net_point$rel[net_point$model == "arima" & net_point$method == "joint" & net_point$level == "States"]), 0),
+    appNetPlugTotal = fmt(100 * d$arima$net_gain_total, 1),
+    appNetPlugRegions = fmt(100 * d$arima$net_gain_regions, 1),
+    appNetPlugStates = fmt(100 * d$arima$net_gain_states, 1),
+    appSepVsBaseStatesAdm = fmt(100 * (1 - acc$rel[acc$model == "arima" & acc$method == "separate" & acc$series == "Admissões" & acc$level == "States"]), 1)
   )
 }

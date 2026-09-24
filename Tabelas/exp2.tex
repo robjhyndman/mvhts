@@ -1,0 +1,24 @@
+\begin{table}[!htb]
+\centering\small
+\caption{Experiment 2. Population quantities for the optimal AR forecasts: incoherent share of error variance (\%), $\kappa$, and MSE reduction from joint reconciliation (\%). Fitted base models: MSE of joint relative to separate reconciliation, averaged over 500 replications, 16 series and horizons 1--12, with the standard error of the log ratio in parentheses; mean plug-in gain $\widehat\gamma$ (\%, ARIMA).}
+\label{tab:exp2}
+\begin{tabular}{lrrrrrrr}
+\hline
+ & & \multicolumn{3}{c}{Population} & \multicolumn{2}{c}{Joint / separate} & \\
+Scenario & $T$ & Incoh. & $\kappa$ & Gain & ARIMA & VAR & $\widehat\gamma$ \\
+\hline
+Separable, $\rho = 0.7$ & 108 & 0.00 & 0.00 & 0.00 & 0.997 (0.003) & 1.002 (0.001) & 1.7 \\
+Separable, $\rho = 0.7$ & 400 & 0.00 & 0.00 & 0.00 & 0.979 (0.004) & 0.999 (0.001) & 1.8 \\
+Separable, $\rho = -0.7$ & 108 & 0.00 & 0.00 & 0.00 & 0.996 (0.003) & 1.004 (0.001) & 2.1 \\
+Separable, $\rho = -0.7$ & 400 & 0.00 & 0.00 & 0.00 & 0.987 (0.004) & 0.999 (0.001) & 2.3 \\
+Variable-specific dynamics & 108 & 0.00 & 0.00 & 0.00 & 1.006 (0.002) & 1.000 (0.001) & 1.8 \\
+Variable-specific dynamics & 400 & 0.00 & 0.00 & 0.00 & 0.996 (0.003) & 0.997 (0.001) & 2.0 \\
+Node-varying correlation & 108 & 0.42 & 0.79 & 2.14 & 0.998 (0.003) & 1.005 (0.001) & 1.5 \\
+Node-varying correlation & 400 & 0.42 & 0.79 & 2.14 & 0.991 (0.003) & 0.998 (0.001) & 1.7 \\
+Variable-specific node covariance & 108 & 1.28 & 0.97 & 2.37 & 0.998 (0.003) & 1.003 (0.002) & 1.6 \\
+Variable-specific node covariance & 400 & 1.28 & 0.97 & 2.37 & 0.990 (0.003) & 1.001 (0.001) & 1.6 \\
+Node-varying dynamics & 108 & 1.52 & 0.65 & 0.46 & 0.999 (0.003) & 1.000 (0.001) & 1.9 \\
+Node-varying dynamics & 400 & 1.52 & 0.65 & 0.46 & 0.985 (0.003) & 0.995 (0.001) & 1.9 \\
+\hline
+\end{tabular}
+\end{table}

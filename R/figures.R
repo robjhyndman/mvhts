@@ -227,29 +227,26 @@ fig_kappa_power <- function(power, file) {
     dplyr::ungroup() |>
     dplyr::mutate(
       separable = family %in% c("F0", "F1"),
-      panel = dplyr::if_else(separable, "Separable (κ = 0): size", family_labels[family]),
-      panel = factor(panel, levels = c("Separable (κ = 0): size", family_labels[c("F2", "F3")])),
+      panel = dplyr::if_else(separable, "Separable (\u03ba = 0): size", family_labels[family]),
+      panel = factor(panel, levels = c("Separable (\u03ba = 0): size", family_labels[c("F2", "F3")])),
       hierarchy = factor(hierarchy_labels[hierarchy], levels = hierarchy_labels),
       key = dplyr::if_else(separable, family, strength),
-      label = dplyr::if_else(
-        separable,
-        dplyr::if_else(family == "F0", "Kronecker", "+ invisible"),
-        sprintf("κ = %.2f", kappa)
-      )
+      label = sprintf("\u03ba = %.2f", kappa)
     )
-  ends <- df |> dplyr::filter(T == max(T))
+  # Label the non-separable lines at the smallest T, where they are distinct
+  starts <- df |> dplyr::filter(!separable, T == min(T))
   p <- ggplot2::ggplot(df, ggplot2::aes(T, rejection, group = interaction(family, dial))) +
     ggplot2::geom_hline(yintercept = 0.05, colour = "grey40", linewidth = 0.4) +
     ggplot2::geom_line(ggplot2::aes(colour = key, linetype = separable), linewidth = 0.7) +
     ggplot2::geom_point(ggplot2::aes(colour = key), size = 1.4) +
     ggplot2::geom_text(
-      data = ends, ggplot2::aes(label = label), hjust = -0.12, size = 2.4,
+      data = starts, ggplot2::aes(label = label), hjust = 1.15, size = 2.4,
       colour = "grey20"
     ) +
     ggplot2::facet_grid(hierarchy ~ panel) +
     ggplot2::scale_x_log10(
       breaks = c(100, 200, 500, 1000),
-      expand = ggplot2::expansion(mult = c(0.03, 0.5))
+      expand = ggplot2::expansion(mult = c(0.45, 0.05))
     ) +
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
     ggplot2::scale_colour_manual(values = c(
@@ -264,4 +261,47 @@ fig_kappa_power <- function(power, file) {
     theme_paper() +
     ggplot2::theme(legend.position = "none")
   save_figure(p, file, height = 4.6)
+}
+
+# --------------------------------------------------------------------
+# Figure: national admissions, dismissals and net change. The period
+# after 2019 (Novo CAGED, COVID-19) is shaded; it is not used in the
+# main analysis.
+# --------------------------------------------------------------------
+fig_app_data <- function(emprego, file) {
+  nat <- emprego |>
+    tibble::as_tibble() |>
+    dplyr::filter(node == "Total") |>
+    dplyr::mutate(date = as.Date(time)) |>
+    dplyr::select(date, series, value) |>
+    tidyr::pivot_wider(names_from = series, values_from = value) |>
+    dplyr::mutate(Net = .data[["Admissões"]] - .data[["Demissões"]])
+  flows <- nat |>
+    tidyr::pivot_longer(c("Admissões", "Demissões"), names_to = "series", values_to = "value") |>
+    dplyr::mutate(
+      series = dplyr::recode(series, "Admissões" = "Admissions", "Demissões" = "Dismissals"),
+      panel = "Admissions and dismissals (millions)",
+      value = value / 1e6
+    )
+  net <- nat |>
+    dplyr::transmute(date, series = "Net change", value = Net / 1e6, panel = "Net change (millions)")
+  df <- dplyr::bind_rows(flows, net) |>
+    dplyr::mutate(panel = factor(panel, levels = c("Admissions and dismissals (millions)", "Net change (millions)")))
+  shade <- tibble::tibble(xmin = as.Date("2020-01-01"), xmax = max(df$date) + 31)
+  p <- ggplot2::ggplot(df, ggplot2::aes(date, value, colour = series)) +
+    ggplot2::geom_rect(
+      data = shade, ggplot2::aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+      inherit.aes = FALSE, fill = "grey92"
+    ) +
+    ggplot2::geom_hline(
+      data = tibble::tibble(panel = factor("Net change (millions)", levels = levels(df$panel)), y = 0),
+      ggplot2::aes(yintercept = y), colour = "grey50", linewidth = 0.3
+    ) +
+    ggplot2::geom_line(linewidth = 0.5) +
+    ggplot2::facet_wrap(~panel, ncol = 1, scales = "free_y") +
+    ggplot2::scale_colour_manual(values = c(Admissions = fig_colours[1], Dismissals = fig_colours[2], `Net change` = "grey25")) +
+    ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+    ggplot2::labs(x = NULL, y = NULL, colour = NULL) +
+    theme_paper()
+  save_figure(p, file, height = 4.2)
 }

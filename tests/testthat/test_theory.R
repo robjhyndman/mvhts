@@ -178,3 +178,18 @@ test_that("cross_test holds its size under the null and detects strong departure
   p_alt <- cross_test(mvtnorm::rmvnorm(500, sigma = exp1_covariance(H, "F3", 0.6)), H)$p_value
   expect_lt(p_alt, 1e-4)
 })
+
+test_that("joint MinT is no worse than separate for every linear combination", {
+  for (i in 1:10) {
+    W <- random_pd(m * n)
+    for (k in 1:5) {
+      a <- rnorm(m * n)
+      expect_gte(plugin_gain_combination(W, C, m, a), -1e-10)
+    }
+    # Loewner order: Cov(separate) - Cov(joint) is positive semidefinite
+    M <- mint_map(W, C_star)
+    Ms <- separate_map(W, C, m)
+    D <- Ms %*% W %*% t(Ms) - M %*% W %*% t(M)
+    expect_gte(min(eigen((D + t(D)) / 2, symmetric = TRUE, only.values = TRUE)$values), -1e-8)
+  }
+})

@@ -31,7 +31,11 @@ The second measure describes the value of the joint map. If $\bm{W}$ were the tr
 \begin{equation}\label{eq:gain}
   \gamma(\bm{W}) = 1 - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
 \end{equation}
-MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of Proposition~\ref{prop:equivalence} hold. The two measures differ in an important way. The gain from any reconciliation comes only from the incoherent component of the errors, so $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences. A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much.
+MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of Proposition~\ref{prop:equivalence} hold. The two measures differ in an important way. The gain from any reconciliation comes only from the incoherent component of the errors, so $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences. A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average. Because $\gamma$ averages over all series, it can hide a larger gain for a particular combination of variables. For a combination $\bm{a}'\bm{y}$ of interest we therefore also compute
+\begin{equation}\label{eq:gain-a}
+  \gamma_{\bm{a}}(\bm{W}) = 1 - \frac{\bm{a}'\bm{M}\bm{W}\bm{M}'\bm{a}}{\bm{a}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{a}},
+\end{equation}
+which is also non-negative for every $\bm{a}$ (Section~\ref{sec:theory}).
 
 \subsection{Estimation and testing}
 

@@ -123,6 +123,17 @@ plugin_gain <- function(W, C, m) {
   1 - pop_mse(mint_map(W, C_star), W) / pop_mse(separate_map(W, C, m), W)
 }
 
+# Plug-in gain for a linear combination a'y of the stacked series (for
+# example admissions minus dismissals at one node). With the true W,
+# joint MinT minimises the reconciled error covariance in the positive
+# semidefinite order, so this is non-negative for every a; the gain can be
+# much larger for some combinations than the trace-based plugin_gain().
+plugin_gain_combination <- function(W, C, m, a) {
+  M <- mint_map(W, stack_matrix(C, m))
+  M_sep <- separate_map(W, C, m)
+  1 - drop(t(a) %*% M %*% W %*% t(M) %*% a) / drop(t(a) %*% M_sep %*% W %*% t(M_sep) %*% a)
+}
+
 # --------------------------------------------------------------------
 # Nearest Kronecker product V (x) Sigma_0 to W in Frobenius norm
 # (Van Loan & Pitsianis, 1993). Row j + (k - 1) m of the rearranged

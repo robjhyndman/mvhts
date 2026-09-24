@@ -1,0 +1,18 @@
+\begin{table}[!htb]
+\centering\small
+\caption{Application: MSE relative to base forecasts (VAR), geometric mean over the series at each level, averaged over 48 forecast origins and horizons 1--12.}
+\label{tab:app-accuracy-var}
+\begin{tabular}{lrrrrrr}
+\hline
+ & \multicolumn{3}{c}{Admissions} & \multicolumn{3}{c}{Dismissals} \\
+Method & Total & Regions & States & Total & Regions & States \\
+\hline
+Base & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+OLS & 1.012 & 0.954 & 1.335 & 0.996 & 1.018 & 1.184 \\
+WLS (structural) & 1.033 & 0.923 & 1.139 & 0.981 & 0.969 & 1.075 \\
+MinT, separate & 1.108 & 0.985 & 1.043 & 0.902 & 0.909 & 0.988 \\
+MinT, separate (joint estimate) & 1.068 & 0.954 & 1.020 & 0.912 & 0.913 & 0.989 \\
+MinT, joint & 1.076 & 0.937 & 1.002 & 0.898 & 0.902 & 0.982 \\
+\hline
+\end{tabular}
+\end{table}
