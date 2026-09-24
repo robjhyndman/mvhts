@@ -20,7 +20,7 @@ method_labels <- c(
   joint = "MinT, joint"
 )
 
-series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
+app_series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
 
 fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
 
@@ -146,7 +146,7 @@ tab_app_accuracy <- function(accuracy, file, base_model = "arima") {
     dplyr::mutate(col = paste(series, level)) |>
     dplyr::select(method, col, rel) |>
     tidyr::pivot_wider(names_from = col, values_from = rel)
-  order_cols <- as.vector(outer(names(series_labels), c("Total", "Regions", "States"), paste))
+  order_cols <- as.vector(outer(names(app_series_labels), c("Total", "Regions", "States"), paste))
   order_cols <- order_cols[c(1, 3, 5, 2, 4, 6)]
   tab <- tab[match(names(method_labels), tab$method), c("method", order_cols)]
   rows <- apply(tab, 1, \(r) {
