@@ -478,42 +478,39 @@ Phase 1 findings:
 - [ ] Figs `kronecker_vs_gain.pdf`, `kappa_noise.pdf` and `test_power.pdf`:
       built by targets. The power target reruns with the LR test.
 
-### Phase 4: Experiment 2 (running)
+### Phase 4: Experiment 2 (done)
 - [x] P4.1–P4.2 Scenarios and exact population W (population-optimal AR(20)
-      forecasts). Controls are exactly coherent (incoherence 1e-16). The
-      non-separable scenarios have an incoherent share of 0.4–1.5%, kappa of
-      0.65–0.97, and a gain of 0.5–2.4%.
-- [ ] P4.3 Fitted ARIMA/VAR runs (6 scenarios × T in {108, 400} × 500 reps),
-      then Table `tab:exp2`.
+      forecasts). Controls are exactly coherent. Non-separable scenarios have
+      an incoherent share of 0.4–1.5%, kappa of 0.65–0.97, and a gain of
+      0.5–2.4%.
+- [x] P4.3 Fitted ARIMA/VAR, 6 scenarios × T in {108, 400} × 500 reps (about
+      7 h), giving Table `tab:exp2`. **Finding:** at T = 400 with ARIMA, joint
+      beats separate by up to 2.1% *even in the separable controls*. The base
+      models' estimation error has exploitable cross-variable structure. At
+      T = 108, and with VAR base models, the differences are negligible.
 
-### Phase 5: application (code done; runs after Experiment 2)
-- [x] P5.1–P5.3 code: 48 origins, methods base / OLS / WLS / separate /
-      sep_blocks / joint, the LR diagnostic, and net-change CRPS from
-      psi-weight sample paths. Point forecast + Psi e is exact.
-      `fabletools::generate()` starts from a slightly wrong mean, so it is not
-      used.
-- [ ] Run, then write Tables 2–4 and Section 6.
-- [ ] P5.4 Robustness (2007–2023, ETS) for the supplement.
+### Phase 5: application (done)
+- [x] 48 origins; methods base / OLS / WLS / separate / sep_blocks / joint;
+      ARIMA, VAR and ETS base models (ETS in the supplement).
+- [x] Diagnostic. ARIMA: kappa 0.34, gamma 2.0%, LR p = 0.020. The VAR
+      residuals are autocorrelated in 95% of series, so the test is invalid
+      for VAR.
+- [x] Accuracy. ARIMA joint/separate is 0.986–1.019: no systematic gain.
+- [x] **Net change.** Joint MinT cuts national net-change MSE by 18%, via the
+      PSD-order optimality of MinT. Joint innovations cut net-change CRPS by
+      15%, rising to 21% with joint reconciliation. A combination-specific
+      plug-in gain `gamma_a` was added to theory.R and Section 4.
+- [ ] P5.4 Robustness with 2007–2023 and 2020 dummies: **not done** (ETS was
+      done instead). Optional.
 
-### Phase 6: writing
-Order: Sec 3, then Sec 4, then Sec 5, then Sec 6, then Sec 2, then Sec 7, then
-the Introduction, then the Abstract.
-
-- [ ] P6.1 Section 3 (Theorem-first framing; Proposition 3 from §0.1).
-- [ ] P6.2 Section 4.
-- [ ] P6.3 Section 5.
-- [ ] P6.4 Section 6. Present the near-null accuracy result as a confirmed
-      prediction.
-- [ ] P6.5 Section 2: compressed, with no novelty claim.
-- [ ] P6.6 Section 7. Practical recommendation: model the base forecasts
-      jointly, reconcile variable by variable unless kappa says otherwise, and
-      reconcile jointly when constraints link the variables.
-- [ ] P6.7 Introduction and abstract, from the revision notes, updated with the
-      real numbers.
-- [ ] P6.8 Check every numerical claim in the text against the generated
-      tables, with no hand-typed numbers. Generate inline numbers from R where
-      practical.
-- [ ] P6.9 Deslop pass; consistent notation (`W_h`, `S*`, `C*`, `G`, kappa).
+### Phase 6: writing (first full draft done)
+- [x] All sections drafted; every number is generated in
+      `Tabelas/numbers.tex`.
+- [x] P0.7 Old pipeline retired: `scripts/`, `Saida/`, the old tables and
+      figures, `R/tables.R` and the dead simulation-loop functions removed.
+      The map is ported to the pipeline (built once, needs network access).
+- [x] Supplement rewritten from new tables.
+- [ ] P6.9 Deslop and editing pass by Rob; coauthor review.
 
 ### Phase 7: submission
 - [ ] P7.1 Check the Journal of Forecasting (Wiley) author guidelines: length,

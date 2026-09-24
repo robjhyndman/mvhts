@@ -349,6 +349,9 @@ numbers_app <- function(app_diag, accuracy, prob_summary, net_point) {
     appJointSepVarRange = paste0(
       fmt(min(js$ratio[js$model == "var"]), 3), "--", fmt(max(js$ratio[js$model == "var"]), 3)
     ),
+    appJointSepEtsRange = paste0(
+      fmt(min(js$ratio[js$model == "ets"]), 3), "--", fmt(max(js$ratio[js$model == "ets"]), 3)
+    ),
     appNetJointSepStates = skill("joint + separate", "States"),
     appNetJointSepTotal = skill("joint + separate", "Total"),
     appNetJointJointStates = skill("joint + joint", "States"),
@@ -363,4 +366,117 @@ numbers_app <- function(app_diag, accuracy, prob_summary, net_point) {
     appNetPlugStates = fmt(100 * d$arima$net_gain_states, 1),
     appSepVsBaseStatesAdm = fmt(100 * (1 - acc$rel[acc$model == "arima" & acc$method == "separate" & acc$series == "Admissões" & acc$level == "States"]), 1)
   )
+}
+
+# ====================================================================
+# Supplementary tables
+# ====================================================================
+
+# Experiment 2: MSE of separate and joint reconciliation relative to base
+tab_supp_exp2 <- function(exp2_sum, file) {
+  lab <- c(
+    C1_sep_pos = "Separable, $\\rho = 0.7$",
+    C2_sep_neg = "Separable, $\\rho = -0.7$",
+    C3_var_dynamics = "Variable-specific dynamics",
+    N1_node_corr = "Node-varying correlation",
+    N2_var_sigma = "Variable-specific node covariance",
+    N3_node_dynamics = "Node-varying dynamics"
+  )
+  x <- exp2_sum |>
+    dplyr::mutate(joint_vs_base = joint / base) |>
+    dplyr::select(scenario, T, model, sep_vs_base, joint_vs_base) |>
+    tidyr::pivot_wider(names_from = model, values_from = c(sep_vs_base, joint_vs_base)) |>
+    dplyr::arrange(factor(scenario, levels = names(lab)), T)
+  rows <- sprintf(
+    "%s & %d & %s & %s & %s & %s \\\\",
+    lab[x$scenario], x$T,
+    fmt(x$sep_vs_base_arima), fmt(x$joint_vs_base_arima),
+    fmt(x$sep_vs_base_var), fmt(x$joint_vs_base_var)
+  )
+  write_table(c(
+    "\\begin{table}[!htb]",
+    "\\centering\\small",
+    "\\caption{Experiment 2: MSE of separate and joint MinT reconciliation relative to the base forecasts, averaged over 500 replications, 16 series and horizons 1--12.}",
+    "\\label{tab:supp-exp2}",
+    "\\begin{tabular}{lrrrrr}",
+    "\\hline",
+    " & & \\multicolumn{2}{c}{ARIMA} & \\multicolumn{2}{c}{VAR} \\\\",
+    "Scenario & $T$ & Separate & Joint & Separate & Joint \\\\",
+    "\\hline",
+    rows,
+    "\\hline",
+    "\\end{tabular}",
+    "\\end{table}"
+  ), file)
+}
+
+# Application: joint / separate MSE ratio by horizon, level and variable
+tab_supp_horizon <- function(app_point, file, base_model = "arima") {
+  x <- app_point |>
+    dplyr::filter(model == base_model, method %in% c("joint", "separate")) |>
+    dplyr::mutate(
+      level = node_level(node),
+      hgroup = cut(h, c(0, 3, 6, 9, 12), labels = c("1--3", "4--6", "7--9", "10--12"))
+    ) |>
+    dplyr::group_by(method, series, level, node, hgroup) |>
+    dplyr::summarise(mse = mean(error^2), .groups = "drop") |>
+    tidyr::pivot_wider(names_from = method, values_from = mse) |>
+    dplyr::group_by(series, level, hgroup) |>
+    dplyr::summarise(ratio = exp(mean(log(joint / separate))), .groups = "drop") |>
+    dplyr::mutate(col = paste(series, level)) |>
+    dplyr::select(hgroup, col, ratio) |>
+    tidyr::pivot_wider(names_from = col, values_from = ratio)
+  order_cols <- as.vector(outer(names(app_series_labels), c("Total", "Regions", "States"), paste))[c(1, 3, 5, 2, 4, 6)]
+  rows <- apply(x[, c("hgroup", order_cols)], 1, \(r) {
+    paste0(r[[1]], " & ", paste(fmt(as.numeric(r[-1])), collapse = " & "), " \\\\")
+  })
+  write_table(c(
+    "\\begin{table}[!htb]",
+    "\\centering\\small",
+    sprintf("\\caption{Application (%s base forecasts): MSE of joint relative to separate MinT reconciliation by forecast horizon, geometric mean over the series at each level.}", toupper(base_model)),
+    sprintf("\\label{tab:supp-horizon-%s}", base_model),
+    "\\begin{tabular}{lrrrrrr}",
+    "\\hline",
+    " & \\multicolumn{3}{c}{Admissions} & \\multicolumn{3}{c}{Dismissals} \\\\",
+    "Horizon & Total & Regions & States & Total & Regions & States \\\\",
+    "\\hline",
+    rows,
+    "\\hline",
+    "\\end{tabular}",
+    "\\end{table}"
+  ), file)
+}
+
+# Application: every node, MSE relative to base (ARIMA)
+tab_supp_nodes <- function(accuracy, file, base_model = "arima") {
+  x <- accuracy |>
+    dplyr::filter(model == base_model, method %in% c("separate", "joint")) |>
+    dplyr::select(series, node, level, method, rel) |>
+    tidyr::pivot_wider(names_from = c(series, method), values_from = rel)
+  lvl <- factor(x$level, levels = c("Total", "Regions", "States"))
+  x <- x[order(lvl, x$node), ]
+  regions_en <- c(
+    "Centro-Oeste" = "Midwest", "Nordeste" = "Northeast", "Norte" = "North",
+    "Sudeste" = "Southeast", "Sul" = "South"
+  )
+  node_lab <- sub("^agg_", "", x$node)
+  node_lab <- dplyr::coalesce(unname(regions_en[node_lab]), node_lab)
+  rows <- sprintf(
+    "%s & %s & %s & %s & %s \\\\",
+    node_lab,
+    fmt(x[["Admissões_separate"]]), fmt(x[["Admissões_joint"]]),
+    fmt(x[["Demissões_separate"]]), fmt(x[["Demissões_joint"]])
+  )
+  write_table(c(
+    "\\begin{longtable}{lrrrr}",
+    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
+    "\\hline",
+    " & \\multicolumn{2}{c}{Admissions} & \\multicolumn{2}{c}{Dismissals} \\\\",
+    "Series & Separate & Joint & Separate & Joint \\\\",
+    "\\hline",
+    "\\endhead",
+    rows,
+    "\\hline",
+    "\\end{longtable}"
+  ), file)
 }

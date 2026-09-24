@@ -1,59 +1,46 @@
 \documentclass[a4paper, 12pt]{article}
 \usepackage[margin=2cm]{geometry}
-\usepackage{color}
 \usepackage{amsmath,bm}
 \usepackage{graphicx}
-\usepackage{booktabs,multirow}
+\usepackage{longtable}
 \usepackage{float}
-\usepackage{authblk}
-\usepackage{pgffor}
 \usepackage[no-weekday]{eukdate}
 
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thetable}{S\arabic{table}}
 
-\DeclareMathOperator{\RelRMSE}{RelRMSE}
-\DeclareMathOperator{\Base}{Base}
-\DeclareMathOperator{\Uni}{Uni}
+\title{Separability and the limits of multivariate forecast reconciliation\\[0.3cm] \large Supplementary material}
+\author{Ana Caroline Pinheiro$^{1,2}$, Rodrigo de Souza Bulh{\~o}es$^{1}$,\\ Rob J. Hyndman$^{3}$, Paulo Canas Rodrigues$^{1,4}$\\[0.3cm]
+  \small $^1$Department of Statistics, Federal University of Bahia, Salvador, Brazil\\
+  \small $^2$Secretary of Health of the State of Bahia, Salvador, Brazil\\
+  \small $^3$Department of Econometrics \& Business Statistics, Monash University, Melbourne, Australia\\
+  \small $^4$Department of Business Management, University of Pretoria, Pretoria, South Africa}
 
-\title{Multivariate reconciliation for hierarchical time series}
-
-\author[1,2]{Ana Caroline Pinheiro}
-\author[1]{Rodrigo de Souza Bulh{\~o}es}
-\author[3]{Rob J. Hyndman}
-\author[1,4]{Paulo Canas Rodrigues}
-
-%% Author affiliations
-\affil[1]{Department of Statistics, Federal University of Bahia, Salvador, Brazil}
-\affil[2]{Secretary of Health of the State of Bahia, Salvador, Brazil}
-\affil[3]{Department of Econometrics \& Business Statistics, Monash University, Melbourne, Victoria, Australia}
-\affil[4]{Department of Business Management, University of Pretoria, Pretoria, South Africa}
+\date{\today}
 
 \begin{document}
-
 \maketitle
-\newpage
 
-%%%% APENAS MATERIAL SUPLEMENTAR(IMGS, FIGURAS, ETC) %%%%
+\section*{Experiment 2}
 
-\section*{Figures}
+Table~\ref{tab:supp-exp2} compares separate and joint MinT reconciliation with the base forecasts in Experiment 2. Reconciliation improves substantially on the ARIMA base forecasts, and less on the VAR base forecasts, in every scenario; the difference between separate and joint reconciliation is small in comparison.
 
-\foreach \i in {1,...,9}{%
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{Imagens/\i.pdf}
-    \caption{Simulation of a hierarchical multivariate time series, with the same structure as Figure 1, with $m=2$, under Scenario \i.}
-    \label{fig:sim\i}
-  \end{figure}
-}
+\input{Tabelas/supp_exp2.tex}
 
-\newpage
+\section*{Application: ETS base forecasts}
 
-\section*{Tables}
+Table~\ref{tab:app-accuracy-ets} repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models. For ETS the covariance matrices are estimated from response residuals, because the innovation residuals of multiplicative-error models are relative errors.
 
-\input{Tabelas/Tabs_sh}
-\input{Tabelas/Tabs_uni}
-\input{Tabelas/Tabs_var_adm_sh.tex}
-\input{Tabelas/Tabs_var_dem_sh.tex}
+\input{Tabelas/app_accuracy_ets.tex}
+
+\section*{Application: results by horizon}
+
+Table~\ref{tab:supp-horizon-arima} breaks down the comparison of joint and separate reconciliation (ARIMA base forecasts) by forecast horizon.
+
+\input{Tabelas/supp_horizon_arima.tex}
+
+\section*{Application: results for every series}
+
+\input{Tabelas/supp_nodes_arima.tex}
 
 \end{document}

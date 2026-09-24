@@ -66,7 +66,7 @@ make            # run the targets pipeline, then build multivariate-reconciliati
 | `make status`     | List pipeline targets that are out of date                              |
 | `make test`       | Run the test suite                                                      |
 | `make sync`       | Install the locked R packages (`uvr sync`)                              |
-| `make supplement` | Build the supplement (not yet rewritten; still pre-rewrite results)     |
+| `make supplement` | Build `supplementary_material.pdf`                                      |
 | `make raw-data`   | Download the raw PDET microdata (several hours)                         |
 | `make emprego`    | Rebuild `Dados/emprego_uf.csv` from the raw microdata                   |
 | `make clean`      | Remove LaTeX auxiliary files                                            |
@@ -75,4 +75,4 @@ The full pipeline takes several hours on 8 cores, mostly in the simulation with 
 
 The paper is split into `sections/*.tex`. Figures are written to `Imagens/`, tables and in-text numbers (`numbers.tex`) to `Tabelas/`, all by the pipeline.
 
-The scripts in `scripts/` are the pre-rewrite analysis and are no longer run; they will be removed once the rewrite is complete.
+The map of Brazilian regions (`Imagens/mapa_reg.pdf`) downloads state boundaries with geobr, so its target is built once and not rerun; delete the file and invalidate the target (`targets::tar_invalidate(fig_region_map)`) to redraw it. `Imagens/diagrama_mult.pdf` is a static diagram.

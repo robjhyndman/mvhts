@@ -1,0 +1,24 @@
+\begin{table}[!htb]
+\centering\small
+\caption{Experiment 2: MSE of separate and joint MinT reconciliation relative to the base forecasts, averaged over 500 replications, 16 series and horizons 1--12.}
+\label{tab:supp-exp2}
+\begin{tabular}{lrrrrr}
+\hline
+ & & \multicolumn{2}{c}{ARIMA} & \multicolumn{2}{c}{VAR} \\
+Scenario & $T$ & Separate & Joint & Separate & Joint \\
+\hline
+Separable, $\rho = 0.7$ & 108 & 0.941 & 0.938 & 0.964 & 0.966 \\
+Separable, $\rho = 0.7$ & 400 & 0.905 & 0.886 & 0.981 & 0.980 \\
+Separable, $\rho = -0.7$ & 108 & 0.939 & 0.936 & 0.979 & 0.983 \\
+Separable, $\rho = -0.7$ & 400 & 0.896 & 0.884 & 0.991 & 0.990 \\
+Variable-specific dynamics & 108 & 0.924 & 0.930 & 0.973 & 0.974 \\
+Variable-specific dynamics & 400 & 0.889 & 0.885 & 0.977 & 0.974 \\
+Node-varying correlation & 108 & 0.936 & 0.933 & 0.958 & 0.963 \\
+Node-varying correlation & 400 & 0.893 & 0.885 & 0.982 & 0.980 \\
+Variable-specific node covariance & 108 & 0.944 & 0.942 & 0.977 & 0.980 \\
+Variable-specific node covariance & 400 & 0.913 & 0.905 & 0.982 & 0.983 \\
+Node-varying dynamics & 108 & 0.939 & 0.938 & 0.960 & 0.960 \\
+Node-varying dynamics & 400 & 0.888 & 0.875 & 0.959 & 0.954 \\
+\hline
+\end{tabular}
+\end{table}

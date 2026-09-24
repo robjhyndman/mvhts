@@ -26,19 +26,22 @@ wide_matrix <- function(x, variable, cols) {
     as.matrix()
 }
 
-# Fit ARIMA to every series and a bivariate VAR to every node
+# Fit ARIMA and ETS to every series and a bivariate VAR to every node
 app_fit <- function(train) {
   list(
     arima = fabletools::model(train, arima = fable::ARIMA(value)),
+    ets = fabletools::model(train, ets = fable::ETS(value)),
     var = train |>
       tidyr::pivot_wider(names_from = series, values_from = value) |>
       fabletools::model(var = fable::VAR(vars(Admissões, Demissões)))
   )
 }
 
-# One-step in-sample residuals, T x 2n, rows with any missing value dropped
+# One-step in-sample residuals, T x 2n, rows with any missing value dropped.
+# Response residuals are used for ETS, whose innovation residuals are
+# relative errors when the error is multiplicative.
 app_residuals <- function(fit, name, cols) {
-  res <- stats::residuals(fit)
+  res <- if (name == "ets") stats::residuals(fit, type = "response") else stats::residuals(fit)
   if (name == "var") {
     res <- res |>
       tidyr::pivot_longer(dplyr::all_of(app_series), names_to = "series", values_to = ".resid")
@@ -131,7 +134,7 @@ app_origins <- function(emprego, min_train = 108, last = tsibble::yearmonth("201
 app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
   cols <- app_cols(S)
   train <- emprego |> dplyr::filter(time <= last)
-  fits <- app_fit(train)
+  fits <- app_fit(train)[c("arima", "var")]
   C <- make_C(S)
   C_star <- stack_matrix(C, 2)
   purrr::imap(fits, \(fit, name) {

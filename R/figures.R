@@ -305,3 +305,52 @@ fig_app_data <- function(emprego, file) {
     theme_paper()
   save_figure(p, file, height = 4.2)
 }
+
+# --------------------------------------------------------------------
+# Figure: map of Brazilian regions and federative units. Downloads state
+# boundaries with geobr, so the target that calls this is built once and
+# not rerun (see _targets.R).
+# --------------------------------------------------------------------
+fig_map <- function(state_meta, region_meta, file) {
+  region_colors <- region_meta |>
+    dplyr::filter(!is.na(map_color)) |>
+    dplyr::arrange(order) |>
+    dplyr::select(region_label, map_color) |>
+    tibble::deframe()
+  uf <- geobr::read_state(year = 2020, cache = FALSE, showProgress = FALSE) |>
+    dplyr::left_join(
+      state_meta |>
+        dplyr::select(abbrev_state = UF, Região) |>
+        dplyr::left_join(region_meta, by = "Região"),
+      by = "abbrev_state"
+    )
+  world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+  world_points <- cbind(world, sf::st_coordinates(sf::st_centroid(world$geometry)))
+  world_points$name[world_points$name == "Brazil"] <- NA
+  ocean <- function(x, y, label) {
+    ggplot2::annotate("text", x = x, y = y, label = label, fontface = "italic", colour = "#3a739c", size = 5.5)
+  }
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_sf(data = world, colour = "#9f9f9f", fill = "#e6e7e8") +
+    ggplot2::geom_sf(data = uf, ggplot2::aes(fill = region_label), colour = "#e6e7e8") +
+    ggplot2::scale_fill_manual(values = region_colors, name = "Region", breaks = names(region_colors)) +
+    ggplot2::geom_sf_text(data = uf, ggplot2::aes(label = abbrev_state), size = 3.3, colour = "#e6e7e8", fontface = "bold") +
+    ggplot2::geom_text(data = world_points, ggplot2::aes(x = X, y = Y, label = name), colour = "#9f9f9f", fontface = "bold") +
+    ocean(-33, -17.5, "Atlantic") + ocean(-33, -19, "Ocean") +
+    ocean(-74, -21.5, "Pacific") + ocean(-74, -23, "Ocean") +
+    ggplot2::labs(x = "", y = "") +
+    ggplot2::coord_sf(xlim = c(-75, -30), ylim = c(-35, 5)) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.background = ggplot2::element_rect(fill = "#d7f9f8"),
+      legend.position = "inside",
+      legend.position.inside = c(0.9, 0.13),
+      legend.background = ggplot2::element_rect(fill = "transparent"),
+      legend.key.size = ggplot2::unit(0.6, "cm"),
+      panel.grid.major = ggplot2::element_line(colour = "#dadad9")
+    )
+  grDevices::pdf(file, width = 9, height = 9)
+  print(p)
+  crop::dev.off.crop(file)
+  file
+}

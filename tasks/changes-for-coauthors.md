@@ -37,3 +37,11 @@
 - **Application redesigned.** 48 rolling origins over 2007–2019, univariate
   and joint MinT compared with base, OLS and WLS, the diagnostic on the real
   residuals, and a probabilistic comparison for net employment change.
+- **Main empirical message.** Joint reconciliation does not improve forecasts
+  of admissions or dismissals individually, but it does improve forecasts of
+  net employment change (national MSE down 18%), because MinT is optimal for
+  every linear combination, not just on average. For probabilistic forecasts
+  of net change, keeping the dependence in the base forecasts matters most.
+- **Old analysis removed.** `scripts/`, `Saida/` and the old tables and
+  figures are gone (all were based on the time-reversed data). The supplement
+  is rewritten.

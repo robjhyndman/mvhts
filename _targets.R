@@ -118,8 +118,19 @@ list(
   tar_target(table_app_var, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_var.tex", "var"), format = "file"),
   tar_target(table_app_diag, tab_app_diag(app_diag, "Tabelas/app_diag.tex"), format = "file"),
   tar_target(app_net, app_net_point(app_point)),
+  tar_target(table_app_ets, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_ets.tex", "ets"), format = "file"),
+  tar_target(table_supp_exp2, tab_supp_exp2(exp2_sum, "Tabelas/supp_exp2.tex"), format = "file"),
+  tar_target(table_supp_horizon, tab_supp_horizon(app_point, "Tabelas/supp_horizon_arima.tex"), format = "file"),
+  tar_target(table_supp_nodes, tab_supp_nodes(app_acc, "Tabelas/supp_nodes_arima.tex"), format = "file"),
   tar_target(table_app_prob, tab_app_prob(app_prob_sum, app_net, "Tabelas/app_prob.tex"), format = "file"),
   tar_target(fig_data, fig_app_data(emprego, "Imagens/app_data.pdf"), format = "file"),
+  # The map downloads state boundaries, so build it once and never rerun
+  tar_target(
+    fig_region_map,
+    fig_map(state_meta, region_meta, "Imagens/mapa_reg.pdf"),
+    format = "file",
+    cue = tar_cue(mode = "never")
+  ),
   tar_target(num_power, numbers_power(power)),
   tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum, app_net)),
 

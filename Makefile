@@ -5,13 +5,12 @@
 # pipeline target always runs and only stale steps are recomputed.
 #
 # Common targets:
-#   make              Run the pipeline, then build the paper PDF.
+#   make              Run the pipeline, then build the paper and supplement PDFs.
 #   make pipeline     Run the targets pipeline only (simulations, application,
 #                     figures, tables and in-text numbers).
-#   make paper        Same as make.
+#   make paper        Run the pipeline, then build the paper PDF only.
 #   make pdf-only     Build the paper PDF from existing outputs.
-#   make supplement   Build the supplement PDF (not yet rewritten; still
-#                     contains results from the pre-rewrite analysis).
+#   make supplement   Build the supplement PDF.
 #   make status       Show which pipeline targets are out of date.
 #   make test         Run the test suite.
 #   make sync         Install the locked R packages (uvr sync).
@@ -27,7 +26,7 @@ LATEXMKFLAGS := -pdf -interaction=nonstopmode -halt-on-error
 
 .PHONY: all paper pipeline pdf-only supplement status test sync raw-data emprego clean help
 
-all: paper
+all: paper supplement
 
 paper: pipeline
 	$(LATEXMK) $(LATEXMKFLAGS) multivariate-reconciliation.tex
@@ -38,7 +37,7 @@ pipeline:
 pdf-only:
 	$(LATEXMK) $(LATEXMKFLAGS) multivariate-reconciliation.tex
 
-supplement:
+supplement: pipeline
 	$(LATEXMK) $(LATEXMKFLAGS) supplementary_material.tex
 
 status:
@@ -67,4 +66,4 @@ clean:
 	$(LATEXMK) -c supplementary_material.tex
 
 help:
-	@sed -n '1,21p' Makefile
+	@sed -n '1,20p' Makefile
