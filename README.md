@@ -1,4 +1,4 @@
-# Multivariate reconciliation for hierarchical time series
+# Separability and the limits of multivariate forecast reconciliation
 
 Ana Caroline Pinheiro, Rodrigo de Souza Bulhões, Rob J. Hyndman, Paulo Canas Rodrigues.
 
@@ -16,13 +16,13 @@ Run scripts with `uvr run <script.R>`, which uses only the project library.
 
 ### Workflow
 
-The analysis is being migrated to [targets](https://docs.ropensci.org/targets/). Functions live in `R/`, the pipeline is defined in `_targets.R`, and it is run with:
+The analysis is a [targets](https://docs.ropensci.org/targets/) pipeline. Functions live in `R/`, the pipeline is defined in `_targets.R`, and it is run with:
 
 ```bash
 uvr run run.R
 ```
 
-Until the migration is complete, the older scripts in `scripts/` are run by the Makefile described below. Tests are in `tests/testthat/` and run with `uvr run tests/testthat.R`.
+Tests are in `tests/testthat/` and run with `uvr run tests/testthat.R` (or `make test`).
 
 ### LaTeX
 
@@ -48,86 +48,31 @@ To rebuild it:
 ```bash
 make raw-data   # download ~5GB into Dados/pdet/ (not tracked; several hours, resumable)
 make emprego    # count admissions and dismissals by month and state
-uvr run tests/testthat.R   # includes checking national totals against IpeaData
+make test       # includes checking national totals against IpeaData
 ```
 
 `Dados/pdet_manifest.csv` records the size and MD5 checksum of every raw file used, since PDET occasionally re-issues files.
 
-## Using the Makefile
-
-The simplest approach is to use `make` as the main interface for reproducibility. It handles dependencies and only rebuilds stale outputs.
+## Building the paper
 
 ```bash
-make          # same as: make all
+make            # run the targets pipeline, then build multivariate-reconciliation.pdf
 ```
 
-Individual targets can also be specified:
+| Target            | Action                                                                  |
+| ----------------- | ----------------------------------------------------------------------- |
+| `make pipeline`   | Run the targets pipeline only (`uvr run run.R`); only stale steps rerun |
+| `make pdf-only`   | Build the paper PDF from existing outputs                               |
+| `make status`     | List pipeline targets that are out of date                              |
+| `make test`       | Run the test suite                                                      |
+| `make sync`       | Install the locked R packages (`uvr sync`)                              |
+| `make supplement` | Build the supplement (not yet rewritten; still pre-rewrite results)     |
+| `make raw-data`   | Download the raw PDET microdata (several hours)                         |
+| `make emprego`    | Rebuild `Dados/emprego_uf.csv` from the raw microdata                   |
+| `make clean`      | Remove LaTeX auxiliary files                                            |
 
-| Target                 | Action                                                      |
-| ---------------------- | ----------------------------------------------------------- |
-| `make paper`           | Build `multivariate-reconciliation.pdf`                     |
-| `make supplement`      | Build `supplementary_material.pdf`                          |
-| `make tables`          | Regenerate all LaTeX tables in `Tabelas/`                  |
-| `make figures`         | Regenerate all figures in `Imagens/`                       |
-| `make data`            | Regenerate cached R outputs in `Saida/`                    |
-| `make simulation`      | Run simulation scripts only                                 |
-| `make application`     | Run application scripts only                                |
-| `make pdf-only`        | Compile PDFs without regenerating R outputs                 |
-| `make clean`           | Remove LaTeX auxiliary files                                |
-| `make clean-generated` | Remove generated caches, tables, and figures               |
+The full pipeline takes several hours on 8 cores, mostly in the simulation with fitted ARIMA models and in the rolling-origin application. Results are cached in `_targets/`, so later runs recompute only what has changed. `targets::tar_visnetwork()` shows the dependency graph.
 
+The paper is split into `sections/*.tex`. Figures are written to `Imagens/`, tables and in-text numbers (`numbers.tex`) to `Tabelas/`, all by the pipeline.
 
-## Not using the Makefile
-
-Run the following R scripts. Each script caches its output in `Saida/` so it can be resumed if interrupted.
-
-### 1. Simulation study
-
-```r
-source("scripts/simulation.R")
-```
-
-Runs 9 Monte Carlo simulation scenarios (3 cross-series correlation structures × 3 cross-node correlation structures), each with 1000 replications using parallel processing. Results are saved to `Saida/sim_rec1.rds` through `Saida/sim_rec9.rds`. Completed scenarios are skipped on re-runs.
-
-```r
-source("scripts/simulation_tables.R")
-```
-
-LaTeX tables are written to `Tabelas/`.
-
-```r
-source("scripts/simulation_figures.R")
-```
-
-Generates figures in `Imagens`
-
-### 2. Real-data application
-
-```r
-source("scripts/application.R")
-```
-
-Applies the methodology to the Brazilian employment data in `Dados/emprego_uf.csv`. Fits ARIMA and VAR models with rolling-origin cross-validation and performs multivariate and univariate reconciliation. Fitted models are cached in `Saida/mod_arima_regiao.rds` and `Saida/mod_var_regiao.rds`. Accuracy measures are saved to `Saida/app_relrmse.rds`.
-
-```r
-source("scripts/application_tables.R")
-```
-
-Writes LaTeX tables to `Tabelas/`.
-
-```r
-source("scripts/application_figures.R")
-```
-
-Generates figures in `Imagens`
-
-### 3. Compiling the paper and supplementary material
-
-After running the R scripts, compile the paper and supplementary material:
-
-```bash
-latexmk -pdf multivariate-reconciliation.tex
-latexmk -pdf supplementary_material.tex
-```
-
-The compiled PDFs are `multivariate-reconciliation.pdf` and `supplementary_material.pdf`.
+The scripts in `scripts/` are the pre-rewrite analysis and are no longer run; they will be removed once the rewrite is complete.

@@ -404,9 +404,10 @@ locked, per-project library.
       `tests/testthat/`. **Checkpoint:** `tar_make()` runs and
       `tar_visnetwork()` shows the data target. The remaining targets are added
       phase by phase, as each piece is written.
-- [ ] P0.7 Retire the old pipeline: delete the Makefile, `scripts/` and
-      `Saida/`. **Deferred to the end of Phase 5**, when targets covers
-      everything still in use, so every commit leaves a working build.
+- [~] P0.7 Retire the old pipeline. **Makefile done (2026-09-24):** it now runs
+      the targets pipeline and latexmk, plus status, test, sync and data
+      targets. Still to do, at the end of Phase 5: delete `scripts/` and
+      `Saida/`, and remove the old table and figure files.
 
 Phase 0 notes (2026-09-24):
 - **tsDyn replaced.** It was archived from CRAN on 2026-08-21. It was used only
