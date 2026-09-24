@@ -59,7 +59,20 @@ exp2_summary <- function(exp2_sims, exp2_pop) {
   diag <- sims |>
     dplyr::filter(method == "joint") |>
     dplyr::select(scenario, T, model, kappa_hat, gain_hat, reps)
+  # Paired standard error of the log ratio joint / separate, from the
+  # per-replication mean MSE over horizons
+  paired <- exp2_sims |>
+    dplyr::filter(method %in% c("joint", "separate")) |>
+    dplyr::group_by(scenario, T, model, batch, rep, method) |>
+    dplyr::summarise(mse = mean(mse), .groups = "drop") |>
+    tidyr::pivot_wider(names_from = method, values_from = mse) |>
+    dplyr::group_by(scenario, T, model) |>
+    dplyr::summarise(
+      log_ratio_se = stats::sd(log(joint / separate)) / sqrt(dplyr::n()),
+      .groups = "drop"
+    )
   ratios |>
+    dplyr::left_join(paired, by = c("scenario", "T", "model")) |>
     dplyr::left_join(diag, by = c("scenario", "T", "model")) |>
     dplyr::left_join(failed, by = c("scenario", "T")) |>
     dplyr::left_join(
@@ -78,24 +91,26 @@ tab_exp2 <- function(summary, file) {
     N3_node_dynamics = "Node-varying dynamics"
   )
   wide <- summary |>
-    dplyr::select(scenario, T, model, joint_vs_sep, kappa_hat, gain_hat, pop_kappa, pop_gain, incoherence) |>
-    tidyr::pivot_wider(names_from = model, values_from = c(joint_vs_sep, kappa_hat, gain_hat)) |>
+    dplyr::select(scenario, T, model, joint_vs_sep, log_ratio_se, kappa_hat, gain_hat, pop_kappa, pop_gain, incoherence) |>
+    tidyr::pivot_wider(names_from = model, values_from = c(joint_vs_sep, log_ratio_se, kappa_hat, gain_hat)) |>
     dplyr::arrange(factor(scenario, levels = names(lab)), T)
   rows <- sprintf(
-    "%s & %d & %s & %s & %s & %s & %s & %s \\\\",
+    "%s & %d & %s & %s & %s & %s (%s) & %s (%s) & %s \\\\",
     lab[wide$scenario], wide$T,
-    fmt(100 * wide$incoherence, 2), fmt(wide$pop_kappa, 2), fmt(100 * wide$pop_gain, 2),
-    fmt(wide$joint_vs_sep_arima), fmt(wide$joint_vs_sep_var), fmt(wide$kappa_hat_arima, 2)
+    fmt(100 * pmax(wide$incoherence, 0), 2), fmt(wide$pop_kappa, 2), fmt(100 * wide$pop_gain, 2),
+    fmt(wide$joint_vs_sep_arima), fmt(wide$log_ratio_se_arima),
+    fmt(wide$joint_vs_sep_var), fmt(wide$log_ratio_se_var),
+    fmt(100 * wide$gain_hat_arima, 1)
   )
   write_table(c(
     "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Experiment 2. Population quantities for the optimal AR forecasts: incoherent share of error variance (\\%), $\\kappa$, and MSE reduction from joint reconciliation (\\%). Fitted models: mean MSE of joint relative to separate reconciliation, and mean $\\widehat\\kappa$ (ARIMA).}",
+    "\\caption{Experiment 2. Population quantities for the optimal AR forecasts: incoherent share of error variance (\\%), $\\kappa$, and MSE reduction from joint reconciliation (\\%). Fitted base models: MSE of joint relative to separate reconciliation, averaged over 500 replications, 16 series and horizons 1--12, with the standard error of the log ratio in parentheses; mean plug-in gain $\\widehat\\gamma$ (\\%, ARIMA).}",
     "\\label{tab:exp2}",
     "\\begin{tabular}{lrrrrrrr}",
     "\\hline",
     " & & \\multicolumn{3}{c}{Population} & \\multicolumn{2}{c}{Joint / separate} & \\\\",
-    "Scenario & $T$ & Incoh. & $\\kappa$ & Gain & ARIMA & VAR & $\\widehat\\kappa$ \\\\",
+    "Scenario & $T$ & Incoh. & $\\kappa$ & Gain & ARIMA & VAR & $\\widehat\\gamma$ \\\\",
     "\\hline",
     rows,
     "\\hline",
@@ -254,5 +269,70 @@ numbers_exp1 <- function(exp1_pop, exp1_summary, exp1_samp) {
     sepPenaltyBrazil = fmt(100 * (sep$ratio[sep$hierarchy == "brazil"] - 1), 1),
     gainFthreeWeakBrazil = fmt(100 * (1 - weak$oracle_ratio), 1),
     gainFthreeWeakBrazilEst = fmt(100 * (1 - weak$ratio), 1)
+  )
+}
+
+# --------------------------------------------------------------------
+# In-text numbers from Experiment 2
+# --------------------------------------------------------------------
+numbers_exp2 <- function(exp2_sum) {
+  pop <- dplyr::distinct(exp2_sum, scenario, pop_kappa, pop_gain, incoherence)
+  ns <- pop |> dplyr::filter(grepl("^N", scenario))
+  ar <- exp2_sum |> dplyr::filter(model == "arima")
+  ctrl400 <- ar |> dplyr::filter(grepl("^C", scenario), T == 400)
+  va <- exp2_sum |> dplyr::filter(model == "var")
+  rng <- function(x, d, scale = 1) paste0(fmt(scale * min(x), d), "--", fmt(scale * max(x), d))
+  list(
+    expTwoIncohRange = rng(ns$incoherence, 1, 100),
+    expTwoKappaRange = rng(ns$pop_kappa, 2),
+    expTwoGainRange = rng(ns$pop_gain, 1, 100),
+    expTwoSepVsBaseRange = rng(1 - ar$sep_vs_base, 0, 100),
+    expTwoCtrlGainMax = fmt(100 * (1 - min(ctrl400$joint_vs_sep)), 1),
+    expTwoArimaSmallRange = rng(ar$joint_vs_sep[ar$T == 108], 3),
+    expTwoArimaLargeRange = rng(ar$joint_vs_sep[ar$T == 400], 3),
+    expTwoVarMaxDiff = fmt(100 * max(abs(1 - va$joint_vs_sep)), 1),
+    expTwoBlocksMaxDiff = fmt(100 * max(abs(1 - exp2_sum$blocks_vs_sep)), 1)
+  )
+}
+
+# --------------------------------------------------------------------
+# In-text numbers from the diagnostic study and the application
+# --------------------------------------------------------------------
+numbers_power <- function(power) {
+  null <- power |> dplyr::filter(family %in% c("F0", "F1"))
+  list(
+    testSizeRange = paste0(fmt(100 * min(null$rejection), 1), "--", fmt(100 * max(null$rejection), 1))
+  )
+}
+
+numbers_app <- function(app_diag, accuracy, prob_summary) {
+  d <- split(app_diag, app_diag$model)
+  acc <- app_accuracy_table(accuracy)
+  js <- acc |>
+    dplyr::filter(method %in% c("joint", "separate")) |>
+    tidyr::pivot_wider(names_from = method, values_from = rel) |>
+    dplyr::mutate(ratio = joint / separate)
+  pr <- prob_summary
+  skill <- function(m, l) fmt(100 * (1 - pr$rel[pr$method == m & pr$level == l]), 0)
+  list(
+    appTArima = d$arima$T,
+    appKappaArima = fmt(d$arima$kappa, 2),
+    appGainArima = fmt(100 * d$arima$gain, 1),
+    appPArima = fmt(d$arima$p_value, 3),
+    appIncohArima = fmt(100 * d$arima$incoherence, 0),
+    appKappaVar = fmt(d$var$kappa, 2),
+    appGainVar = fmt(100 * d$var$gain, 1),
+    appIncohVar = fmt(100 * d$var$incoherence, 0),
+    appKronArima = fmt(d$arima$kronecker_error, 2),
+    appJointSepArimaRange = paste0(
+      fmt(min(js$ratio[js$model == "arima"]), 3), "--", fmt(max(js$ratio[js$model == "arima"]), 3)
+    ),
+    appJointSepVarRange = paste0(
+      fmt(min(js$ratio[js$model == "var"]), 3), "--", fmt(max(js$ratio[js$model == "var"]), 3)
+    ),
+    appNetJointSepStates = skill("joint + separate", "States"),
+    appNetJointSepTotal = skill("joint + separate", "Total"),
+    appNetJointJointStates = skill("joint + joint", "States"),
+    appNetJointJointTotal = skill("joint + joint", "Total")
   )
 }

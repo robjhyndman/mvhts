@@ -96,6 +96,9 @@ list(
     ),
     pattern = map(exp2_grid)
   ),
+  tar_target(exp2_sum, exp2_summary(exp2_sims, exp2_pop)),
+  tar_target(table_exp2, tab_exp2(exp2_sum, "Tabelas/exp2.tex"), format = "file"),
+  tar_target(num_exp2, numbers_exp2(exp2_sum)),
 
   # Application: Brazilian admissions and dismissals, 2007-2019
   # (R/application_analysis.R, R/application_prob.R)
@@ -109,7 +112,15 @@ list(
   tar_target(app_point, dplyr::bind_rows(purrr::map(app_results, "point"))),
   tar_target(app_prob_scores, dplyr::bind_rows(purrr::map(app_results, "prob"))),
   tar_target(app_diag, app_diagnostic(emprego, S_brazil)),
+  tar_target(app_acc, app_accuracy(app_point)),
+  tar_target(app_prob_sum, app_prob_summary(app_prob_scores)),
+  tar_target(table_app_arima, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_arima.tex", "arima"), format = "file"),
+  tar_target(table_app_var, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_var.tex", "var"), format = "file"),
+  tar_target(table_app_diag, tab_app_diag(app_diag, "Tabelas/app_diag.tex"), format = "file"),
+  tar_target(table_app_prob, tab_app_prob(app_prob_sum, "Tabelas/app_prob.tex"), format = "file"),
+  tar_target(num_power, numbers_power(power)),
+  tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum)),
 
   # In-text numbers for the paper (R/results.R)
-  tar_target(numbers, write_numbers(c(num_exp1), "Tabelas/numbers.tex"), format = "file")
+  tar_target(numbers, write_numbers(c(num_exp1, num_exp2, num_power, num_app), "Tabelas/numbers.tex"), format = "file")
 )

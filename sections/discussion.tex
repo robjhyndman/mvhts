@@ -7,7 +7,7 @@ When several variables are observed over the same hierarchy and no constraint li
 
 This has three practical consequences.
 
-\emph{First, simulation designs need care.} A design in which every node shares the same dynamics produces coherent population forecasts (Proposition~\ref{prop:coherent}), so any difference between joint and separate reconciliation comes from estimation error in the base models. Such designs cannot show a benefit from joint reconciliation, however strongly the variables are correlated.
+\emph{First, simulation designs need care.} A design in which every node shares the same dynamics produces coherent population forecasts (Proposition~\ref{prop:coherent}), so any difference between joint and separate reconciliation comes from estimation error in the base models. Experiment~2 shows that this estimation error can itself have exploitable cross-variable structure, but that the resulting gains are small and appear only with long series. Varying the cross-variable correlation in such a design, however strongly, says nothing about the value of joint reconciliation for the data-generating process.
 
 \emph{Second, check before reconciling jointly.} The diagnostic of Section~\ref{sec:diagnostic} estimates how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise. When they are not, separate reconciliation is preferable: it needs only the diagonal blocks of the error covariance, which are estimated more precisely, and Experiment~1 shows that estimating the cross-variable blocks costs accuracy when they carry no information.
 
