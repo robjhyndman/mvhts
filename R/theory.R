@@ -109,7 +109,18 @@ kappa_mv <- function(W, C, m, standardise = TRUE) {
     on_diag <- on_diag + sum(block(G, j, j, n, n_a)^2)
   }
   total <- sum(G^2)
-  sqrt((total - on_diag) / total)
+  sqrt(max(0, total - on_diag) / total)
+}
+
+# --------------------------------------------------------------------
+# Plug-in gain: the proportional MSE reduction that joint reconciliation
+# would achieve over separate reconciliation if W were the true error
+# covariance. Zero exactly when kappa is zero, and bounded by the size of
+# the incoherent component, which kappa does not measure.
+# --------------------------------------------------------------------
+plugin_gain <- function(W, C, m) {
+  C_star <- stack_matrix(C, m)
+  1 - pop_mse(mint_map(W, C_star), W) / pop_mse(separate_map(W, C, m), W)
 }
 
 # --------------------------------------------------------------------

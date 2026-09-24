@@ -159,3 +159,10 @@ test_that("Proposition 3: node-invariant dynamics give coherent population forec
   })
   expect_lt(max(abs(C %*% fc)), 1e-10)
 })
+
+test_that("plug-in gain is zero exactly when kappa is zero, and positive otherwise", {
+  W0 <- w_invisible(w_separable(matrix(c(1, 0.7, 0.7, 1), 2), sigma_one()), S, m, random_pd(m * 5))
+  expect_lt(abs(plugin_gain(W0, C, m)), 1e-10)
+  W1 <- w_node_varying(sigma_one(), seq(-0.6, 0.9, length.out = n))
+  expect_gt(plugin_gain(W1, C, m), 1e-4)
+})
