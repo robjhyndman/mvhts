@@ -24,13 +24,13 @@
 
 \section*{Experiment 2}
 
-Table~\ref{tab:supp-exp2} compares separate and joint MinT reconciliation with the base forecasts in Experiment 2. Reconciliation improves substantially on the ARIMA base forecasts, and less on the VAR base forecasts, in every scenario; the difference between separate and joint reconciliation is small in comparison.
+Table~\ref{tab:supp-exp2} compares separate and joint MinT reconciliation with the base forecasts in Experiment 2. In every scenario, reconciliation reduces MSE by 6--13\% relative to the ARIMA base forecasts and by 1--5\% relative to the VAR base forecasts. Separate and joint reconciliation never differ by more than 0.02.
 
 \input{Tabelas/supp_exp2.tex}
 
 \section*{Application: ETS base forecasts}
 
-Table~\ref{tab:app-accuracy-ets} repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models. For ETS the covariance matrices are estimated from response residuals, because the innovation residuals of multiplicative-error models are relative errors.
+Table~\ref{tab:app-accuracy-ets} repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models. For ETS we estimate the covariance matrices from response residuals, because the innovation residuals of multiplicative-error models are relative errors.
 
 \input{Tabelas/app_accuracy_ets.tex}
 
