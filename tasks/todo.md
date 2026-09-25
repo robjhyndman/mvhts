@@ -14,11 +14,9 @@ Every number comes from the pipeline.
 Decisions needed:
 
 1. ~~**Title (D5 revisited).**~~ Done: "When does multivariate forecast reconciliation help?"
-2. **Kappa's standardisation.** (Rob will rerun this overnight on his desktop.)
-   It currently uses the mean diagonal of each variable's block of W, which changes when coherent components are added (the text now says so).
-   Standardising by the mean diagonal of `C W_jj C'` (the incoherence variances) would make kappa's value fully invariant.
-   The cost is about 8 h of pipeline reruns (Experiment 2 recomputes kappa_hat).
-   Recommended if the diagnostic is kept as a headline.
+2. **Kappa's standardisation.** Code and text changed on 2026-09-25; **pipeline rerun pending** (Rob, overnight on his desktop, about 8 h: `make`).
+   Kappa now standardises each variable by the mean diagonal of `C W_jj C'` (the incoherence variances) instead of `W_jj`, so its value is fully invariant to `S* K S*'` components (new test in `tests/testthat/test_theory.R`).
+   After the rerun, check the kappa values quoted in the notes below (they use the old scaling) and reread Section 4 and the application diagnostic text against the new numbers.
 3. **VAR base models.** The per-state VARs have no seasonal terms, and their residuals are autocorrelated in 95% of series (so the LR test is invalid for them).
    Keep them in the main text (D4) with the caveat, or move them to the supplement.
 4. **D6 authorship.** Felix Fesca (TU Dortmund) added as fifth author on 2026-09-25.
@@ -386,7 +384,7 @@ All three are marked TODO in `cas-refs.bib`.
 
 ### Phase 3: diagnostic (done, redesigned)
 
-- [x] Scale convention: standardise each variable by the square root of the mean diagonal of its block (tested).
+- [x] Scale convention: standardise each variable by the square root of the mean diagonal of `C W_jj C'` (tested; changed from the mean diagonal of `W_jj` on 2026-09-25).
 - [x] **Plug-in gain gamma added.** Kappa alone is not enough: in Experiment 2, kappa is 0.65–0.97 but the gain is under 2.5%, because only the small incoherent component can be improved.
 - [x] **Bootstrap dropped.** The Kronecker-null and decoupling bootstraps were mis-sized in the 33-series hierarchy, because any null built from W-hat inherits its noise.
   Replaced by a likelihood ratio test of condition (d): regress each variable's bottom-level errors on its own and the other variable's incoherences, using Wilks' lambda with Rao's F and a Bonferroni combination.

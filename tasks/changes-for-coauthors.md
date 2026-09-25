@@ -41,3 +41,6 @@
   Smaller fixes: CAGED no longer used before it is defined, the test is called a likelihood ratio (Wilks' Lambda) test throughout, and the net-change plug-in gain is named gamma_a.
 - **Abstract rewritten (25 September 2026)** to match the restructured paper and to follow the what/why/how/results/implications template, in the present tense.
   It now reports the 15.7% maximum population gain in the simulations and the 15% CRPS reduction from joint simulation of the base forecasts, and ends with the practical implication.
+- **Kappa's scaling changed.** Each variable is now standardised by the average variance of its incoherences (the diagonal of `C W_jj C'`) rather than of all its base forecast errors.
+  This makes the value of kappa, not just whether it is zero, unaffected by error components that reconciliation ignores.
+  All kappa values in the paper change.

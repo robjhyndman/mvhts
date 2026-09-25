@@ -91,16 +91,18 @@ pop_mse <- function(M, W) sum(diag(M %*% W %*% t(M)))
 # --------------------------------------------------------------------
 # The kappa diagnostic: off-diagonal block mass of G.
 # With standardise = TRUE each variable is first scaled by the square
-# root of the mean diagonal of its block of W, so kappa does not depend
-# on the units of the variables. (Rescaling variable j by c_j multiplies
-# block G_jk by c_j / c_k.)
+# root of the mean diagonal of C W_jj C' (its incoherence variances), so
+# kappa does not depend on the units of the variables. (Rescaling
+# variable j by c_j multiplies block G_jk by c_j / c_k.) Because C S = 0,
+# adding S* K S*' to W changes neither G nor the scaling, so the value of
+# kappa is invariant to such components, not just whether it is zero.
 # --------------------------------------------------------------------
 kappa_mv <- function(W, C, m, standardise = TRUE) {
   n <- NCOL(C)
   if (standardise) {
     s <- vapply(
       seq_len(m),
-      \(j) sqrt(mean(diag(block(W, j, j, n)))),
+      \(j) sqrt(mean(diag(C %*% block(W, j, j, n) %*% t(C)))),
       numeric(1)
     )
     d <- rep(1 / s, each = n)

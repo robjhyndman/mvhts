@@ -13,10 +13,10 @@ $$
   = \left( \frac{\sum_{j \ne k}\|\bm{G}_{jk}\|_F^2}{\|\bm{G}\|_F^2} \right)^{1/2},
 $$ {#eq-kappa}
 where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$.
-Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{W}_{jj}$.
+Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{C}\bm{W}_{jj}\bm{C}'$, the variances of its incoherences.
 This makes $\kappa$ free of units.
 By @prp-equivalence, $\kappa = 0$ exactly when joint and separate reconciliation coincide.
-Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), so it cannot move $\kappa$ away from zero, although it can change the standardisation and hence the value of a non-zero $\kappa$.
+Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), and since $\bm{C}\bm{S} = \bm{0}$ it leaves the standardisation unchanged too, so the value of $\kappa$ does not depend on such components.
 
 The second measure describes the value of the joint map.
 If $\bm{W}$ were the true error covariance, the proportional reduction in mean squared error from reconciling jointly rather than separately would be

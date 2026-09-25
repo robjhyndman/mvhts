@@ -124,6 +124,13 @@ test_that("kappa is invariant to the units of each variable when standardised", 
   )
 })
 
+test_that("kappa's value is invariant to components of the form S* K S*'", {
+  W <- random_pd(m * n)
+  W2 <- w_invisible(W, S, m, 10 * random_pd(m * 5))
+  expect_gt(kappa_mv(W, C, m), 1e-3)
+  expect_equal(kappa_mv(W, C, m), kappa_mv(W2, C, m), tolerance = 1e-8)
+})
+
 test_that("nearest_kronecker recovers a separable matrix", {
   V <- matrix(c(2, -0.5, -0.5, 1), 2)
   Sigma0 <- sigma_one()
