@@ -15,6 +15,7 @@ papersize: a4
 fontfamily: mathpazo
 fig-pos: "!htb"
 include-in-header: preamble.tex
+number-depth: 2
 colorlinks: true
 linkcolor: black
 citecolor: black
