@@ -23,46 +23,62 @@ library(targets)
 
 # Experiment 2 {.unnumbered}
 
-Table\ \ref{tab:supp-exp2} compares separate and joint MinT reconciliation with the base forecasts in Experiment 2.
+@tbl-supp-exp2 compares separate and joint MinT reconciliation with the base forecasts in Experiment 2.
 In every scenario, reconciliation reduces MSE by 6--13% relative to the ARIMA base forecasts and by 1--5% relative to the VAR base forecasts.
 Separate and joint reconciliation never differ by more than 0.02.
 
+::: {#tbl-supp-exp2}
 ```{r}
 #| output: asis
 
 cat(readLines(tar_read(table_supp_exp2)), sep = "\n")
 ```
 
+Experiment 2: MSE of separate and joint MinT reconciliation relative to the base forecasts, averaged over 500 replications, 16 series and horizons 1--12.
+:::
+
 # Application: ETS base forecasts {.unnumbered}
 
-Table\ \ref{tab:app-accuracy-ets} repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models.
+@tbl-app-accuracy-ets repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models.
 For ETS we estimate the covariance matrices from response residuals, because the innovation residuals of multiplicative-error models are relative errors.
 
+::: {#tbl-app-accuracy-ets}
 ```{r}
 #| output: asis
 
 cat(readLines(tar_read(table_app_ets)), sep = "\n")
 ```
 
+Application: MSE relative to base forecasts (ETS), geometric mean over the series at each level, averaged over 48 forecast origins (37 with all twelve horizons) and horizons 1--12.
+:::
+
 # Application: results by horizon {.unnumbered}
 
-Table\ \ref{tab:supp-horizon-arima} breaks down the comparison of joint and separate reconciliation (ARIMA base forecasts) by forecast horizon.
+@tbl-supp-horizon-arima breaks down the comparison of joint and separate reconciliation (ARIMA base forecasts) by forecast horizon.
 For admissions the ratio stays close to one at all horizons.
 For dismissals, joint reconciliation is worse at short horizons and better at long ones, especially at the national level, so the near-neutral averages in the main text combine gains and losses.
 
+::: {#tbl-supp-horizon-arima}
 ```{r}
 #| output: asis
 
 cat(readLines(tar_read(table_supp_horizon)), sep = "\n")
 ```
 
+Application (ARIMA base forecasts): MSE of joint relative to separate MinT reconciliation by forecast horizon, geometric mean over the series at each level.
+:::
+
 # Application: results for every series {.unnumbered}
 
-Table\ \ref{tab:supp-nodes} gives the results for every series.
+@tbl-supp-nodes gives the results for every series.
 Differences between joint and separate reconciliation are larger for individual states than for the aggregates, and go in both directions.
 
+::: {#tbl-supp-nodes}
 ```{r}
 #| output: asis
 
 cat(readLines(tar_read(table_supp_nodes)), sep = "\n")
 ```
+
+Application (ARIMA base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins (37 with all twelve horizons) and horizons 1--12.
+:::

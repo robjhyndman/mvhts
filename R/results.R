@@ -105,10 +105,7 @@ tab_exp2 <- function(summary, file) {
     fmt(100 * wide$gain_hat_arima, 1)
   )
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Experiment 2. Population quantities for the optimal AR forecasts: incoherent share of error variance (\\%), $\\kappa$, and MSE reduction from joint reconciliation (\\%). Fitted base models: MSE of joint relative to separate reconciliation, averaged over 500 replications, 16 series and horizons 1--12, with the standard error of the log ratio in parentheses; mean plug-in gain $\\widehat\\gamma$ (\\%, ARIMA).}",
-    "\\label{tab:exp2}",
     "\\begin{tabular}{lrrrrrrr}",
     "\\hline",
     " & & \\multicolumn{3}{c}{Population} & \\multicolumn{2}{c}{Joint / separate} & \\\\",
@@ -116,8 +113,7 @@ tab_exp2 <- function(summary, file) {
     "\\hline",
     rows,
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -155,10 +151,7 @@ tab_app_accuracy <- function(accuracy, file, base_model = "arima") {
     paste0(method_labels[r[["method"]]], " & ", paste(fmt(as.numeric(r[-1])), collapse = " & "), " \\\\")
   })
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    sprintf("\\caption{Application: MSE relative to base forecasts (%s), geometric mean over the series at each level, averaged over %s forecast origins (37 with all twelve horizons) and horizons 1--12.}", toupper(base_model), "48"),
-    sprintf("\\label{tab:app-accuracy-%s}", base_model),
     "\\begin{tabular}{lrrrrrr}",
     "\\hline",
     " & \\multicolumn{3}{c}{Admissions} & \\multicolumn{3}{c}{Dismissals} \\\\",
@@ -166,8 +159,7 @@ tab_app_accuracy <- function(accuracy, file, base_model = "arima") {
     "\\hline",
     rows,
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -183,10 +175,7 @@ tab_app_diag <- function(app_diag, file) {
     fmt(100 * app_diag$incoherence, 1), fmt(app_diag$kronecker_error, 3)
   )
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    sprintf("\\caption{Application: diagnostics from the one-step residuals over 2007--2019. Estimated $\\widehat\\kappa$ and plug-in gain $\\widehat\\gamma$ (\\%%); Rao $F$ statistics for the other variable's incoherences in the regression of each variable's errors ($%d$ and $%.0f$ degrees of freedom for ARIMA, $%d$ and $%.0f$ for VAR), and the Bonferroni $p$-value; incoherent share of error variance (\\%%); relative error of the nearest Kronecker product.}", app_diag$df1[app_diag$model == "arima"], app_diag$df2[app_diag$model == "arima"], app_diag$df1[app_diag$model == "var"], app_diag$df2[app_diag$model == "var"]),
-    "\\label{tab:app-diag}",
     "\\begin{tabular}{lrrrrrrrr}",
     "\\hline",
     " & & & & \\multicolumn{2}{c}{$F$} & & & \\\\",
@@ -194,8 +183,7 @@ tab_app_diag <- function(app_diag, file) {
     "\\hline",
     rows,
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -236,10 +224,7 @@ tab_app_prob <- function(prob_summary, net_point, file) {
   }
   np <- net_point |> dplyr::filter(model == "arima")
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Application: forecasts of net employment change (admissions minus dismissals), ARIMA base models, geometric mean over the series at each level, 48 origins (37 with all twelve horizons), horizons 1--12. Top: MSE of point forecasts relative to separate MinT. Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation.}",
-    "\\label{tab:app-prob}",
     "\\begin{tabular}{lrrr}",
     "\\hline",
     " & Total & Regions & States \\\\",
@@ -253,8 +238,7 @@ tab_app_prob <- function(prob_summary, net_point, file) {
     row("\\quad Joint innovations, separate reconciliation", prob_summary, "joint + separate"),
     row("\\quad Joint innovations, joint reconciliation", prob_summary, "joint + joint"),
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -345,6 +329,10 @@ numbers_app <- function(app_diag, accuracy, prob_summary, net_point, app_point) 
     appGainArima = fmt(100 * d$arima$gain, 1),
     appPArima = fmt(d$arima$p_value, 3),
     appIncohArima = fmt(100 * d$arima$incoherence, 0),
+    appDfOneArima = d$arima$df1,
+    appDfTwoArima = fmt(d$arima$df2, 0),
+    appDfOneVar = d$var$df1,
+    appDfTwoVar = fmt(d$var$df2, 0),
     appKappaVar = fmt(d$var$kappa, 2),
     appGainVar = fmt(100 * d$var$gain, 1),
     appIncohVar = fmt(100 * d$var$incoherence, 0),
@@ -402,10 +390,7 @@ tab_supp_exp2 <- function(exp2_sum, file) {
     fmt(x$sep_vs_base_var), fmt(x$joint_vs_base_var)
   )
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    "\\caption{Experiment 2: MSE of separate and joint MinT reconciliation relative to the base forecasts, averaged over 500 replications, 16 series and horizons 1--12.}",
-    "\\label{tab:supp-exp2}",
     "\\begin{tabular}{lrrrrr}",
     "\\hline",
     " & & \\multicolumn{2}{c}{ARIMA} & \\multicolumn{2}{c}{VAR} \\\\",
@@ -413,8 +398,7 @@ tab_supp_exp2 <- function(exp2_sum, file) {
     "\\hline",
     rows,
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -439,10 +423,7 @@ tab_supp_horizon <- function(app_point, file, base_model = "arima") {
     paste0(r[[1]], " & ", paste(fmt(as.numeric(r[-1])), collapse = " & "), " \\\\")
   })
   write_table(c(
-    "\\begin{table}[!htb]",
     "\\centering\\small",
-    sprintf("\\caption{Application (%s base forecasts): MSE of joint relative to separate MinT reconciliation by forecast horizon, geometric mean over the series at each level.}", toupper(base_model)),
-    sprintf("\\label{tab:supp-horizon-%s}", base_model),
     "\\begin{tabular}{lrrrrrr}",
     "\\hline",
     " & \\multicolumn{3}{c}{Admissions} & \\multicolumn{3}{c}{Dismissals} \\\\",
@@ -450,8 +431,7 @@ tab_supp_horizon <- function(app_point, file, base_model = "arima") {
     "\\hline",
     rows,
     "\\hline",
-    "\\end{tabular}",
-    "\\end{table}"
+    "\\end{tabular}"
   ), file)
 }
 
@@ -481,10 +461,8 @@ tab_supp_nodes <- function(accuracy, file, base_model = "arima") {
     "Series & Separate & Joint & Separate & Joint \\\\",
     "\\hline"
   )
-  # Label only in \endfirsthead: \endhead repeats on every page
   write_table(c(
     "\\begin{longtable}{lrrrr}",
-    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins (37 with all twelve horizons) and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
     header,
     "\\endfirsthead",
     "\\caption[]{(continued)} \\\\",

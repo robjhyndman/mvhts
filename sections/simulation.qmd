@@ -119,7 +119,7 @@ By @prp-coherent, all three have coherent population forecasts.
 The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
 
 For each scenario we computed the exact one-step error covariance of the population-optimal univariate AR(20) forecasts of all 16 series.
-Table\ \ref{tab:exp2} gives its incoherent share, $\kappa$ and $\gamma$.
+@tbl-exp2 gives its incoherent share, $\kappa$ and $\gamma$.
 The controls are coherent to machine precision.
 In the other scenarios the incoherent component is only `r num$expTwoIncohRange`% of the error variance.
 So although $\kappa$ is large (`r num$expTwoKappaRange`), the population gain from joint reconciliation is only `r num$expTwoGainRange`%.
@@ -134,8 +134,14 @@ The fitted models differ from node to node and are estimated from correlated dat
 Using the diagonal blocks of the joint covariance estimate for separate reconciliation changes the MSE by at most `r num$expTwoBlocksMaxDiff`%, so the gain comes from the cross-variable blocks rather than from differences in shrinkage.
 In these designs, joint reconciliation exploits the structure of the base models' estimation error rather than that of the data-generating process, and the resulting gains are small.
 
+::: {#tbl-exp2}
 ```{r}
 #| output: asis
 
 cat(readLines(tar_read(table_exp2)), sep = "\n")
 ```
+
+Experiment 2.
+Population quantities for the optimal AR forecasts: incoherent share of error variance (%), $\kappa$, and MSE reduction from joint reconciliation (%).
+Fitted base models: MSE of joint relative to separate reconciliation, averaged over 500 replications, 16 series and horizons 1--12, with the standard error of the log ratio in parentheses; mean plug-in gain $\widehat\gamma$ (%, ARIMA).
+:::

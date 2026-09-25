@@ -22,3 +22,5 @@
 }
 % Set URLs in the text font (url is loaded after this preamble)
 \AtBeginDocument{\urlstyle{same}}
+% Default placement for tables (Quarto's tbl-pos does not reach div tables)
+\makeatletter\def\fps@table{!htb}\makeatother
