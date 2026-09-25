@@ -12,3 +12,6 @@
 - 2026-09-25: Abstracts go in the present tense.
   Rob's 2009 Hyndsight post on abstracts says past tense, but he no longer holds that view.
   Follow the rest of that post (what/why/how/results/implication, one paragraph, no citations) but write in the present tense.
+- 2026-09-25: Check `~/.ssh/config` before giving rsync/scp commands to Rob's hosts.
+  `desktop`, `laptop` and `tvpc` force `RemoteCommand zsh -l`, so plain rsync fails with code 255.
+  Always add `-e "ssh -o RemoteCommand=none -o RequestTTY=no"`.
