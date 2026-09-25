@@ -124,6 +124,14 @@ url = "https://cran.r-project.org/src/contrib/backports_1.5.1.tar.gz"
 checksum = "md5:f23f63d1a2a739db18644dfa8c1de7ec"
 
 [[package]]
+name = "base64enc"
+version = "0.1.6"
+source = "cran"
+raw_version = "0.1-6"
+url = "https://cran.r-project.org/src/contrib/base64enc_0.1-6.tar.gz"
+checksum = "md5:2c4ecc969451a673ee05eb2e725fcbaf"
+
+[[package]]
 name = "base64url"
 version = "1.4.0"
 source = "cran"
@@ -169,6 +177,39 @@ raw_version = "1.1.5"
 url = "https://cran.r-project.org/src/contrib/brio_1.1.5.tar.gz"
 checksum = "md5:01e1a782f87242f9ca9c80acf9deeeff"
 dev = true
+
+[[package]]
+name = "bslib"
+version = "0.12.0"
+source = "cran"
+raw_version = "0.12.0"
+url = "https://cran.r-project.org/src/contrib/bslib_0.12.0.tar.gz"
+checksum = "md5:4e10d130d9538a635ae123e52b1274bf"
+requires = [
+    "base64enc",
+    "cachem",
+    "fastmap",
+    "htmltools",
+    "jquerylib",
+    "jsonlite",
+    "lifecycle",
+    "memoise",
+    "mime",
+    "rlang",
+    "sass",
+]
+
+[[package]]
+name = "cachem"
+version = "1.1.0"
+source = "cran"
+raw_version = "1.1.0"
+url = "https://cran.r-project.org/src/contrib/cachem_1.1.0.tar.gz"
+checksum = "md5:53980eb40dd09b0cd44673d3a6fabe36"
+requires = [
+    "rlang",
+    "fastmap",
+]
 
 [[package]]
 name = "callr"
@@ -536,6 +577,18 @@ requires = [
 ]
 
 [[package]]
+name = "fontawesome"
+version = "0.5.3"
+source = "cran"
+raw_version = "0.5.3"
+url = "https://cran.r-project.org/src/contrib/fontawesome_0.5.3.tar.gz"
+checksum = "md5:95b072a27418b962792410dfb21c3d2b"
+requires = [
+    "rlang",
+    "htmltools",
+]
+
+[[package]]
 name = "fpp3"
 version = "1.0.3"
 source = "cran"
@@ -584,11 +637,11 @@ requires = [
 
 [[package]]
 name = "future"
-version = "1.75.0"
+version = "1.76.0"
 source = "cran"
-raw_version = "1.75.0"
-url = "https://cran.r-project.org/src/contrib/future_1.75.0.tar.gz"
-checksum = "md5:ab6672f254e977c420487eb8c72ad5b5"
+raw_version = "1.76.0"
+url = "https://cran.r-project.org/src/contrib/future_1.76.0.tar.gz"
+checksum = "md5:6f8138fad95ccd825f6eb78c0ab807b7"
 requires = [
     "digest",
     "globals",
@@ -772,6 +825,20 @@ checksum = "md5:006fcfa8e16c72ecd1adffdf0cf87e43"
 requires = ["xfun"]
 
 [[package]]
+name = "htmltools"
+version = "0.5.9"
+source = "cran"
+raw_version = "0.5.9"
+url = "https://cran.r-project.org/src/contrib/htmltools_0.5.9.tar.gz"
+checksum = "md5:f4a0cac920fb54b5c5ea94e175e20067"
+requires = [
+    "base64enc",
+    "digest",
+    "fastmap",
+    "rlang",
+]
+
+[[package]]
 name = "httr"
 version = "1.4.9"
 source = "cran"
@@ -836,6 +903,15 @@ requires = [
     "rlang",
     "cpp11",
 ]
+
+[[package]]
+name = "jquerylib"
+version = "0.1.4"
+source = "cran"
+raw_version = "0.1.4"
+url = "https://cran.r-project.org/src/contrib/jquerylib_0.1.4.tar.gz"
+checksum = "md5:3607a34ac45ff420bc325d84eab4b0cb"
+requires = ["htmltools"]
 
 [[package]]
 name = "jsonlite"
@@ -929,6 +1005,18 @@ url = "https://cran.r-project.org/src/contrib/magrittr_2.0.5.tar.gz"
 checksum = "md5:4ee23a88bc1589527696d777d7e68dfc"
 
 [[package]]
+name = "memoise"
+version = "2.0.1"
+source = "cran"
+raw_version = "2.0.1"
+url = "https://cran.r-project.org/src/contrib/memoise_2.0.1.tar.gz"
+checksum = "md5:89da4ce771967d851db47132b762ce6f"
+requires = [
+    "rlang",
+    "cachem",
+]
+
+[[package]]
 name = "mime"
 version = "0.13.0"
 source = "cran"
@@ -938,11 +1026,11 @@ checksum = "md5:45c3868fb2f5a7f3817d54d1c75799f9"
 
 [[package]]
 name = "mirai"
-version = "2.7.2"
+version = "2.7.3"
 source = "cran"
-raw_version = "2.7.2"
-url = "https://cran.r-project.org/src/contrib/mirai_2.7.2.tar.gz"
-checksum = "md5:102c286631f6580ce76016a5620b601a"
+raw_version = "2.7.3"
+url = "https://cran.r-project.org/src/contrib/mirai_2.7.3.tar.gz"
+checksum = "md5:84bfa1981bf129efeecfd973c264e146"
 requires = ["nanonext"]
 
 [[package]]
@@ -1186,6 +1274,28 @@ url = "https://cran.r-project.org/src/contrib/quadprog_1.5-8.tar.gz"
 checksum = "md5:4483c9a4606a3a19da46fa68f02c8486"
 
 [[package]]
+name = "quarto"
+version = "1.5.1"
+source = "cran"
+raw_version = "1.5.1"
+url = "https://cran.r-project.org/src/contrib/quarto_1.5.1.tar.gz"
+checksum = "md5:399b5a595e22f090193a9169d5bd84db"
+requires = [
+    "cli",
+    "fs",
+    "htmltools",
+    "jsonlite",
+    "later",
+    "lifecycle",
+    "processx",
+    "rlang",
+    "rmarkdown",
+    "rstudioapi",
+    "xfun",
+    "yaml",
+]
+
+[[package]]
 name = "rappdirs"
 version = "0.3.4"
 source = "cran"
@@ -1202,6 +1312,26 @@ url = "https://cran.r-project.org/src/contrib/rlang_1.3.0.tar.gz"
 checksum = "md5:b52c165e43f4d7fe5cfa15c5c9467ff4"
 
 [[package]]
+name = "rmarkdown"
+version = "2.32.0"
+source = "cran"
+raw_version = "2.32"
+url = "https://cran.r-project.org/src/contrib/rmarkdown_2.32.tar.gz"
+checksum = "md5:01b497e82b287a2269a965119ed59271"
+requires = [
+    "bslib",
+    "evaluate",
+    "fontawesome",
+    "htmltools",
+    "jquerylib",
+    "jsonlite",
+    "knitr",
+    "tinytex",
+    "xfun",
+    "yaml",
+]
+
+[[package]]
 name = "rnaturalearth"
 version = "1.2.0"
 source = "cran"
@@ -1215,6 +1345,14 @@ requires = [
     "sf",
     "terra",
 ]
+
+[[package]]
+name = "rnaturalearthdata"
+version = "1.0.0"
+source = "cran"
+raw_version = "1.0.0"
+url = "https://cran.r-project.org/src/contrib/rnaturalearthdata_1.0.0.tar.gz"
+checksum = "md5:e2114ca233393de2bd0ae28c168752e8"
 
 [[package]]
 name = "rprojroot"
@@ -1244,6 +1382,21 @@ requires = [
     "wk",
     "Rcpp",
     "wk",
+]
+
+[[package]]
+name = "sass"
+version = "0.4.10"
+source = "cran"
+raw_version = "0.4.10"
+url = "https://cran.r-project.org/src/contrib/sass_0.4.10.tar.gz"
+checksum = "md5:16054a7117a81ba75893fec17da62209"
+requires = [
+    "fs",
+    "rlang",
+    "htmltools",
+    "R6",
+    "rappdirs",
 ]
 
 [[package]]
@@ -1496,6 +1649,15 @@ raw_version = "0.4.0"
 url = "https://cran.r-project.org/src/contrib/timechange_0.4.0.tar.gz"
 checksum = "md5:4cabacecbed68e3beb00e47d42fc9fca"
 requires = ["cpp11"]
+
+[[package]]
+name = "tinytex"
+version = "0.61.0"
+source = "cran"
+raw_version = "0.61"
+url = "https://cran.r-project.org/src/contrib/tinytex_0.61.tar.gz"
+checksum = "md5:67e114649aa529e1631baed939110e97"
+requires = ["xfun"]
 
 [[package]]
 name = "tsibble"

@@ -1,0 +1,60 @@
+# Measuring whether joint reconciliation can help {#sec-diagnostic}
+
+@prp-equivalence gives an exact condition, but in practice $\bm{W}$ is estimated and the condition never holds exactly in the estimate. We need a measure of how far an estimated covariance is from satisfying it, and a way to judge whether the observed departure is larger than estimation noise alone would produce.
+
+## Separability is the wrong target
+
+The natural first choice is a measure of distance from a Kronecker product, such as the relative error of the nearest Kronecker approximation [@vanloan1993approximation]. Rearranging $\bm{W}$ so that each block $\bm{W}_{jk}$ becomes a row, $\bm{W}$ is a Kronecker product exactly when the rearranged matrix has rank one, and the relative error of the nearest Kronecker product is $\{1 - \sigma_1^2/\sum_i\sigma_i^2\}^{1/2}$, where $\sigma_i$ are its singular values. Likelihood ratio tests of separability are also available [@lu2005likelihood; @mitchell2006likelihood].
+
+These measures answer the wrong question. By @cor-invariance, reconciliation ignores any component of $\bm{W}$ of the form $\bm{S}_*\bm{K}\bm{S}_*'$, and such components can make $\bm{W}$ arbitrarily far from a Kronecker product without changing the reconciled forecasts at all. Conversely, departures that do change the forecasts may leave the Kronecker error small. @fig-kronecker plots the gain from joint reconciliation against the nearest-Kronecker error for the covariance families of @sec-simulation. The Kronecker error rises with no gain at all when the departure is invisible, and it can fall while the gain rises.
+
+```{r}
+#| label: fig-kronecker
+#| fig-cap: 'Population MSE reduction from joint reconciliation against the relative error of the nearest Kronecker approximation to $\bm{W}$, for the covariance families of @sec-simulation.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_kronecker))
+```
+
+## Two measures
+
+We instead measure the conditions of @prp-equivalence directly. The first measure describes the structure of the joint map. Since $\bm{G}$ contains the regression coefficients of the base forecast errors on the incoherences, and its off-diagonal blocks are the coefficients on other variables' incoherences, we define
+$$
+\kappa(\bm{W}) = \left(\frac{\sum_{j \ne k}\|\bm{G}_{jk}\|_F^2}{\|\bm{G}\|_F^2}\right)^{1/2},
+$$ {#eq-kappa}
+where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$. Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{W}_{jj}$. This makes $\kappa$ free of units. By @prp-equivalence, $\kappa = 0$ exactly when joint and separate reconciliation coincide. Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), so it cannot move $\kappa$ away from zero, although it can change the standardisation and hence the value of a non-zero $\kappa$.
+
+The second measure describes the value of the joint map. If $\bm{W}$ were the true error covariance, the proportional reduction in mean squared error from reconciling jointly rather than separately would be
+$$
+\gamma(\bm{W}) = 1 - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
+$$ {#eq-gain}
+MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of @prp-equivalence hold. Components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove. Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the errors, because the gain from any reconciliation comes only from that component. So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences. A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average. Because $\gamma$ averages over all series, it can hide a larger gain for a particular combination of variables. For a combination $\bm{a}'\bm{y}$ of interest we therefore also compute
+$$
+\gamma_{\bm{a}}(\bm{W}) = 1 - \frac{\bm{a}'\bm{M}\bm{W}\bm{M}'\bm{a}}{\bm{a}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{a}},
+$$ {#eq-gain-a}
+which is also non-negative for every $\bm{a}$ (@sec-theory).
+
+## Estimation and testing
+
+Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are biased in finite samples. Sampling noise pushes them above zero even when the population covariance satisfies @prp-equivalence. The shrinkage estimator pulls the other way, because its diagonal target has no cross-variable blocks (@sec-theory), so it shrinks genuine departures towards zero. @fig-noise shows both effects. Under a separable covariance the median of $\widehat\kappa$ is about `r num$kappaNoiseSep` at the sample sizes of monthly data and falls only slowly with $T$, while for the strongest node-varying departure in the Brazilian hierarchy $\widehat\kappa$ is below its population value at every sample size, and at $T \le 200$ it is about the same as, or smaller than, under separability. The estimates $\widehat\kappa$ and $\widehat\gamma$ are therefore useful as descriptions of what joint reconciliation would do with the estimated covariance, but their raw values cannot be read as evidence that the population conditions fail.
+
+```{r}
+#| label: fig-noise
+#| fig-cap: 'Sampling distribution of $\widehat\kappa$ (median and 5--95% range over 1000 replications) under a separable covariance and under the strongest node-varying correlation case, with the population values dashed.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_noise))
+```
+
+A direct test of the conditions follows from the regression reading of @prp-equivalence. Given its own incoherences $\bm{z}_j = \bm{C}\bm{e}_j$, the errors of variable $j$ are determined by their bottom-level part $\bm{e}_{j}^{b}$, since the aggregate errors equal $\bm{z}_j + \bm{A}\bm{e}_j^{b}$. Condition (d) says that, in the multivariate regression
+$$
+\bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{B}_{jj}'\bm{z}_{j,t} + \sum_{k \ne j}\bm{B}_{jk}'\bm{z}_{k,t} + \bm{u}_{j,t},
+$$ {#eq-test-regression}
+the other variables' incoherences add nothing: $\bm{B}_{jk} = \bm{0}$ for all $k \ne j$. This is a standard linear hypothesis in a multivariate regression with $n_b$ responses and $(m-1)n_a$ restrictions per response. We test it with Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution [@rao1951asymptotic], applied to the one-step residuals of the base models. With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction. The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$. It needs $T \ge n_b + m n_a + 1$, and like any normal-theory test it assumes serially uncorrelated residual vectors, so it should be applied to residuals of adequate base models.
+
+We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data. Such procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error, and the regression test avoids simulation altogether. @fig-power reports its size and power for the covariance families of @sec-simulation. Under both separable and separable-plus-invisible covariances the rejection rate at the 5% level ranges from `r num$testSizeMin`% to `r num$testSizeMax`% at every sample size, in both hierarchies. Power grows with the size of the departure and with $T$; the smallest departures, with population gains below 1%, are detected reliably only with around a thousand observations.
+
+```{r}
+#| label: fig-power
+#| fig-cap: 'Rejection rate at the 5% level of the test of condition (d), by sample size (1000 replications). For the separable and separable-plus-invisible covariances the rejection rate is the size of the test.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_power))
+```

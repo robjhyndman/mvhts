@@ -50,3 +50,14 @@ Dados/pdet/
 
 # targets cache
 _targets/
+
+# Quarto render outputs: generated LaTeX (keep-tex), the class and style
+# files copied from _extensions/, and intermediates
+/multivariate-reconciliation.tex
+/supplementary_material.tex
+/elsarticle.cls
+/elsarticle-harv.bst
+/.quarto/
+**/*.quarto_ipynb
+*_files/
+*.knit.md

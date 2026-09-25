@@ -47,3 +47,12 @@
   is rewritten.
 - **New title and author.** The paper is now "When does multivariate forecast
   reconciliation help?", and Felix Fesca (TU Dortmund) has joined as an author.
+- **Paper converted from LaTeX to Quarto.** The paper and supplement are now
+  `multivariate-reconciliation.qmd` and `supplementary_material.qmd`, with
+  sections in `sections/*.qmd`, and both are built as targets of the pipeline.
+  To edit the text, edit the `.qmd` files (the `.tex` files are now generated).
+  Numbers in the text are inline R code (`` `r num$name` ``) and
+  cross-references use Quarto syntax (`@sec-theory`, `@prp-equivalence`,
+  `@fig-exp1-gain`). The PDFs match the LaTeX versions in content.
+- **Proofs moved into the main text.** Each proof now follows its result in
+  Section 3, and the appendix is gone.

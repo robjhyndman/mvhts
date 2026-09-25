@@ -1,0 +1,55 @@
+---
+title: "When does multivariate forecast reconciliation help? Supplementary material"
+format:
+  pdf:
+    documentclass: article
+    fontsize: 12pt
+    template-partials: [partials/supplement/title.tex]
+    include-in-header:
+      - preamble.tex
+      - text: |
+          \usepackage[no-weekday]{eukdate}
+          \renewcommand{\thefigure}{S\arabic{figure}}
+          \renewcommand{\thetable}{S\arabic{table}}
+---
+
+```{r}
+#| label: setup
+library(targets)
+```
+
+# Experiment 2 {.unnumbered}
+
+Table\ \ref{tab:supp-exp2} compares separate and joint MinT reconciliation with the base forecasts in Experiment 2. In every scenario, reconciliation reduces MSE by 6--13% relative to the ARIMA base forecasts and by 1--5% relative to the VAR base forecasts. Separate and joint reconciliation never differ by more than 0.02.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_supp_exp2)), sep = "\n")
+```
+
+# Application: ETS base forecasts {.unnumbered}
+
+Table\ \ref{tab:app-accuracy-ets} repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models. For ETS we estimate the covariance matrices from response residuals, because the innovation residuals of multiplicative-error models are relative errors.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_app_ets)), sep = "\n")
+```
+
+# Application: results by horizon {.unnumbered}
+
+Table\ \ref{tab:supp-horizon-arima} breaks down the comparison of joint and separate reconciliation (ARIMA base forecasts) by forecast horizon. For admissions the ratio stays close to one at all horizons. For dismissals, joint reconciliation is worse at short horizons and better at long ones, especially at the national level, so the near-neutral averages in the main text combine gains and losses.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_supp_horizon)), sep = "\n")
+```
+
+# Application: results for every series {.unnumbered}
+
+Table\ \ref{tab:supp-nodes} gives the results for every series. Differences between joint and separate reconciliation are larger for individual states than for the aggregates, and go in both directions.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_supp_nodes)), sep = "\n")
+```

@@ -1,0 +1,64 @@
+# Application: admissions and dismissals in Brazil {#sec-application}
+
+## Data
+
+Brazil's General Register of Employed and Unemployed (CAGED) records every admission and dismissal of formally employed workers. The two variables share a geographical hierarchy: 26 states and the Federal District (27 federative units) aggregate to five regions, which aggregate to the country (@fig-map). With two variables this gives $m = 2$, $n = 33$ and $n_b = 27$, so 66 series in all.
+
+```{r}
+#| label: fig-map
+#| fig-cap: 'Brazilian regions and federative units.'
+#| out-width: 14.5cm
+knitr::include_graphics(tar_read(fig_region_map))
+```
+
+We built the monthly series directly from the CAGED microdata published by the Labour Statistics Dissemination Program (PDET) of the Ministry of Labour and Employment, counting admissions and dismissals by federative unit and month. Records without an identified federative unit (fewer than 0.1% before 2020) are excluded. Microdata are available from January 2007. Twenty-two of the 156 monthly archives for 2007--2019 are damaged on the PDET server; for those months we used an earlier extract of the same data, which agrees with the microdata to within one record in every federative unit for all intact months. National totals agree with the official series published by IpeaData. The code that downloads the microdata and builds the series is part of the replication material.
+
+In January 2020 CAGED was replaced by the Novo CAGED, which draws on different administrative sources, and the COVID-19 pandemic began soon after. Both events change the joint behaviour of admissions and dismissals, and would contaminate an estimate of their forecast error covariance. Our main analysis therefore uses January 2007 to December 2019 (156 months).
+
+@fig-app-data shows the national series. Admissions and dismissals move together, with strong seasonality: December brings large net job losses every year. Net employment change was positive until 2014, negative through the recession of 2015--2016, and positive again from 2017.
+
+```{r}
+#| label: fig-app-data
+#| fig-cap: 'Monthly admissions, dismissals and net employment change in Brazil. The shaded period (Novo CAGED and the COVID-19 pandemic) is not used in the main analysis.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_data))
+```
+
+## Forecasting set-up
+
+We forecast all 66 series from rolling origins with an expanding window, starting with 108 months of training data (January 2007 to December 2015) and moving the origin forward one month at a time. This gives 48 origins, and 37 of them have all twelve horizons within the sample. Base forecasts come from an ARIMA model selected automatically for each series [@hyndman2021forecasting] and from a bivariate VAR for admissions and dismissals at each node. We compare the base forecasts with OLS, structurally weighted (WLS) and MinT reconciliation. MinT is applied separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate, which isolates the effect of the cross-variable blocks from that of the different shrinkage intensities.
+
+## Diagnostics
+
+Table\ \ref{tab:app-diag} reports the diagnostics computed from the one-step residuals of models fitted to the whole of 2007--2019. For the ARIMA base forecasts the estimated error covariance is close to separable by the generic measure (nearest-Kronecker error `r num$appKronArima`), and joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num$appKappaArima`$) for a plug-in gain of only `r num$appGainArima`% in mean squared error. The likelihood ratio test rejects the conditions of @prp-equivalence at the 5% level ($p = `r num$appPArima`$), so the departure is not pure estimation noise, but it is small. The incoherent component is `r num$appIncohArima`% of the one-step error variance. The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test; the per-node VARs, fitted without seasonal terms, probably do not capture the monthly seasonality.
+
+The plug-in gain for net employment change is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_app_diag)), sep = "\n")
+```
+
+## Forecast accuracy
+
+Table\ \ref{tab:app-accuracy-arima} gives the mean squared error of each method relative to the ARIMA base forecasts. Separate MinT reconciliation improves on the base forecasts at every level and for both variables, and it is better than OLS and structural WLS reconciliation, which damage the state-level forecasts. Joint and separate MinT are close: the ratio of their mean squared errors ranges from `r num$appJointSepArimaRange` across the six combinations of variable and level. Joint reconciliation is slightly better for dismissals at the national and regional levels and slightly worse elsewhere. The averages hide a horizon pattern (Supplementary Table\ S3): for national dismissals, joint reconciliation is worse at short horizons and better at long ones. There is no systematic gain from reconciling the two variables together, consistent with the small departure found by the diagnostics. With VAR base forecasts (Table\ \ref{tab:app-accuracy-var}), joint reconciliation is better than separate reconciliation at every level (ratios `r num$appJointSepVarRange`), but the VAR base forecasts are poorer to begin with: their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts, on average over the series. This is consistent with the lesson of Experiment 2 that the cross-variable structure joint reconciliation exploits can come from the errors of the base models themselves. With ETS base forecasts (Supplementary Table\ S2) the ratios of joint to separate MSE range from `r num$appJointSepEtsRange`: joint reconciliation is better for admissions at every level and roughly neutral for dismissals.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_app_arima)), sep = "\n")
+```
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_app_var)), sep = "\n")
+```
+
+## Net employment change
+
+Net employment change is a linear combination of the two variables, so the argument of @sec-theory suggests that joint reconciliation may help it even when it does not help either variable alone. Table\ \ref{tab:app-prob} confirms this. For point forecasts, joint reconciliation reduces the mean squared error of net change relative to separate reconciliation by `r num$appNetPointTotal`% at the national level and `r num$appNetPointRegions`% for the regions, though only `r num$appNetPointStates`% for the states. Joint reconciliation makes the errors in admissions and dismissals more positively correlated (a correlation of `r num$appErrCorJoint` against `r num$appErrCorSep` for separate reconciliation, pooled over all series and horizons), and they cancel in the difference. Part of the gain comes from the different shrinkage intensity of the joint covariance estimate, as the row for separate reconciliation with the joint estimate shows. At the national and regional levels most of it comes from the cross-variable blocks; the small gain for the states comes entirely from the shrinkage.
+
+For probabilistic forecasts we generated 1000 sample paths of all 66 series at each origin from the fitted ARIMA models, driven by resampled one-step residuals, and reconciled every path. Resampling each variable's innovations independently discards the dependence between admissions and dismissals; resampling whole residual vectors keeps it. Keeping the dependence reduces the CRPS of net change by `r num$appNetJointSepTotal`% nationally, `r num$appNetJointSepRegions`% for the regions and `r num$appNetJointSepStates`% for the states, using separate reconciliation of each variable. Reconciling the joint paths jointly adds a further gain at the aggregate levels, to `r num$appNetJointJointTotal`% and `r num$appNetJointJointRegions`% respectively. The largest single effect comes from modelling the dependence in the base forecasts; joint reconciliation adds to it for the aggregate net change.
+
+```{r}
+#| output: asis
+cat(readLines(tar_read(table_app_prob)), sep = "\n")
+```

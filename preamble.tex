@@ -1,0 +1,24 @@
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,longtable,float,multirow,parskip,bm}
+
+\DeclareMathOperator{\cov}{Cov}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\vetor}{vec}
+\DeclareMathOperator{\seno}{sin}
+\DeclareMathOperator{\RMSSE}{RMSSE}
+\DeclareMathOperator{\RMSE}{RMSE}
+\DeclareMathOperator{\RelRMSE}{RelRMSE}
+\DeclareMathOperator{\Base}{Base}
+\DeclareMathOperator{\Rec}{Rec}
+\DeclareMathOperator{\Uni}{Uni}
+\allowdisplaybreaks
+\sloppy
+\widowpenalty=10000
+\clubpenalty=10000
+% Quarto numbers theorems within sections; number them through the paper
+\AtBeginDocument{%
+  \ifcsname c@proposition\endcsname\counterwithout{proposition}{section}\fi
+  \ifcsname c@corollary\endcsname\counterwithout{corollary}{section}\fi
+}
+% Set URLs in the text font (url is loaded after this preamble)
+\AtBeginDocument{\urlstyle{same}}

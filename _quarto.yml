@@ -1,0 +1,21 @@
+project:
+  render:
+    - multivariate-reconciliation.qmd
+    - supplementary_material.qmd
+
+execute:
+  echo: false
+  warning: false
+  message: false
+
+# PDF options shared by both documents (the paper uses the elsevier-pdf format)
+pdf-engine: pdflatex
+keep-tex: true
+papersize: a4
+fontfamily: mathpazo
+fig-pos: "!htb"
+include-in-header: preamble.tex
+colorlinks: true
+linkcolor: black
+citecolor: black
+urlcolor: black

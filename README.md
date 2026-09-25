@@ -24,9 +24,9 @@ uvr run run.R
 
 Tests are in `tests/testthat/` and run with `uvr run tests/testthat.R` (or `make test`).
 
-### LaTeX
+### Quarto and LaTeX
 
-A standard LaTeX distribution (e.g. TeX Live or MiKTeX) with `latexmk` is required to compile the paper. The paper uses the Elsevier `elsarticle` class, which is bundled in this repository.
+The paper and supplement are [Quarto](https://quarto.org) documents rendered to PDF with pdflatex, so Quarto (1.4 or later) and a LaTeX distribution (e.g. TeX Live) are required. The paper uses the [quarto-journals/elsevier](https://github.com/quarto-journals/elsevier) extension, which is bundled in `_extensions/`.
 
 ### Other tools
 
@@ -56,23 +56,26 @@ make test       # includes checking national totals against IpeaData
 ## Building the paper
 
 ```bash
-make            # run the targets pipeline, then build multivariate-reconciliation.pdf
+make            # run the targets pipeline, which also renders both PDFs
 ```
+
+The paper (`multivariate-reconciliation.qmd`) and supplement (`supplementary_material.qmd`) are targets of the pipeline (`tarchetypes::tar_quarto()`). They read their figures, tables and in-text numbers with `tar_read()`, so a document is re-rendered whenever anything it uses changes.
 
 | Target            | Action                                                                  |
 | ----------------- | ----------------------------------------------------------------------- |
-| `make pipeline`   | Run the targets pipeline only (`uvr run run.R`); only stale steps rerun |
-| `make pdf-only`   | Build the paper PDF from existing outputs                               |
+| `make pipeline`   | Same as `make` (`uvr run run.R`); only stale steps rerun                |
+| `make paper`      | Build the paper PDF and any stale targets it depends on                 |
+| `make pdf-only`   | Render the paper PDF from the stored pipeline results                   |
 | `make status`     | List pipeline targets that are out of date                              |
 | `make test`       | Run the test suite                                                      |
 | `make sync`       | Install the locked R packages (`uvr sync`)                              |
-| `make supplement` | Build `supplementary_material.pdf`                                      |
+| `make supplement` | Build `supplementary_material.pdf` and any stale targets it needs       |
 | `make raw-data`   | Download the raw PDET microdata (several hours)                         |
 | `make emprego`    | Rebuild `Dados/emprego_uf.csv` from the raw microdata                   |
-| `make clean`      | Remove LaTeX auxiliary files                                            |
+| `make clean`      | Remove Quarto and LaTeX intermediate files                              |
 
 The full pipeline takes several hours on 8 cores, mostly in the simulation with fitted ARIMA models and in the rolling-origin application. Results are cached in `_targets/`, so later runs recompute only what has changed. `targets::tar_visnetwork()` shows the dependency graph.
 
-The paper is split into `sections/*.tex`. Figures are written to `Imagens/`, tables and in-text numbers (`numbers.tex`) to `Tabelas/`, all by the pipeline.
+The paper is split into `sections/*.qmd`, included by `multivariate-reconciliation.qmd`. Shared LaTeX settings are in `preamble.tex` and `_quarto.yml`. Figures are written to `Imagens/` and tables to `Tabelas/` by the pipeline; in-text numbers come from the `numbers` target (a named list, used as `` `r num$name` ``).
 
 The map of Brazilian regions (`Imagens/mapa_reg.pdf`) downloads state boundaries with geobr, so its target is built once and not rerun; delete the file and invalidate the target (`targets::tar_invalidate(fig_region_map)`) to redraw it. `Imagens/diagrama_mult.pdf` is a static diagram.

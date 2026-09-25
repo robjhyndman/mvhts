@@ -570,4 +570,12 @@ Phase 1 findings:
 
 ## Review
 
-(To be filled in as phases complete.)
+- 2026-09-25: Converted the paper and supplement from LaTeX to Quarto, rendered
+  by `tar_quarto()` targets (`paper`, `supplement`). Checked by diffing the
+  PDF text against the last LaTeX build (same content, 17 + 3 pages), by
+  comparing pages visually, with `make status` clean after `make`, and with the
+  tests passing. Known differences: microtype is on, so some line breaks
+  differ; bold maths now uses Palatino
+  bold instead of a Computer Modern fallback. Tables are still raw LaTeX from
+  `R/results.R`, cross-referenced with `\ref{tab:...}`; moving their captions
+  into the `.qmd` files would allow native `@tbl-` references.
