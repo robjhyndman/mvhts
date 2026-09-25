@@ -91,7 +91,12 @@ exp1_covariance <- function(S, family, dial, seed = 1) {
     F1 = w_components(S, cbind(a, a), 0.7 * ones, U = random_coherent(dial)),
     F2 = w_components(S, cbind(a, a^(1 + dial)), 0.7 * ones),
     F3 = w_components(S, cbind(a, a), 0.3 + dial * node_pattern(S)),
-    F4 = w_components(S, cbind(ones, ones), 0.7 * ones, U = random_coherent(dial)),
+    F4 = w_components(
+      S,
+      cbind(ones, ones),
+      0.7 * ones,
+      U = random_coherent(dial)
+    ),
     stop("Unknown family ", family)
   )
 }

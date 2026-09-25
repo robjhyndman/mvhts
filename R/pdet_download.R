@@ -29,17 +29,28 @@ novo_years <- 2020:2023
 # see R/pdet_extract.R.
 # --------------------------------------------------------------------
 pdet_damaged <- c(
-  "CAGED/2008/CAGEDEST_052008.7z", "CAGED/2008/CAGEDEST_082008.7z",
-  "CAGED/2009/CAGEDEST_062009.7z", "CAGED/2009/CAGEDEST_082009.7z",
-  "CAGED/2009/CAGEDEST_102009.7z", "CAGED/2009/CAGEDEST_112009.7z",
-  "CAGED/2010/CAGEDEST_052010.7z", "CAGED/2010/CAGEDEST_062010.7z",
-  "CAGED/2010/CAGEDEST_072010.7z", "CAGED/2010/CAGEDEST_102010.7z",
-  "CAGED/2010/CAGEDEST_122010.7z", "CAGED/2011/CAGEDEST_032011.7z",
-  "CAGED/2012/CAGEDEST_052012.7z", "CAGED/2012/CAGEDEST_062012.7z",
-  "CAGED/2012/CAGEDEST_082012.7z", "CAGED/2012/CAGEDEST_102012.7z",
-  "CAGED/2013/CAGEDEST_012013.7z", "CAGED/2013/CAGEDEST_102013.7z",
-  "CAGED/2014/CAGEDEST_032014.7z", "CAGED/2014/CAGEDEST_052014.7z",
-  "CAGED/2014/CAGEDEST_092014.7z", "CAGED/2014/CAGEDEST_122014.7z"
+  "CAGED/2008/CAGEDEST_052008.7z",
+  "CAGED/2008/CAGEDEST_082008.7z",
+  "CAGED/2009/CAGEDEST_062009.7z",
+  "CAGED/2009/CAGEDEST_082009.7z",
+  "CAGED/2009/CAGEDEST_102009.7z",
+  "CAGED/2009/CAGEDEST_112009.7z",
+  "CAGED/2010/CAGEDEST_052010.7z",
+  "CAGED/2010/CAGEDEST_062010.7z",
+  "CAGED/2010/CAGEDEST_072010.7z",
+  "CAGED/2010/CAGEDEST_102010.7z",
+  "CAGED/2010/CAGEDEST_122010.7z",
+  "CAGED/2011/CAGEDEST_032011.7z",
+  "CAGED/2012/CAGEDEST_052012.7z",
+  "CAGED/2012/CAGEDEST_062012.7z",
+  "CAGED/2012/CAGEDEST_082012.7z",
+  "CAGED/2012/CAGEDEST_102012.7z",
+  "CAGED/2013/CAGEDEST_012013.7z",
+  "CAGED/2013/CAGEDEST_102013.7z",
+  "CAGED/2014/CAGEDEST_032014.7z",
+  "CAGED/2014/CAGEDEST_052014.7z",
+  "CAGED/2014/CAGEDEST_092014.7z",
+  "CAGED/2014/CAGEDEST_122014.7z"
 )
 
 # --------------------------------------------------------------------
@@ -52,7 +63,11 @@ pdet_files <- function(caged_years, novo_years) {
     sprintf("CAGED/%d/CAGEDEST_%02d%d.7z", caged$year, caged$month, caged$year),
     sprintf(
       "NOVO CAGED/%d/%d%02d/CAGEDMOV%d%02d.7z",
-      novo$year, novo$year, novo$month, novo$year, novo$month
+      novo$year,
+      novo$year,
+      novo$month,
+      novo$year,
+      novo$month
     )
   )
   setdiff(files, pdet_damaged)
@@ -73,10 +88,17 @@ download_pdet_file <- function(file) {
   status <- system2(
     "curl",
     c(
-      "--silent", "--show-error", "--fail",
-      "--retry", "5", "--retry-delay", "30",
-      "--continue-at", "-",
-      "--output", shQuote(part),
+      "--silent",
+      "--show-error",
+      "--fail",
+      "--retry",
+      "5",
+      "--retry-delay",
+      "30",
+      "--continue-at",
+      "-",
+      "--output",
+      shQuote(part),
       shQuote(url)
     )
   )
@@ -123,7 +145,8 @@ if (sys.nframe() == 0L) {
   write_manifest(files)
   if (!all(ok)) {
     stop(
-      sum(!ok), " files not downloaded; re-run to resume:\n",
+      sum(!ok),
+      " files not downloaded; re-run to resume:\n",
       paste(files[!ok], collapse = "\n")
     )
   }

@@ -6,20 +6,25 @@ local({
   lock <- file.path(getwd(), "uvr.lock")
   rver_file <- file.path(getwd(), ".r-version")
   count_locked <- function(path) {
-    if (!file.exists(path)) return(0L)
+    if (!file.exists(path)) {
+      return(0L)
+    }
     length(grep("^\\[\\[package\\]\\]", readLines(path, warn = FALSE)))
   }
   version_ok <- TRUE
   if (file.exists(rver_file)) {
     pinned <- tryCatch(trimws(readLines(rver_file, warn = FALSE)[1]),
-                       error = function(e) "")
+      error = function(e) ""
+    )
     if (nzchar(pinned)) {
       active <- as.character(getRversion())
       pinned_minor <- paste(strsplit(pinned, "\\.")[[1]][1:2], collapse = ".")
       active_minor <- paste(strsplit(active, "\\.")[[1]][1:2], collapse = ".")
       if (pinned_minor != active_minor) {
-        message("uvr: R ", active, " active but .r-version pins ", pinned,
-                ". Restart R against the pinned version, or run uvr::r_pin() to change the pin.")
+        message(
+          "uvr: R ", active, " active but .r-version pins ", pinned,
+          ". Restart R against the pinned version, or run uvr::r_pin() to change the pin."
+        )
         version_ok <- FALSE
       }
     }
@@ -31,8 +36,10 @@ local({
       installed <- list.dirs(lib, recursive = FALSE, full.names = FALSE)
       n_installed <- length(setdiff(installed, "uvr"))
       if (n_locked > 0 && n_installed < n_locked) {
-        message("uvr: ", n_locked - n_installed, " of ", n_locked,
-                " package(s) not installed. Run uvr::sync() to install.")
+        message(
+          "uvr: ", n_locked - n_installed, " of ", n_locked,
+          " package(s) not installed. Run uvr::sync() to install."
+        )
       } else if (n_locked > 0) {
         message("uvr: library linked (", n_installed, " packages)")
       } else if (file.exists(lock)) {

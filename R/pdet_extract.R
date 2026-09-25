@@ -53,11 +53,16 @@ count_movements <- function(path, type_col, month_col, uf_col) {
   )
   cmd <- paste(
     "set -o pipefail;",
-    "7z e -so", shQuote(path), "2>/dev/null |",
+    "7z e -so",
+    shQuote(path),
+    "2>/dev/null |",
     "LC_ALL=C awk -F';'",
-    "-v", shQuote(paste0("tcol=", type_col)),
-    "-v", shQuote(paste0("mcol=", month_col)),
-    "-v", shQuote(paste0("ucol=", uf_col)),
+    "-v",
+    shQuote(paste0("tcol=", type_col)),
+    "-v",
+    shQuote(paste0("mcol=", month_col)),
+    "-v",
+    shQuote(paste0("ucol=", uf_col)),
     shQuote(awk_prog)
   )
   out <- suppressWarnings(system2("bash", c("-c", shQuote(cmd)), stdout = TRUE))
@@ -103,7 +108,8 @@ build_emprego_uf <- function(files) {
   missing <- !file.exists(paths)
   if (any(missing)) {
     stop(
-      sum(missing), " raw files missing; run R/pdet_download.R first.\n",
+      sum(missing),
+      " raw files missing; run R/pdet_download.R first.\n",
       paste(head(files[missing]), collapse = "\n")
     )
   }
@@ -120,13 +126,18 @@ build_emprego_uf <- function(files) {
   unmatched <- counts |> dplyr::filter(!uf %in% state_meta$ibge)
   if (nrow(unmatched) > 0) {
     message(
-      "Dropping ", sum(unmatched$n), " records with unknown state codes: ",
+      "Dropping ",
+      sum(unmatched$n),
+      " records with unknown state codes: ",
       paste(unique(unmatched$uf), collapse = ", ")
     )
   }
 
   counts |>
-    dplyr::inner_join(state_meta |> dplyr::select(ibge, UF), by = c(uf = "ibge")) |>
+    dplyr::inner_join(
+      state_meta |> dplyr::select(ibge, UF),
+      by = c(uf = "ibge")
+    ) |>
     dplyr::mutate(
       month = paste0(substr(month, 1, 4), "-", substr(month, 5, 6))
     ) |>

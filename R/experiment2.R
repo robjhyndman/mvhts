@@ -29,12 +29,18 @@ exp2_scenarios <- function() {
   corr <- function(r) matrix(c(1, r, r, 1), 2)
   # Node covariances from the original design
   Sigma_pos <- rbind(
-    c(1, 0.7, 0, 0, 0), c(0.7, 1, 0, 0, 0),
-    c(0, 0, 1, 0.7, 0.7), c(0, 0, 0.7, 1, 0.7), c(0, 0, 0.7, 0.7, 1)
+    c(1, 0.7, 0, 0, 0),
+    c(0.7, 1, 0, 0, 0),
+    c(0, 0, 1, 0.7, 0.7),
+    c(0, 0, 0.7, 1, 0.7),
+    c(0, 0, 0.7, 0.7, 1)
   )
   Sigma_neg <- rbind(
-    c(1, -0.4, 0, 0, 0), c(-0.4, 1, 0, 0, 0),
-    c(0, 0, 1, -0.4, -0.4), c(0, 0, -0.4, 1, -0.4), c(0, 0, -0.4, -0.4, 1)
+    c(1, -0.4, 0, 0, 0),
+    c(-0.4, 1, 0, 0, 0),
+    c(0, 0, 1, -0.4, -0.4),
+    c(0, 0, -0.4, 1, -0.4),
+    c(0, 0, -0.4, -0.4, 1)
   )
   same_phi <- function(Phi) rep(list(Phi), n_b)
 
@@ -45,19 +51,34 @@ exp2_scenarios <- function() {
 
   # N2: each variable has its own node covariance
   perm <- node_major(2, n_b)
-  Omega_var_sigma <- w_variable_specific(list(Sigma_pos, Sigma_neg), corr(0.7))[perm, perm]
+  Omega_var_sigma <- w_variable_specific(list(Sigma_pos, Sigma_neg), corr(0.7))[
+    perm,
+    perm
+  ]
 
   # N3: dynamics vary by node, in opposite directions for the two variables
   a <- seq(0.2, 0.8, length.out = n_b)
   Phi_node <- lapply(seq_len(n_b), \(i) matrix(c(a[i], 0.2, 0.2, rev(a)[i]), 2))
 
   list(
-    C1_sep_pos = list(Phi_list = same_phi(Phi0), Omega = kronecker(Sigma_pos, corr(0.7))),
-    C2_sep_neg = list(Phi_list = same_phi(Phi0), Omega = kronecker(Sigma_pos, corr(-0.7))),
-    C3_var_dynamics = list(Phi_list = same_phi(diag(c(0.9, 0.2))), Omega = kronecker(Sigma_pos, corr(0.7))),
+    C1_sep_pos = list(
+      Phi_list = same_phi(Phi0),
+      Omega = kronecker(Sigma_pos, corr(0.7))
+    ),
+    C2_sep_neg = list(
+      Phi_list = same_phi(Phi0),
+      Omega = kronecker(Sigma_pos, corr(-0.7))
+    ),
+    C3_var_dynamics = list(
+      Phi_list = same_phi(diag(c(0.9, 0.2))),
+      Omega = kronecker(Sigma_pos, corr(0.7))
+    ),
     N1_node_corr = list(Phi_list = same_phi(Phi0), Omega = Omega_node_corr),
     N2_var_sigma = list(Phi_list = same_phi(Phi0), Omega = Omega_var_sigma),
-    N3_node_dynamics = list(Phi_list = Phi_node, Omega = kronecker(Sigma_pos, corr(0.7)))
+    N3_node_dynamics = list(
+      Phi_list = Phi_node,
+      Omega = kronecker(Sigma_pos, corr(0.7))
+    )
   )
 }
 
@@ -106,10 +127,14 @@ exp2_population <- function(scenario, S, p = 20) {
   P <- lapply(Gamma, \(G) t(Wsel) %*% G %*% Wsel)
 
   # AR(p) coefficients for each series
-  coefs <- vapply(seq_len(m * n), \(x) {
-    g <- vapply(P, \(Pd) Pd[x, x], numeric(1))
-    c(1, -solve(stats::toeplitz(g[seq_len(p)]), g[-1]))
-  }, numeric(p + 1))
+  coefs <- vapply(
+    seq_len(m * n),
+    \(x) {
+      g <- vapply(P, \(Pd) Pd[x, x], numeric(1))
+      c(1, -solve(stats::toeplitz(g[seq_len(p)]), g[-1]))
+    },
+    numeric(p + 1)
+  )
 
   W <- matrix(0, m * n, m * n)
   for (k in 0:p) {
@@ -128,7 +153,11 @@ exp2_population <- function(scenario, S, p = 20) {
   tibble::tibble(
     incoherence = incoherence,
     kappa = if (visible) kappa_mv(W, C, m) else 0,
-    gain = if (visible) 1 - pop_mse(mint_map(W, C_star), W) / pop_mse(separate_map(W, C, m), W) else 0,
+    gain = if (visible) {
+      1 - pop_mse(mint_map(W, C_star), W) / pop_mse(separate_map(W, C, m), W)
+    } else {
+      0
+    },
     W = list(W)
   )
 }
@@ -147,7 +176,11 @@ exp2_rep <- function(scenario, S, T_train, h = 12) {
   test <- Y |> dplyr::filter(time > times[T_train])
   nodes <- order_nodes(unique(Y$node))
   series <- sort(unique(Y$series))
-  cols <- paste0(rep(series, each = length(nodes)), ".", rep(nodes, times = length(series)))
+  cols <- paste0(
+    rep(series, each = length(nodes)),
+    ".",
+    rep(nodes, times = length(series))
+  )
 
   fits <- list(
     arima = fabletools::model(train, arima = fable::ARIMA(value)),
@@ -157,7 +190,8 @@ exp2_rep <- function(scenario, S, T_train, h = 12) {
   )
   fcs <- list(
     arima = fabletools::forecast(fits$arima, h = h),
-    var = fabletools::forecast(fits$var, h = h) |> tidy_var_forecast(series_names = c("A", "B"))
+    var = fabletools::forecast(fits$var, h = h) |>
+      tidy_var_forecast(series_names = c("A", "B"))
   )
   actual <- make_matrix(test, "value")[, cols]
   C <- make_C(S)
@@ -181,7 +215,12 @@ exp2_rep <- function(scenario, S, T_train, h = 12) {
     )
     purrr::imap(maps, \(M, method) {
       err <- Yhat %*% t(M) - actual
-      tibble::tibble(model = name, method = method, h = seq_len(h), mse = rowMeans(err^2))
+      tibble::tibble(
+        model = name,
+        method = method,
+        h = seq_len(h),
+        mse = rowMeans(err^2)
+      )
     }) |>
       dplyr::bind_rows() |>
       dplyr::mutate(
@@ -198,7 +237,8 @@ exp2_rep <- function(scenario, S, T_train, h = 12) {
 exp2_batch <- function(scenario_name, scenarios, S, T_train, reps, batch) {
   out <- purrr::map(seq_len(reps), \(r) {
     tryCatch(
-      exp2_rep(scenarios[[scenario_name]], S, T_train) |> dplyr::mutate(rep = r),
+      exp2_rep(scenarios[[scenario_name]], S, T_train) |>
+        dplyr::mutate(rep = r),
       error = function(e) NULL
     )
   })

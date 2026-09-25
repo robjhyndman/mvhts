@@ -57,8 +57,22 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
   draw <- function() matrix(sample.int(NROW(res), h * K, replace = TRUE), h, K)
   shared <- draw()
   paths <- list(
-    joint = app_paths(fit, res, list(Admissões = shared, Demissões = shared), h, K, cols),
-    independent = app_paths(fit, res, list(Admissões = shared, Demissões = draw()), h, K, cols)
+    joint = app_paths(
+      fit,
+      res,
+      list(Admissões = shared, Demissões = shared),
+      h,
+      K,
+      cols
+    ),
+    independent = app_paths(
+      fit,
+      res,
+      list(Admissões = shared, Demissões = draw()),
+      h,
+      K,
+      cols
+    )
   )
   combos <- list(
     `independent + separate` = list(paths = "independent", map = "separate"),
@@ -74,14 +88,20 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
     M <- maps[[cmb$map]]
     # Reconcile every path: for each step t, (2n x K) -> (2n x K)
     rec <- array(NA_real_, dim(P))
-    for (t in seq_len(h)) rec[t, , ] <- M %*% P[t, , ]
+    for (t in seq_len(h)) {
+      rec[t, , ] <- M %*% P[t, , ]
+    }
     net <- rec[, idx_a, , drop = FALSE] - rec[, idx_d, , drop = FALSE]
     tibble::tibble(
       origin = as.character(origin),
       method = label,
       h = grid$h,
       node = rownames(S)[grid$node],
-      crps = mapply(\(t, a) crps_sample(net_actual[t, a], net[t, a, ]), grid$h, grid$node)
+      crps = mapply(
+        \(t, a) crps_sample(net_actual[t, a], net[t, a, ]),
+        grid$h,
+        grid$node
+      )
     )
   }) |>
     dplyr::bind_rows()
@@ -116,23 +136,38 @@ arima_psi <- function(model, h) {
     return(1)
   }
   arma <- model$arma # p, q, P, Q, s, d, D
-  p <- arma[1]; q <- arma[2]; P <- arma[3]; Q <- arma[4]; s <- arma[5]; d <- arma[6]; D <- arma[7]
+  p <- arma[1]
+  q <- arma[2]
+  P <- arma[3]
+  Q <- arma[4]
+  s <- arma[5]
+  d <- arma[6]
+  D <- arma[7]
   cf <- model$coef
   ar <- cf[seq_len(p)]
   ma <- cf[p + seq_len(q)]
   sar <- cf[p + q + seq_len(P)]
   sma <- cf[p + q + P + seq_len(Q)]
   ar_poly <- poly_mult(c(1, -ar), seasonal_poly(-sar, s))
-  for (i in seq_len(d)) ar_poly <- poly_mult(ar_poly, c(1, -1))
-  for (i in seq_len(D)) ar_poly <- poly_mult(ar_poly, seasonal_poly(-1, s))
+  for (i in seq_len(d)) {
+    ar_poly <- poly_mult(ar_poly, c(1, -1))
+  }
+  for (i in seq_len(D)) {
+    ar_poly <- poly_mult(ar_poly, seasonal_poly(-1, s))
+  }
   ma_poly <- poly_mult(c(1, ma), seasonal_poly(sma, s))
-  c(1, stats::ARMAtoMA(ar = -ar_poly[-1], ma = ma_poly[-1], lag.max = h - 1))[seq_len(h)]
+  c(
+    1,
+    stats::ARMAtoMA(ar = -ar_poly[-1], ma = ma_poly[-1], lag.max = h - 1)
+  )[seq_len(h)]
 }
 
 # Lower-triangular h x h matrix mapping future innovations to paths
 psi_matrix <- function(psi) {
   h <- length(psi)
   Psi <- matrix(0, h, h)
-  for (t in seq_len(h)) Psi[t, seq_len(t)] <- rev(psi[seq_len(t)])
+  for (t in seq_len(h)) {
+    Psi[t, seq_len(t)] <- rev(psi[seq_len(t)])
+  }
   Psi
 }

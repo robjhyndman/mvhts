@@ -19,7 +19,11 @@ app_cols <- function(S) {
 wide_matrix <- function(x, variable, cols) {
   x |>
     tibble::as_tibble() |>
-    dplyr::transmute(time, col = paste0(series, ".", node), v = .data[[variable]]) |>
+    dplyr::transmute(
+      time,
+      col = paste0(series, ".", node),
+      v = .data[[variable]]
+    ) |>
     tidyr::pivot_wider(names_from = col, values_from = v) |>
     dplyr::arrange(time) |>
     dplyr::select(dplyr::all_of(cols)) |>
@@ -41,10 +45,18 @@ app_fit <- function(train) {
 # Response residuals are used for ETS, whose innovation residuals are
 # relative errors when the error is multiplicative.
 app_residuals <- function(fit, name, cols) {
-  res <- if (name == "ets") stats::residuals(fit, type = "response") else stats::residuals(fit)
+  res <- if (name == "ets") {
+    stats::residuals(fit, type = "response")
+  } else {
+    stats::residuals(fit)
+  }
   if (name == "var") {
     res <- res |>
-      tidyr::pivot_longer(dplyr::all_of(app_series), names_to = "series", values_to = ".resid")
+      tidyr::pivot_longer(
+        dplyr::all_of(app_series),
+        names_to = "series",
+        values_to = ".resid"
+      )
   }
   stats::na.omit(wide_matrix(res, ".resid", cols))
 }
@@ -53,7 +65,8 @@ app_residuals <- function(fit, name, cols) {
 app_forecasts <- function(fit, name, h, cols) {
   fc <- fabletools::forecast(fit, h = h)
   if (name == "var") {
-    fc <- fc |> tidy_var_forecast(series_names = app_series, extra_keys = "Região")
+    fc <- fc |>
+      tidy_var_forecast(series_names = app_series, extra_keys = "Região")
   }
   wide_matrix(fc, ".mean", cols)
 }
@@ -89,8 +102,14 @@ app_maps <- function(res, S) {
 #   point: errors by model, method, horizon, series and node;
 #   prob:  CRPS of net change for the probabilistic comparison (ARIMA).
 # --------------------------------------------------------------------
-app_origin <- function(emprego, S, origin, h = 12, K = 1000,
-                       last = tsibble::yearmonth("2019 Dec")) {
+app_origin <- function(
+  emprego,
+  S,
+  origin,
+  h = 12,
+  K = 1000,
+  last = tsibble::yearmonth("2019 Dec")
+) {
   cols <- app_cols(S)
   origin <- tsibble::yearmonth(origin)
   train <- emprego |> dplyr::filter(time <= origin)
@@ -108,10 +127,21 @@ app_origin <- function(emprego, S, origin, h = 12, K = 1000,
     maps <- app_maps(res, S)
     point <- purrr::imap(maps, \(M, method) {
       err <- Yhat %*% t(M) - actual
-      tibble::tibble(model = name, method = method, h = horizon, series = series, node = node, error = c(err))
+      tibble::tibble(
+        model = name,
+        method = method,
+        h = horizon,
+        series = series,
+        node = node,
+        error = c(err)
+      )
     }) |>
       dplyr::bind_rows()
-    prob <- if (name == "arima") app_prob(fit, res, maps, actual, S, origin, K) else NULL
+    prob <- if (name == "arima") {
+      app_prob(fit, res, maps, actual, S, origin, K)
+    } else {
+      NULL
+    }
     list(point = point, prob = prob)
   })
   list(
@@ -123,7 +153,11 @@ app_origin <- function(emprego, S, origin, h = 12, K = 1000,
 
 # Forecast origins: expanding windows from `min_train` months to the
 # month before `last`
-app_origins <- function(emprego, min_train = 108, last = tsibble::yearmonth("2019 Dec")) {
+app_origins <- function(
+  emprego,
+  min_train = 108,
+  last = tsibble::yearmonth("2019 Dec")
+) {
   times <- sort(unique(emprego$time[emprego$time <= last]))
   as.character(times[min_train:(length(times) - 1)])
 }
@@ -143,11 +177,15 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
     W_hat <- shrinkage_cov(res)
     # Plug-in gain for net change (admissions - dismissals) at each node
     n <- NROW(S)
-    net_gain <- vapply(seq_len(n), \(i) {
-      a <- numeric(2 * n)
-      a[c(i, n + i)] <- c(1, -1)
-      plugin_gain_combination(W_hat, C, 2, a)
-    }, numeric(1))
+    net_gain <- vapply(
+      seq_len(n),
+      \(i) {
+        a <- numeric(2 * n)
+        a[c(i, n + i)] <- c(1, -1)
+        plugin_gain_combination(W_hat, C, 2, a)
+      },
+      numeric(1)
+    )
     level <- node_level(rownames(S))
     tibble::tibble(
       model = name,
@@ -162,7 +200,8 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       p_dis = test$p_each[2],
       p_value = test$p_value,
       kronecker_error = nearest_kronecker(W_hat, 2)$rel_error,
-      incoherence = sum(diag(C_star %*% W_hat %*% t(C_star))) / sum(diag(W_hat)),
+      incoherence = sum(diag(C_star %*% W_hat %*% t(C_star))) /
+        sum(diag(W_hat)),
       net_gain_total = mean(net_gain[level == "Total"]),
       net_gain_regions = mean(net_gain[level == "Regions"]),
       net_gain_states = mean(net_gain[level == "States"])

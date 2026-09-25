@@ -98,7 +98,11 @@ pop_mse <- function(M, W) sum(diag(M %*% W %*% t(M)))
 kappa_mv <- function(W, C, m, standardise = TRUE) {
   n <- NCOL(C)
   if (standardise) {
-    s <- vapply(seq_len(m), \(j) sqrt(mean(diag(block(W, j, j, n)))), numeric(1))
+    s <- vapply(
+      seq_len(m),
+      \(j) sqrt(mean(diag(block(W, j, j, n)))),
+      numeric(1)
+    )
     d <- rep(1 / s, each = n)
     W <- W * outer(d, d)
   }
@@ -131,7 +135,9 @@ plugin_gain <- function(W, C, m) {
 plugin_gain_combination <- function(W, C, m, a) {
   M <- mint_map(W, stack_matrix(C, m))
   M_sep <- separate_map(W, C, m)
-  1 - drop(t(a) %*% M %*% W %*% t(M) %*% a) / drop(t(a) %*% M_sep %*% W %*% t(M_sep) %*% a)
+  1 -
+    drop(t(a) %*% M %*% W %*% t(M) %*% a) /
+      drop(t(a) %*% M_sep %*% W %*% t(M_sep) %*% a)
 }
 
 # --------------------------------------------------------------------
@@ -173,7 +179,9 @@ nearest_kronecker <- function(W, m) {
 w_separable <- function(V, Sigma0) kronecker(V, Sigma0)
 
 # F1: add a component that reconciliation cannot see
-w_invisible <- function(W, S, m, K) W + stack_matrix(S, m) %*% K %*% t(stack_matrix(S, m))
+w_invisible <- function(W, S, m, K) {
+  W + stack_matrix(S, m) %*% K %*% t(stack_matrix(S, m))
+}
 
 # F2: variable-specific structure across the hierarchy. Blocks are
 # W_jk = R_jk L_j L_k', where Sigma_j = L_j L_j' and R is an m x m
