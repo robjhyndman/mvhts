@@ -1,0 +1,13 @@
+flavor = "quarto"
+
+[flavors]
+gfm = ["*.md"]
+
+[format]
+wrap = "sentence"
+line-ending = "lf"
+tab-width = 2
+line-width = 88
+
+[formatters]
+r = "air"

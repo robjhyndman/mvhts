@@ -1,33 +1,67 @@
 # Measuring whether joint reconciliation can help {#sec-diagnostic}
 
-@prp-equivalence gives an exact condition, but in practice $\bm{W}$ is estimated and the condition never holds exactly in the estimate. We need a measure of how far an estimated covariance is from satisfying it, and a way to judge whether the observed departure is larger than estimation noise alone would produce.
+@prp-equivalence gives an exact condition, but in practice $\bm{W}$ is estimated and the condition never holds exactly in the estimate.
+We need a measure of how far an estimated covariance is from satisfying it, and a way to judge whether the observed departure is larger than estimation noise alone would produce.
 
 ## Two measures
 
-We measure the conditions of @prp-equivalence directly, rather than distance from a Kronecker product (@sec-theory). The first measure describes the structure of the joint map. Since $\bm{G}$ contains the regression coefficients of the base forecast errors on the incoherences, and its off-diagonal blocks are the coefficients on other variables' incoherences, we define
+We measure the conditions of @prp-equivalence directly, rather than distance from a Kronecker product (@sec-theory).
+The first measure describes the structure of the joint map.
+Since $\bm{G}$ contains the regression coefficients of the base forecast errors on the incoherences, and its off-diagonal blocks are the coefficients on other variables' incoherences, we define
 $$
-\kappa(\bm{W}) = \left(\frac{\sum_{j \ne k}\|\bm{G}_{jk}\|_F^2}{\|\bm{G}\|_F^2}\right)^{1/2},
+  \kappa(\bm{W})
+  = \left( \frac{\sum_{j \ne k}\|\bm{G}_{jk}\|_F^2}{\|\bm{G}\|_F^2} \right)^{1/2},
 $$ {#eq-kappa}
-where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$. Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{W}_{jj}$. This makes $\kappa$ free of units. By @prp-equivalence, $\kappa = 0$ exactly when joint and separate reconciliation coincide. Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), so it cannot move $\kappa$ away from zero, although it can change the standardisation and hence the value of a non-zero $\kappa$.
+where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$.
+Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{W}_{jj}$.
+This makes $\kappa$ free of units.
+By @prp-equivalence, $\kappa = 0$ exactly when joint and separate reconciliation coincide.
+Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), so it cannot move $\kappa$ away from zero, although it can change the standardisation and hence the value of a non-zero $\kappa$.
 
-The second measure describes the value of the joint map. If $\bm{W}$ were the true error covariance, the proportional reduction in mean squared error from reconciling jointly rather than separately would be
+The second measure describes the value of the joint map.
+If $\bm{W}$ were the true error covariance, the proportional reduction in mean squared error from reconciling jointly rather than separately would be
 $$
-\gamma(\bm{W}) = 1 - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
+  \gamma(\bm{W})
+  = 1
+    - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
 $$ {#eq-gain}
-MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of @prp-equivalence hold. Components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove. Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the errors, because the gain from any reconciliation comes only from that component. So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences. A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average. Because $\gamma$ averages over all series, it can hide a larger gain for a particular combination of variables. For a combination $\bm{a}'\bm{y}$ of interest we therefore also compute
+MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of @prp-equivalence hold.
+Components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove.
+Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the errors, because the gain from any reconciliation comes only from that component.
+So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences.
+A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average.
+Because $\gamma$ averages over all series, it can hide a larger gain for a particular combination of variables.
+For a combination $\bm{a}'\bm{y}$ of interest we therefore also compute
 $$
-\gamma_{\bm{a}}(\bm{W}) = 1 - \frac{\bm{a}'\bm{M}\bm{W}\bm{M}'\bm{a}}{\bm{a}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{a}},
+  \gamma_{\bm{a}}(\bm{W})
+  = 1
+    - \frac{\bm{a}'\bm{M}\bm{W}\bm{M}'\bm{a}}{\bm{a}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{a}},
 $$ {#eq-gain-a}
 which is also non-negative for every $\bm{a}$ (@sec-theory).
 
 ## Estimation and testing
 
-Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are biased in finite samples. Sampling noise pushes them above zero even when the population covariance satisfies @prp-equivalence. The shrinkage estimator pulls the other way, because its diagonal target has no cross-variable blocks (@sec-theory), so it shrinks genuine departures towards zero. So a non-zero $\widehat\kappa$ may be pure noise, and a genuine departure may be understated. The estimates $\widehat\kappa$ and $\widehat\gamma$ are therefore useful as descriptions of what joint reconciliation would do with the estimated covariance, but their raw values cannot be read as evidence that the population conditions fail. For that we need a test.
+Both measures are computed from an estimate $\widehat{\bm{W}}$, and both are biased in finite samples.
+Sampling noise pushes them above zero even when the population covariance satisfies @prp-equivalence.
+The shrinkage estimator pulls the other way, because its diagonal target has no cross-variable blocks (@sec-theory), so it shrinks genuine departures towards zero.
+So a non-zero $\widehat\kappa$ may be pure noise, and a genuine departure may be understated.
+The estimates $\widehat\kappa$ and $\widehat\gamma$ are therefore useful as descriptions of what joint reconciliation would do with the estimated covariance, but their raw values cannot be read as evidence that the population conditions fail.
+For that we need a test.
 
-A direct test of the conditions follows from the regression reading of @prp-equivalence. Given its own incoherences $\bm{z}_j = \bm{C}\bm{e}_j$, the errors of variable $j$ are determined by their bottom-level part $\bm{e}_{j}^{b}$, since the aggregate errors equal $\bm{z}_j + \bm{A}\bm{e}_j^{b}$. Condition (d) says that, in the multivariate regression
+A direct test of the conditions follows from the regression reading of @prp-equivalence.
+Given its own incoherences $\bm{z}_j = \bm{C}\bm{e}_j$, the errors of variable $j$ are determined by their bottom-level part $\bm{e}_{j}^{b}$, since the aggregate errors equal $\bm{z}_j + \bm{A}\bm{e}_j^{b}$.
+Condition (d) says that, in the multivariate regression
 $$
-\bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{B}_{jj}'\bm{z}_{j,t} + \sum_{k \ne j}\bm{B}_{jk}'\bm{z}_{k,t} + \bm{u}_{j,t},
+  \bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{B}_{jj}'\bm{z}_{j,t}
+                     + \sum_{k \ne j}\bm{B}_{jk}'\bm{z}_{k,t} + \bm{u}_{j,t},
 $$ {#eq-test-regression}
-the other variables' incoherences add nothing: $\bm{B}_{jk} = \bm{0}$ for all $k \ne j$. This is a standard linear hypothesis in a multivariate regression with $n_b$ responses and $(m-1)n_a$ restrictions per response. We test it with the likelihood ratio statistic, Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution [@rao1951asymptotic], applied to the one-step residuals of the base models. With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction. The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$. It needs $T \ge n_b + m n_a + 1$, and like any normal-theory test it assumes serially uncorrelated residual vectors, so it should be applied to residuals of adequate base models.
+the other variables' incoherences add nothing: $\bm{B}_{jk} = \bm{0}$ for all $k \ne j$.
+This is a standard linear hypothesis in a multivariate regression with $n_b$ responses and $(m - 1)n_a$ restrictions per response.
+We test it with the likelihood ratio statistic, Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution [@rao1951asymptotic], applied to the one-step residuals of the base models.
+With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction.
+The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$.
+It needs $T \ge n_b + m n_a + 1$, and like any normal-theory test it assumes serially uncorrelated residual vectors, so it should be applied to residuals of adequate base models.
 
-We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data. Such procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error. The regression test avoids simulation altogether.
+We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data.
+Such procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error.
+The regression test avoids simulation altogether.

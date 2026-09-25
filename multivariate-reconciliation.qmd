@@ -8,7 +8,7 @@ author:
   - name: Rodrigo de Souza Bulhões
     affiliations:
       - ref: ufba
-  - name: Rob J. Hyndman
+  - name: Rob J Hyndman
     affiliations:
       - ref: monash
   - name: Paulo Canas Rodrigues

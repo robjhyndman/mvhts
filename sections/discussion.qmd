@@ -1,15 +1,34 @@
 # Discussion {#sec-discussion}
 
-When several variables are observed over the same hierarchy and no constraint links them, joint MinT reconciliation can improve on reconciling each variable separately only through the covariance between one variable's reconciled errors and another variable's incoherences. Cross-variable correlation in the base forecast errors is not enough. Correlation that is common to the whole hierarchy (the separable case) and correlation in the coherent component of the errors are both invisible to reconciliation. The remaining dependence varies across the hierarchy differently for each variable, and it is typically a small fraction of the forecast error variance.
+When several variables are observed over the same hierarchy and no constraint links them, joint MinT reconciliation can improve on reconciling each variable separately only through the covariance between one variable's reconciled errors and another variable's incoherences.
+Cross-variable correlation in the base forecast errors is not enough.
+Correlation that is common to the whole hierarchy (the separable case) and correlation in the coherent component of the errors are both invisible to reconciliation.
+The remaining dependence varies across the hierarchy differently for each variable, and it is typically a small fraction of the forecast error variance.
 
 This has three practical consequences.
 
-First, simulation designs need care. A design in which every node shares the same dynamics produces coherent population forecasts (@prp-coherent), so any difference between joint and separate reconciliation comes from estimation error in the base models. Experiment 2 shows that this estimation error can itself have exploitable cross-variable structure, but that the resulting gains are small and appear only with long series. Varying the cross-variable correlation in such a design, however strongly, says nothing about the value of joint reconciliation for the data-generating process.
+First, simulation designs need care.
+A design in which every node shares the same dynamics produces coherent population forecasts (@prp-coherent), so any difference between joint and separate reconciliation comes from estimation error in the base models.
+Experiment 2 shows that this estimation error can itself have exploitable cross-variable structure, but that the resulting gains are small and appear only with long series.
+Varying the cross-variable correlation in such a design, however strongly, says nothing about the value of joint reconciliation for the data-generating process.
 
-Second, check before reconciling jointly. The diagnostic of @sec-diagnostic estimates how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise. When it is not, separate reconciliation is preferable: it needs only the diagonal blocks of the error covariance, which are estimated more precisely, and Experiment 1 shows that estimating the cross-variable blocks costs accuracy when they carry no information.
+Second, check before reconciling jointly.
+The diagnostic of @sec-diagnostic estimates how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise.
+When it is not, separate reconciliation is preferable: it needs only the diagonal blocks of the error covariance, which are estimated more precisely, and Experiment 1 shows that estimating the cross-variable blocks costs accuracy when they carry no information.
 
-Third, think about the quantity being forecast. Many quantities of interest are functions of several variables, such as net employment change. Their forecast distributions depend on the joint distribution of the base forecasts, and in the application, keeping that dependence reduced the CRPS of the national net change by `r num$appNetJointSepTotal`%. Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map, so separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold. When they fail, joint reconciliation can still help such combinations while barely changing each variable's average accuracy, as it did for the national and regional net change in Brazil. The plug-in gain $\gamma_{\bm{a}}$ for the combination of interest is a better guide than the average gain $\gamma$.
+Third, think about the quantity being forecast.
+Many quantities of interest are functions of several variables, such as net employment change.
+Their forecast distributions depend on the joint distribution of the base forecasts, and in the application, keeping that dependence reduced the CRPS of the national net change by `r num$appNetJointSepTotal`%.
+Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map, so separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
+When they fail, joint reconciliation can still help such combinations while barely changing each variable's average accuracy, as it did for the national and regional net change in Brazil.
+The plug-in gain $\gamma_{\bm{a}}$ for the combination of interest is a better guide than the average gain $\gamma$.
 
-Joint reconciliation is needed when a constraint does link the variables. If net employment change were forecast as a series in its own right, the constraint that it equals admissions minus dismissals would couple the two variables, and no variable-by-variable reconciliation could satisfy it. Such signed linear constraints fit the general framework of @girolimetto2024point. With them $\bm{C}_*$ is no longer block diagonal, separate reconciliation is not an option, and the question addressed here does not arise.
+Joint reconciliation is needed when a constraint does link the variables.
+If net employment change were forecast as a series in its own right, the constraint that it equals admissions minus dismissals would couple the two variables, and no variable-by-variable reconciliation could satisfy it.
+Such signed linear constraints fit the general framework of @girolimetto2024point.
+With them $\bm{C}_*$ is no longer block diagonal, separate reconciliation is not an option, and the question addressed here does not arise.
 
-Several extensions are natural. The shrinkage estimator treats cross-variable covariances like any other off-diagonal entry; an estimator that shrinks towards the null set of @prp-equivalence would interpolate between separate and joint reconciliation using the data to choose how far to move. The diagnostic could also be applied pairwise to decide which groups of variables to reconcile together when there are many. Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, where the characterisation of @sec-theory extends directly.
+Several extensions are natural.
+The shrinkage estimator treats cross-variable covariances like any other off-diagonal entry; an estimator that shrinks towards the null set of @prp-equivalence would interpolate between separate and joint reconciliation using the data to choose how far to move.
+The diagnostic could also be applied pairwise to decide which groups of variables to reconcile together when there are many.
+Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, where the characterisation of @sec-theory extends directly.
