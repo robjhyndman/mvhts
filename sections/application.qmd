@@ -32,7 +32,7 @@ We forecast all 66 series from rolling origins with an expanding window, startin
 
 Table\ \ref{tab:app-diag} reports the diagnostics computed from the one-step residuals of models fitted to the whole of 2007--2019. For the ARIMA base forecasts the estimated error covariance is close to separable by the generic measure (nearest-Kronecker error `r num$appKronArima`), and joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num$appKappaArima`$) for a plug-in gain of only `r num$appGainArima`% in mean squared error. The likelihood ratio test rejects the conditions of @prp-equivalence at the 5% level ($p = `r num$appPArima`$), so the departure is not pure estimation noise, but it is small. The incoherent component is `r num$appIncohArima`% of the one-step error variance. The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test; the per-node VARs, fitted without seasonal terms, probably do not capture the monthly seasonality.
 
-The plug-in gain for net employment change is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
+The plug-in gain for net employment change, $\widehat\gamma_{\bm{a}}$ with $\bm{a}$ selecting admissions minus dismissals at a node, is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
 
 ```{r}
 #| output: asis

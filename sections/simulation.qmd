@@ -1,6 +1,6 @@
 # Simulations {#sec-simulation}
 
-We use two experiments. The first simulates base forecast errors directly, so that the population error covariance is known and the gain from joint reconciliation can be computed exactly. The second simulates time series, fits base forecasting models, and reconciles their forecasts, as in the original design of this study.
+We use two experiments. The first simulates base forecast errors directly, so that the population error covariance is known and the gain from joint reconciliation can be computed exactly. It also shows how the measures and the test of @sec-diagnostic behave when the covariance is estimated. The second simulates time series in which every node shares the same dynamics, as in @prp-coherent, and variants that break this, fits base forecasting models, and reconciles their forecasts.
 
 ## Experiment 1: controlled error covariances
 
@@ -21,7 +21,7 @@ F3, node-varying correlation.
 F4, OLS case.
 : $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$.
 
-F0, F1 and F4 satisfy @prp-equivalence; F2 and F3 do not when $\delta > 0$. We use two hierarchies: the eight-series hierarchy of @fig-hierarchy, and the 33-series hierarchy of the Brazilian application (@sec-application).
+F0, F1 and F4 satisfy @prp-equivalence; F2 and F3 do not when $\delta > 0$. We use two hierarchies: the eight-series hierarchy of @fig-hierarchy, and a 33-series hierarchy in which 27 bottom-level series aggregate to five intermediate series and then to a single total. The second has the structure of the Brazilian employment data analysed in @sec-application, and we refer to it as the Brazilian hierarchy.
 
 #### Population results
 
@@ -32,6 +32,15 @@ F0, F1 and F4 satisfy @prp-equivalence; F2 and F3 do not when $\delta > 0$. We u
 #| fig-cap: 'Experiment 1: population MSE reduction from joint rather than separate reconciliation against $\kappa$. The separable (F0), separable-plus-invisible (F1) and OLS (F4) families all lie at the origin.'
 #| out-width: 100%
 knitr::include_graphics(tar_read(fig_gain))
+```
+
+@fig-kronecker shows why distance from a Kronecker product is the wrong measure (@sec-theory). It plots the same population gains against the relative error of the nearest Kronecker approximation to $\bm{W}$. For F1 the Kronecker error rises with no gain at all, because the departure is invisible to reconciliation, and for F2 it can fall while the gain rises.
+
+```{r}
+#| label: fig-kronecker
+#| fig-cap: 'Experiment 1: population MSE reduction from joint rather than separate reconciliation against the relative error of the nearest Kronecker approximation to $\bm{W}$.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_kronecker))
 ```
 
 #### Estimated covariances
@@ -45,9 +54,29 @@ In practice $\bm{W}$ is estimated, and the joint estimate has $m^2 = 4$ times as
 knitr::include_graphics(tar_read(fig_samplesize))
 ```
 
+The same replications show the finite-sample behaviour of $\widehat\kappa$ (@fig-noise). Under a separable covariance the median of $\widehat\kappa$ is about `r num$kappaNoiseSep` at the sample sizes of monthly data and falls only slowly with $T$. For the strongest node-varying departure (F3) in the Brazilian hierarchy, $\widehat\kappa$ is below its population value at every sample size, because of shrinkage, and at $T \le 200$ it is about the same as, or smaller than, under separability. The raw value of $\widehat\kappa$ cannot distinguish the two.
+
+```{r}
+#| label: fig-noise
+#| fig-cap: 'Experiment 1: sampling distribution of $\widehat\kappa$ (median and 5--95% range) under the separable family F0 and under the node-varying family F3 with the largest departure, with the population values dashed.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_noise))
+```
+
+#### Size and power of the test
+
+To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ error vectors from $N(\bm{0}, \bm{W})$ for F0, F1, and three strengths each of F2 and F3, in both hierarchies, and applied the test to each sample (1000 replications). @fig-power shows the results. Under both separable and separable-plus-invisible covariances the rejection rate at the 5% level ranges from `r num$testSizeMin`% to `r num$testSizeMax`% at every sample size, in both hierarchies. Power grows with the size of the departure and with $T$; the smallest departures, with population gains below 1%, are detected reliably only with around a thousand observations.
+
+```{r}
+#| label: fig-power
+#| fig-cap: 'Experiment 1: rejection rate at the 5% level of the test of condition (d), by sample size (1000 replications). For the separable (F0) and separable-plus-invisible (F1) covariances the rejection rate is the size of the test.'
+#| out-width: 100%
+knitr::include_graphics(tar_read(fig_power))
+```
+
 ## Experiment 2: fitted base models
 
-The second experiment follows the original design of this study. The two bottom-level series at node $i$ are $\bm{x}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, with a deterministic quarterly component $\bm{\mu}_{i,t}$ and a bivariate VAR(1) $\bm{\eta}_{i,t} = \bm{\Phi}_i\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$, aggregated over the eight-series hierarchy of @fig-hierarchy. We use six scenarios. In three controls every node has the same dynamics and the innovation covariances have the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$ of @prp-coherent: cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, and variable-specific dynamics ($\bm{\Phi} = \operatorname{diag}(0.9, 0.2)$). By @prp-coherent, all three have coherent population forecasts. The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
+The second experiment simulates time series and fits base models to them. The two bottom-level series at node $i$ are $\bm{x}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, with a deterministic quarterly component $\bm{\mu}_{i,t}$ and a bivariate VAR(1) $\bm{\eta}_{i,t} = \bm{\Phi}_i\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$, aggregated over the eight-series hierarchy of @fig-hierarchy. We use six scenarios. In three controls every node has the same dynamics and the innovation covariances have the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$ of @prp-coherent: cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, and variable-specific dynamics ($\bm{\Phi} = \operatorname{diag}(0.9, 0.2)$). By @prp-coherent, all three have coherent population forecasts. The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
 
 For each scenario we computed the exact one-step error covariance of the population-optimal univariate AR(20) forecasts of all 16 series. Table\ \ref{tab:exp2} gives its incoherent share, $\kappa$ and $\gamma$. The controls are coherent to machine precision. In the other scenarios the incoherent component is only `r num$expTwoIncohRange`% of the error variance. So although $\kappa$ is large (`r num$expTwoKappaRange`), the population gain from joint reconciliation is only `r num$expTwoGainRange`%.
 

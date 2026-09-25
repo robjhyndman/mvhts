@@ -18,7 +18,7 @@ $$
 \qquad
 \bm{S}_* = \bm{I}_m \otimes \bm{S},
 $$ {#eq-vec}
-with constraint matrix $\bm{C}_* = \bm{I}_m \otimes \bm{C}$. The stacked summing matrix is block diagonal: no constraint links one variable to another. This distinguishes the setting from a grouped hierarchy, where the categories of a grouping variable (such as travel purpose in the Australian tourism data of \citealp{wickramasuriya2019optimal}) are linked by aggregation constraints because their total is itself observed and forecast.
+with constraint matrix $\bm{C}_* = \bm{I}_m \otimes \bm{C}$. The stacked summing matrix is block diagonal: no constraint links one variable to another. This distinguishes the setting from a grouped hierarchy, where the categories of a grouping variable (such as travel purpose in the Australian tourism data of @wickramasuriya2019optimal) are linked by aggregation constraints because their total is itself observed and forecast.
 
 ## Forecast reconciliation
 

@@ -56,3 +56,14 @@
   `@fig-exp1-gain`). The PDFs match the LaTeX versions in content.
 - **Proofs moved into the main text.** Each proof now follows its result in
   Section 3, and the appendix is gone.
+- **Paper restructured to read linearly (25 September 2026).** Section 4
+  (diagnostic) now contains only the measures and the test; the three figures
+  that evaluate them (Kronecker error vs gain, sampling distribution of
+  kappa-hat, size and power of the test) moved into Experiment 1 of Section 5,
+  after the covariance families and hierarchies are defined. The argument
+  against measuring distance from a Kronecker product moved to Section 3,
+  after the separability corollary. The 33-series hierarchy is now described
+  in Section 5 where it is first used. References to "the original design of
+  this study" (an earlier draft) are gone. Smaller fixes: CAGED no longer
+  used before it is defined, the test is called a likelihood ratio (Wilks'
+  Lambda) test throughout, and the net-change plug-in gain is named gamma_a.
