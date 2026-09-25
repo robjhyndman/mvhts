@@ -16,12 +16,9 @@ it says what to build, in what order, and how to check each step.
 A first full draft is built (`make`: 17-page paper plus supplement). Every
 number comes from the pipeline. Decisions needed:
 
-1. **Title (D5 revisited).** The paper now argues that separability is the
-   wrong target, and its positive result is about linear combinations (net
-   change). "Separability and the limits of multivariate forecast
-   reconciliation" still fits the negative half. An alternative is "When
-   does multivariate forecast reconciliation help?".
-2. **Kappa's standardisation.** It currently uses the mean diagonal of each
+1. ~~**Title (D5 revisited).**~~ Done: "When does multivariate forecast
+   reconciliation help?"
+2. **Kappa's standardisation.** (Rob will rerun this overnight on his desktop.) It currently uses the mean diagonal of each
    variable's block of W, which changes when coherent components are added
    (the text now says so). Standardising by the mean diagonal of `C W_jj C'`
    (the incoherence variances) would make kappa's value fully invariant. The
@@ -31,7 +28,8 @@ number comes from the pipeline. Decisions needed:
    residuals are autocorrelated in 95% of series (so the LR test is invalid
    for them). Keep them in the main text (D4) with the caveat, or move them to
    the supplement.
-4. **D6 authorship.** Still open.
+4. **D6 authorship.** Felix Fesca (TU Dortmund) added as fifth author on
+   2026-09-25. Final author order still to confirm.
 5. **P7.1.** The Journal of Forecasting author guidelines could not be
    fetched (the Wiley page is bot-protected): check length and format.
 6. **Not done:** the 2007–2023 robustness check (P5.4); the editing and

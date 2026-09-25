@@ -1,6 +1,6 @@
-# Separability and the limits of multivariate forecast reconciliation
+# When does multivariate forecast reconciliation help?
 
-Ana Caroline Pinheiro, Rodrigo de Souza Bulhões, Rob J. Hyndman, Paulo Canas Rodrigues.
+Ana Caroline Pinheiro, Rodrigo de Souza Bulhões, Rob J. Hyndman, Paulo Canas Rodrigues, Felix Fesca.
 
 ## Requirements
 

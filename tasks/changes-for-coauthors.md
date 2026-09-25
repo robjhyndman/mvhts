@@ -45,3 +45,5 @@
 - **Old analysis removed.** `scripts/`, `Saida/` and the old tables and
   figures are gone (all were based on the time-reversed data). The supplement
   is rewritten.
+- **New title and author.** The paper is now "When does multivariate forecast
+  reconciliation help?", and Felix Fesca (TU Dortmund) has joined as an author.
