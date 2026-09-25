@@ -485,13 +485,20 @@ tab_supp_nodes <- function(accuracy, file, base_model = "arima") {
     fmt(x[["Admissões_separate"]]), fmt(x[["Admissões_joint"]]),
     fmt(x[["Demissões_separate"]]), fmt(x[["Demissões_joint"]])
   )
-  write_table(c(
-    "\\begin{longtable}{lrrrr}",
-    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins (37 with all twelve horizons) and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
+  header <- c(
     "\\hline",
     " & \\multicolumn{2}{c}{Admissions} & \\multicolumn{2}{c}{Dismissals} \\\\",
     "Series & Separate & Joint & Separate & Joint \\\\",
-    "\\hline",
+    "\\hline"
+  )
+  # Label only in \endfirsthead: \endhead repeats on every page
+  write_table(c(
+    "\\begin{longtable}{lrrrr}",
+    sprintf("\\caption{Application (%s base forecasts): MSE of separate and joint MinT reconciliation relative to the base forecasts for every series, averaged over 48 origins (37 with all twelve horizons) and horizons 1--12.}\\label{tab:supp-nodes} \\\\", toupper(base_model)),
+    header,
+    "\\endfirsthead",
+    "\\caption[]{(continued)} \\\\",
+    header,
     "\\endhead",
     rows,
     "\\hline",
