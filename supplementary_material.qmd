@@ -1,18 +1,12 @@
 ---
-title: >-
-  When does multivariate forecast reconciliation help?
-  Supplementary material
 format:
-  pdf:
-    documentclass: article
-    fontsize: 12pt
-    template-partials: [partials/supplement/title.tex]
-    include-in-header:
-      - preamble.tex
-      - text: |
-          \usepackage[no-weekday]{eukdate}
-          \renewcommand{\thefigure}{S\arabic{figure}}
-          \renewcommand{\thetable}{S\arabic{table}}
+  elsevier-pdf:
+    # No citations here, so skip natbib and its empty bibliography
+    cite-method: citeproc
+subtitle: Supplementary material
+header-includes: |
+  \renewcommand{\thefigure}{S\arabic{figure}}
+  \renewcommand{\thetable}{S\arabic{table}}
 ---
 
 ```{r}
