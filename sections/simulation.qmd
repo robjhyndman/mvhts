@@ -9,23 +9,23 @@ The second simulates time series in which every node shares the same dynamics, a
 
 For each of two variables, the base forecast errors are $\bm{e}_j = \bm{S}\bm{u}_j + \bm{v}_j$.
 The coherent component $\bm{S}\bm{u}_j$ is invisible to reconciliation (@cor-invariance).
-The incoherent component $\bm{v}_j$ has independent entries across series, with variance $\lambda_{ij}$ for series $i$ and correlation $\rho_i$ between the two variables at series $i$.
-With this structure, condition (e) of @prp-equivalence holds exactly when $d_i = \rho_i(\lambda_{i2}/\lambda_{i1})^{1/2}$ is the same for every series.
+The incoherent component $\bm{v}_j$ has independent entries across series, with variance $\psi_{ij}$ for series $i$ and correlation $\rho_i$ between the two variables at series $i$.
+With this structure, condition (e) of @prp-equivalence holds exactly when $d_i = \rho_i(\psi_{i2}/\psi_{i1})^{1/2}$ is the same for every series.
 We consider five families of covariance matrices, each indexed by a parameter that controls the departure from the conditions of @prp-equivalence.
 Let $a_i$ be the number of bottom-level series summed by series $i$.
 
 F0, separable.
-:   $\lambda_{i1} = \lambda_{i2} = a_i$ and $\rho_i = \rho$, with $\rho$ from $-0.9$ to $0.9$.
+:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = \rho$, with $\rho$ from $-0.9$ to $0.9$.
 
 F1, separable plus invisible.
 :   F0 with $\rho = 0.7$, plus a non-separable coherent component $\bm{S}_*\bm{K}\bm{S}_*'$ of increasing size.
 
 F2, variable-specific profiles.
-:   $\lambda_{i1} = a_i$, $\lambda_{i2} = a_i^{1+\delta}$ and $\rho_i = 0.7$.
+:   $\psi_{i1} = a_i$, $\psi_{i2} = a_i^{1+\delta}$ and $\rho_i = 0.7$.
     As $\delta$ grows, the second variable's incoherent errors become increasingly concentrated at the aggregate levels.
 
 F3, node-varying correlation.
-:   $\lambda_{i1} = \lambda_{i2} = a_i$ and $\rho_i = 0.3 + \delta\omega_i$, where $\omega_i \in [-1, 1]$ is a fixed pattern that alternates in sign within each level.
+:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = 0.3 + \delta\omega_i$, where $\omega_i \in [-1, 1]$ is a fixed pattern that alternates in sign within each level.
 
 F4, OLS case.
 :   $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$.
@@ -64,7 +64,7 @@ knitr::include_graphics(tar_read(fig_kronecker))
 #### Estimated covariances
 
 In practice $\bm{W}$ is estimated, and the joint estimate has $m^2 = 4$ times as many entries as each separate one.
-For each family and hierarchy we drew $T \in \{50, 100, 200, 500, 1000, 2000\}$ error vectors from $N(\bm{0}, \bm{W})$, estimated the covariance by shrinkage ([-@eq-shrink]), and computed the exact expected loss $\operatorname{tr}(\widehat{\bm{M}}\bm{W}\widehat{\bm{M}}')$ of the resulting maps, over `r num$expOneReps` replications.
+For each family and hierarchy we drew $T \in \{50, 100, 200, 500, 1000, 2000\}$ error vectors from $N(\bm{0}, \bm{W})$, estimated the covariance by shrinkage ([-@eq-shrink]), and computed the exact expected loss $\operatorname{tr}(\widehat{\bm{M}}\bm{W}\widehat{\bm{M}}')$ of each estimated map $\widehat{\bm{M}}$, averaged over `r num$expOneReps` replications.
 @fig-exp1-samplesize shows the ratio of expected loss for joint to separate reconciliation.
 Under separability the joint map is never better, and it is worse at small sample sizes: by `r num$sepPenaltySmall`% at $T = 50$ in the small hierarchy and `r num$sepPenaltyBrazil`% in the Brazilian one.
 That is the price of estimating cross-variable blocks that carry no information.
@@ -96,7 +96,7 @@ knitr::include_graphics(tar_read(fig_noise))
 
 To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ error vectors from $N(\bm{0}, \bm{W})$ for F0, F1, and three strengths each of F2 and F3, in both hierarchies, and applied the test to each sample (1000 replications).
 @fig-power shows the results.
-Under both separable and separable-plus-invisible covariances the rejection rate at the 5% level ranges from `r num$testSizeMin`% to `r num$testSizeMax`% at every sample size, in both hierarchies.
+Under both separable and separable-plus-invisible covariances, the rejection rate at the 5% level lies between `r num$testSizeMin`% and `r num$testSizeMax`% across all sample sizes and both hierarchies.
 Power grows with the size of the departure and with $T$; the smallest departures, with population gains below 1%, are detected reliably only with around a thousand observations.
 
 ```{r}
@@ -124,7 +124,7 @@ The controls are coherent to machine precision.
 In the other scenarios the incoherent component is only `r num$expTwoIncohRange`% of the error variance.
 So although $\kappa$ is large (`r num$expTwoKappaRange`), the population gain from joint reconciliation is only `r num$expTwoGainRange`%.
 
-We then simulated 500 series of length $T + 12$ for $T = 108$ and $T = 400$, fitted automatically selected ARIMA models to every series and a bivariate VAR at every node, and reconciled their forecasts for horizons 1--12.
+We then simulated 500 replications of each scenario, with series of length $T + 12$ for $T = 108$ and $T = 400$, fitted automatically selected ARIMA models to every series and a bivariate VAR at every node, and reconciled their forecasts for horizons 1--12.
 Reconciliation improves on the ARIMA base forecasts (by `r num$expTwoSepVsBaseRange`% in MSE), but joint and separate reconciliation are nearly indistinguishable.
 With $T = 108$ the ratio of joint to separate MSE lies between `r num$expTwoArimaSmallRange` for ARIMA base forecasts, and with VAR base forecasts the two never differ by more than `r num$expTwoVarMaxDiff`%.
 

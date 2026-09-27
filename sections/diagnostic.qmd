@@ -26,7 +26,7 @@ $$
     - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
 $$ {#eq-gain}
 MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of @prp-equivalence hold.
-Components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove.
+Positive semidefinite components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove.
 Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the errors, because the gain from any reconciliation comes only from that component.
 So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences.
 A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average.
@@ -60,8 +60,8 @@ This is a standard linear hypothesis in a multivariate regression with $n_b$ res
 We test it with the likelihood ratio statistic, Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution [@rao1951asymptotic], applied to the one-step residuals of the base models.
 With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction.
 The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$.
-It needs $T \ge n_b + m n_a + 1$, and like any normal-theory test it assumes serially uncorrelated residual vectors, so it should be applied to residuals of adequate base models.
+It needs $T \ge n_b + m n_a + 1$, and its null distribution assumes independent residual vectors, so it should be applied to the residuals of base models that leave no serial correlation.
 
 We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data.
-Such procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error.
+These procedures were badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error.
 The regression test avoids simulation altogether.

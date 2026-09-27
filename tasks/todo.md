@@ -475,3 +475,15 @@ Goal: remove dead code and duplication in `R/`, and make the data layout and the
   Checked by running old and new code side by side with the same seeds: Experiments 1 and 2, the power study, one application origin (point and probabilistic), the diagnostic, all tables, the in-text numbers and all six figures (rendered PNGs) are identical.
   Branches of `exp1_samp`, `power`, `exp2_sims` and `app_results`, replayed under their stored seeds, reproduce the stored values exactly (`exp2_sims` differs only in names on the `mse` vector, which the summaries drop).
   Every target is now outdated because the functions changed, so the next `make` reruns the whole pipeline (about 8 hours) with the same results.
+
+----------------------------------------------------------------------------------------
+
+## Review pass before coauthor circulation (27 September 2026)
+
+- [x] Read every section; check the mathematics of Sections 2--4 (proofs verified line by line)
+- [x] Verify cited references (Crossref/arXiv)
+- [ ] Text edits: clarity, accuracy, deslop
+- [ ] Add references only where needed; fix bib entries
+- [ ] After Rob's `make` finishes: check every number-dependent sentence against the new results
+- [ ] Re-render and check PDF (cross-references, tables, figures)
+- [ ] Commit (no push)

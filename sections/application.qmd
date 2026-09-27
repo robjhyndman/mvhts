@@ -43,7 +43,7 @@ knitr::include_graphics(tar_read(fig_data))
 
 We forecast all 66 series from rolling origins with an expanding window, starting with 108 months of training data (January 2007 to December 2015) and moving the origin forward one month at a time.
 This gives 48 origins, and 37 of them have all twelve horizons within the sample.
-Base forecasts come from an ARIMA model selected automatically for each series [@hyndman2021forecasting] and from a bivariate VAR for admissions and dismissals at each node.
+Base forecasts come from an ARIMA model selected automatically for each series [@hyndman2021forecasting] and from a bivariate VAR for admissions and dismissals at each node, with no seasonal terms and lag order up to five selected by the AICc.
 We compare the base forecasts with OLS, structurally weighted (WLS) and MinT reconciliation.
 MinT is applied separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate, which isolates the effect of the cross-variable blocks from that of the different shrinkage intensities.
 
@@ -53,7 +53,8 @@ MinT is applied separately to each variable, jointly to both, and separately usi
 For the ARIMA base forecasts the estimated error covariance is close to separable by the generic measure (nearest-Kronecker error `r num$appKronArima`), and joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num[["appKappaArima"]]`$) for a plug-in gain of only `r num$appGainArima`% in mean squared error.
 The likelihood ratio test rejects the conditions of @prp-equivalence at the 5% level ($p = `r num[["appPArima"]]`$), so the departure is not pure estimation noise, but it is small.
 The incoherent component is `r num$appIncohArima`% of the one-step error variance.
-The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test; the per-node VARs, fitted without seasonal terms, probably do not capture the monthly seasonality.
+The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test.
+With no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
 
 The plug-in gain for net employment change, $\widehat\gamma_{\bm{a}}$ with $\bm{a}$ selecting admissions minus dismissals at a node, is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
 
@@ -108,11 +109,10 @@ Joint reconciliation makes the errors in admissions and dismissals more positive
 Part of the gain comes from the different shrinkage intensity of the joint covariance estimate, as the row for separate reconciliation with the joint estimate shows.
 At the national and regional levels most of it comes from the cross-variable blocks; the small gain for the states comes entirely from the shrinkage.
 
-For probabilistic forecasts we generated 1000 sample paths of all 66 series at each origin from the fitted ARIMA models, driven by resampled one-step residuals, and reconciled every path.
+For probabilistic forecasts we generated 1000 sample paths of all 66 series at each origin from the fitted ARIMA models, driven by resampled one-step residuals, and reconciled every path [@panagiotelis2023probabilistic].
 Resampling each variable's innovations independently discards the dependence between admissions and dismissals; resampling whole residual vectors keeps it.
 Keeping the dependence reduces the CRPS of net change by `r num$appNetJointSepTotal`% nationally, `r num$appNetJointSepRegions`% for the regions and `r num$appNetJointSepStates`% for the states, using separate reconciliation of each variable.
 Reconciling the joint paths jointly adds a further gain at the aggregate levels, to `r num$appNetJointJointTotal`% and `r num$appNetJointJointRegions`% respectively.
-The largest single effect comes from modelling the dependence in the base forecasts; joint reconciliation adds to it for the aggregate net change.
 
 ::: {#tbl-app-prob}
 ```{r}
