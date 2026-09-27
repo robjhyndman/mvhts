@@ -1,4 +1,8 @@
-# Brazilian geographical meta data
+# ====================================================================
+# Application data: Brazilian admissions and dismissals by state
+# ====================================================================
+
+# Federative units (the bottom level) and their regions
 
 state_meta <- tibble::tribble(
   ~UF  , ~ibge , ~State                , ~Região        ,
@@ -31,6 +35,7 @@ state_meta <- tibble::tribble(
   "TO" ,    17 , "Tocantins"           , "Norte"
 )
 
+# Regions, with English labels, table order and map colours
 region_meta <- tibble::tribble(
   ~Região        , ~region_label , ~order , ~map_color ,
   "Total"        , "Brazil"      ,      1 , NA         ,
@@ -41,91 +46,28 @@ region_meta <- tibble::tribble(
   "Sul"          , "South"       ,      6 , "#54bebe"
 )
 
-read_data <- function(
-  state_meta,
-  region_meta,
-  path = here::here("Dados/emprego_uf.csv")
-) {
-  # Built from raw PDET microdata by R/pdet_extract.R
-  Dados <- read.csv(path) |>
-    transmute(
-      Data = yearmonth(month),
-      UF,
+# The two variables: names in the data, and English labels for output
+app_series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
+app_series <- names(app_series_labels)
+
+# --------------------------------------------------------------------
+# Monthly admissions and dismissals for every series of hierarchy S, as
+# a tsibble with columns time, node, series and value. The state counts
+# in `path` are built from raw PDET microdata by R/pdet_extract.R.
+# --------------------------------------------------------------------
+read_data <- function(path, S) {
+  utils::read.csv(path) |>
+    dplyr::transmute(
+      time = tsibble::yearmonth(month),
+      node = UF,
       Admissões = admissions,
       Demissões = dismissals
-    )
-
-  # ============================================================
-  # Add state and region information by joining with metadata tables
-  # ============================================================
-  Dados <- Dados |>
-    left_join(state_meta, by = "UF") |>
-    left_join(region_meta, by = "Região")
-  if (any(is.na(Dados$Região))) {
-    stop("Some UF values were not matched to state_meta.")
-  }
-  if (any(is.na(Dados$region_label))) {
-    stop("Some Região values were not matched to region_meta.")
-  }
-  # ============================================================
-  # Aggregate data by state within each region and month
-  # ============================================================
-
-  Dados <- Dados |>
-    group_by(Data, Região, UF) |>
-    summarise(
-      Admissões = sum(Admissões),
-      Demissões = sum(Demissões),
-      .groups = "drop"
-    )
-
-  # ============================================================
-  # Build hierarchical structure: States → Regions → Total
-  # ============================================================
-
-  Dados <- bind_rows(
-    # Bottom level: states
-    Dados |> mutate(node = UF),
-
-    # Intermediate level: regions (sum of states)
-    Dados |>
-      group_by(Data, Região) |>
-      summarise(
-        Admissões = sum(Admissões),
-        Demissões = sum(Demissões),
-        .groups = "drop"
-      ) |>
-      mutate(node = paste0("agg_", Região)),
-
-    # Top level: Brazil (sum of all regions)
-    Dados |>
-      group_by(Data) |>
-      summarise(
-        Admissões = sum(Admissões),
-        Demissões = sum(Demissões),
-        .groups = "drop"
-      ) |>
-      mutate(node = "Total", Região = "Total")
-  )
-
-  # ============================================================
-  # Convert to long format (series = Admissions / Dismissals)
-  # ============================================================
-
-  Dados <- Dados |>
-    select(-UF) |>
-    pivot_longer(
-      -c(Data, Região, node),
+    ) |>
+    tidyr::pivot_longer(
+      dplyr::all_of(app_series),
       names_to = "series",
       values_to = "value"
     ) |>
-    rename(time = Data)
-
-  # ============================================================
-  # Convert to tsibble format
-  # ============================================================
-
-  Dados |>
-    as_tsibble(key = c(Região, node, series), index = time) |>
-    arrange(Região)
+    aggregate_hierarchy(S) |>
+    tsibble::as_tsibble(index = time, key = c(node, series))
 }

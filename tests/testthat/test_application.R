@@ -1,14 +1,7 @@
-# Checks of the application helpers in R/application_analysis.R and
+# Checks of the application helpers in R/application_data.R and
 # R/application_prob.R
 
 library(testthat)
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tsibble)
-  library(fable)
-})
-source(here::here("R/application_analysis.R"))
-source(here::here("R/application_prob.R"))
 
 test_that("crps_sample matches the direct definition", {
   set.seed(1)
@@ -43,11 +36,15 @@ test_that("psi weights reproduce fable's response to future innovations", {
   expect_equal(arima_psi(fit$m[[1]]$fit$model, 1), 1)
 })
 
-test_that("wide_matrix orders columns as requested", {
-  x <- tidyr::expand_grid(time = 1:3, node = c("Total", "a", "b"), series = c("A", "D")) |>
-    mutate(value = seq_len(n()))
-  cols <- c("A.Total", "A.a", "A.b", "D.Total", "D.a", "D.b")
-  M <- wide_matrix(x, "value", cols)
-  expect_equal(colnames(M), cols)
-  expect_equal(unname(M[2, "D.a"]), x$value[x$time == 2 & x$node == "a" & x$series == "D"])
+test_that("the employment data are coherent and match the state file", {
+  S <- brazil_hierarchy(state_meta, region_meta)
+  emprego <- read_data(here::here("Dados/emprego_uf.csv"), S)
+  Y <- wide_matrix(emprego, "value", stacked_names(S, app_series))
+  C_star <- stack_matrix(make_C(S), 2)
+  expect_equal(max(abs(Y %*% t(C_star))), 0)
+  raw <- read.csv(here::here("Dados/emprego_uf.csv"))
+  raw <- raw[raw$UF == "SP" & raw$month == "2010-03", ]
+  sp <- emprego |> filter(node == "SP", time == yearmonth("2010 Mar"))
+  expect_equal(sp$value[sp$series == "Admissões"], raw$admissions)
+  expect_equal(sp$value[sp$series == "Demissões"], raw$dismissals)
 })

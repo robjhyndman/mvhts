@@ -20,30 +20,9 @@
 # Separable W = V (x) Sigma_0 satisfies (e), and so does any W + S* K S*'
 # (the map ignores S* K S*' because C* S* = 0). Statements and proofs are
 # in sections/theory.tex and sections/appendix-proofs.tex.
+#
+# make_C(), stack_matrix(), var_index() and block() are in R/hierarchy.R.
 # ====================================================================
-
-# --------------------------------------------------------------------
-# Hierarchy matrices
-# --------------------------------------------------------------------
-
-# Constraint matrix C = [I, -A] for S = [A; I] (aggregate rows first)
-make_C <- function(S) {
-  n_b <- NCOL(S)
-  n_a <- NROW(S) - n_b
-  if (!isTRUE(all.equal(unname(S[-seq_len(n_a), , drop = FALSE]), diag(n_b)))) {
-    stop("S must have its identity block in the last n_b rows.")
-  }
-  cbind(diag(n_a), -S[seq_len(n_a), , drop = FALSE])
-}
-
-stack_matrix <- function(X, m) kronecker(diag(m), X)
-
-# Rows/columns of variable j in the stacked system
-var_index <- function(j, n) (j - 1) * n + seq_len(n)
-
-block <- function(X, j, k, n_row, n_col = n_row) {
-  X[var_index(j, n_row), var_index(k, n_col), drop = FALSE]
-}
 
 # --------------------------------------------------------------------
 # Reconciliation maps
@@ -72,6 +51,12 @@ separate_map <- function(W, C, m) {
   M
 }
 
+# OLS reconciliation (MinT with W proportional to the identity)
+ols_map <- function(S, m) {
+  S_star <- stack_matrix(S, m)
+  S_star %*% solve(crossprod(S_star), t(S_star))
+}
+
 # Condition (d): largest |M_j W_jk C'| over j != k
 cross_condition <- function(W, C, m) {
   n <- NCOL(C)
@@ -87,6 +72,13 @@ cross_condition <- function(W, C, m) {
 
 # Population MSE (trace of reconciled error covariance) of map M
 pop_mse <- function(M, W) sum(diag(M %*% W %*% t(M)))
+
+# Size of the incoherent component relative to the whole error,
+# tr(C* W C*') / tr(W). Reconciliation sees only the incoherent part.
+incoherence_ratio <- function(W, C, m) {
+  C_star <- stack_matrix(C, m)
+  sum(diag(C_star %*% W %*% t(C_star))) / sum(diag(W))
+}
 
 # --------------------------------------------------------------------
 # The kappa diagnostic: off-diagonal block mass of G.

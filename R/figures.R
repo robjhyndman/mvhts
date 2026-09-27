@@ -1,5 +1,5 @@
 # ====================================================================
-# Shared figure style and Experiment 1 figures.
+# Figures for the simulations and the application, with a shared style.
 # Figures are written as PDF files and returned as paths, so they can be
 # format = "file" targets.
 # ====================================================================
@@ -38,6 +38,49 @@ theme_paper <- function() {
     )
 }
 
+hierarchy_factor <- function(h) {
+  factor(hierarchy_labels[h], levels = hierarchy_labels)
+}
+
+family_factor <- function(f, families) {
+  factor(family_labels[f], levels = family_labels[families])
+}
+
+# --------------------------------------------------------------------
+# Layout shared by the sample-size and power figures: a row per
+# hierarchy, the two kappa = 0 families (F0, F1) together in the first
+# panel, and one panel per visible family with a line per dial value,
+# darker for stronger departures. `key` picks the line colour from
+# dial_colour_scale().
+# --------------------------------------------------------------------
+dial_panels <- function(df, separable_panel) {
+  df |>
+    dplyr::group_by(hierarchy, family) |>
+    dplyr::mutate(strength = paste0("s", dplyr::dense_rank(dial))) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      separable = family %in% c("F0", "F1"),
+      panel = factor(
+        dplyr::if_else(separable, separable_panel, family_labels[family]),
+        levels = c(separable_panel, family_labels[c("F2", "F3")])
+      ),
+      hierarchy = hierarchy_factor(hierarchy),
+      key = dplyr::if_else(separable, family, strength)
+    )
+}
+
+dial_colour_scale <- function() {
+  ggplot2::scale_colour_manual(
+    values = c(
+      F0 = fig_colours[1],
+      F1 = fig_colours[2],
+      s1 = fig_ramp[2],
+      s2 = fig_ramp[3],
+      s3 = fig_ramp[4]
+    )
+  )
+}
+
 save_figure <- function(plot, file, width = 6.5, height = 3.2) {
   fs::dir_create(dirname(file))
   ggplot2::ggsave(
@@ -58,11 +101,8 @@ fig_exp1_gain <- function(exp1_pop, file) {
   df <- exp1_pop |>
     dplyr::filter(family %in% c("F2", "F3")) |>
     dplyr::mutate(
-      family = factor(
-        family_labels[family],
-        levels = family_labels[c("F2", "F3")]
-      ),
-      hierarchy = factor(hierarchy_labels[hierarchy], levels = hierarchy_labels)
+      family = family_factor(family, c("F2", "F3")),
+      hierarchy = hierarchy_factor(hierarchy)
     )
   # kappa = 0 families (separable, invisible, OLS) all sit at the origin;
   # the caption says so
@@ -108,41 +148,10 @@ fig_exp1_gain <- function(exp1_pop, file) {
 # estimated separate reconciliation, by training sample size.
 # Values below 1 favour joint reconciliation.
 # --------------------------------------------------------------------
-exp1_sample_summary <- function(exp1_samp) {
-  exp1_samp |>
-    dplyr::group_by(hierarchy, family, dial, kappa, T) |>
-    dplyr::summarise(
-      ratio = mean(mse_joint) / mean(mse_separate),
-      oracle_ratio = mean(mse_oracle_joint) / mean(mse_oracle_sep),
-      se = stats::sd(mse_joint / mse_separate) / sqrt(dplyr::n()),
-      kappa_hat = mean(kappa_hat),
-      kappa_hat_q10 = stats::quantile(kappa_hat, 0.1),
-      kappa_hat_q90 = stats::quantile(kappa_hat, 0.9),
-      .groups = "drop"
-    )
-}
-
 fig_exp1_samplesize <- function(exp1_summary, file) {
   df <- exp1_summary |>
-    dplyr::group_by(hierarchy, family) |>
-    dplyr::mutate(strength = paste0("s", dplyr::dense_rank(dial))) |>
-    dplyr::ungroup() |>
+    dial_panels("Separable (\u03ba = 0)") |>
     dplyr::mutate(
-      separable = family %in% c("F0", "F1"),
-      panel = dplyr::if_else(
-        separable,
-        "Separable (\u03ba = 0)",
-        family_labels[family]
-      ),
-      panel = factor(
-        panel,
-        levels = c("Separable (\u03ba = 0)", family_labels[c("F2", "F3")])
-      ),
-      hierarchy = factor(
-        hierarchy_labels[hierarchy],
-        levels = hierarchy_labels
-      ),
-      key = dplyr::if_else(separable, family, strength),
       label = dplyr::if_else(
         separable,
         dplyr::if_else(family == "F0", "Separable", "+ invisible"),
@@ -178,15 +187,7 @@ fig_exp1_samplesize <- function(exp1_summary, file) {
       breaks = c(50, 200, 1000),
       expand = ggplot2::expansion(mult = c(0.03, 0.5))
     ) +
-    ggplot2::scale_colour_manual(
-      values = c(
-        F0 = fig_colours[1],
-        F1 = fig_colours[2],
-        s1 = fig_ramp[2],
-        s2 = fig_ramp[3],
-        s3 = fig_ramp[4]
-      )
-    ) +
+    dial_colour_scale() +
     ggplot2::scale_linetype_manual(
       values = c(`FALSE` = "solid", `TRUE` = "22")
     ) +
@@ -207,11 +208,8 @@ fig_kronecker_vs_gain <- function(exp1_pop, file) {
   df <- exp1_pop |>
     dplyr::filter(family %in% c("F1", "F2", "F3")) |>
     dplyr::mutate(
-      family = factor(
-        family_labels[family],
-        levels = family_labels[c("F1", "F2", "F3")]
-      ),
-      hierarchy = factor(hierarchy_labels[hierarchy], levels = hierarchy_labels)
+      family = family_factor(family, c("F1", "F2", "F3")),
+      hierarchy = hierarchy_factor(hierarchy)
     )
   p <- ggplot2::ggplot(
     df,
@@ -253,7 +251,7 @@ fig_kappa_noise <- function(exp1_samp, file) {
     dplyr::mutate(
       case = dplyr::if_else(
         family == "F0",
-        "Separable (κ = 0)",
+        "Separable (\u03ba = 0)",
         "Node-varying correlation (strongest)"
       ),
       case = factor(
@@ -263,7 +261,7 @@ fig_kappa_noise <- function(exp1_samp, file) {
           "Node-varying correlation (strongest)"
         )
       ),
-      hierarchy = factor(hierarchy_labels[hierarchy], levels = hierarchy_labels)
+      hierarchy = hierarchy_factor(hierarchy)
     )
   truth <- df |> dplyr::distinct(hierarchy, case, kappa)
   noise_colours <- c(fig_colours[1], fig_colours[4])
@@ -305,27 +303,8 @@ fig_kappa_noise <- function(exp1_samp, file) {
 # --------------------------------------------------------------------
 fig_kappa_power <- function(power, file) {
   df <- power |>
-    dplyr::group_by(hierarchy, family) |>
-    dplyr::mutate(strength = paste0("s", dplyr::dense_rank(dial))) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(
-      separable = family %in% c("F0", "F1"),
-      panel = dplyr::if_else(
-        separable,
-        "Separable (\u03ba = 0): size",
-        family_labels[family]
-      ),
-      panel = factor(
-        panel,
-        levels = c("Separable (\u03ba = 0): size", family_labels[c("F2", "F3")])
-      ),
-      hierarchy = factor(
-        hierarchy_labels[hierarchy],
-        levels = hierarchy_labels
-      ),
-      key = dplyr::if_else(separable, family, strength),
-      label = sprintf("\u03ba = %.2f", kappa)
-    )
+    dial_panels("Separable (\u03ba = 0): size") |>
+    dplyr::mutate(label = sprintf("\u03ba = %.2f", kappa))
   # Label the non-separable lines at the smallest T, where they are distinct
   starts <- df |> dplyr::filter(!separable, T == min(T))
   p <- ggplot2::ggplot(
@@ -351,15 +330,7 @@ fig_kappa_power <- function(power, file) {
       expand = ggplot2::expansion(mult = c(0.45, 0.05))
     ) +
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
-    ggplot2::scale_colour_manual(
-      values = c(
-        F0 = fig_colours[1],
-        F1 = fig_colours[2],
-        s1 = fig_ramp[2],
-        s2 = fig_ramp[3],
-        s3 = fig_ramp[4]
-      )
-    ) +
+    dial_colour_scale() +
     ggplot2::scale_linetype_manual(
       values = c(`FALSE` = "solid", `TRUE` = "22")
     ) +
@@ -392,11 +363,7 @@ fig_app_data <- function(emprego, file) {
       values_to = "value"
     ) |>
     dplyr::mutate(
-      series = dplyr::recode(
-        series,
-        "Admissões" = "Admissions",
-        "Demissões" = "Dismissals"
-      ),
+      series = unname(app_series_labels[series]),
       panel = "Admissions and dismissals (millions)",
       value = value / 1e6
     )

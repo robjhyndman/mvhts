@@ -1,5 +1,5 @@
 # ====================================================================
-# Functions needed for simulations
+# Simulation of hierarchical multivariate time series (Experiment 2)
 # ====================================================================
 
 # ====================================================================
@@ -19,51 +19,29 @@ sim_var1 <- function(Phi, innov) {
   eta
 }
 
-# ====================================================================
-# Simulation of multivariate series at the bottom level
-#
-# NOTE: Series names "A" and "B" and start at year 2000
-# so that a length-120 quarterly series spans 2000 Q1 to 2029 Q4.
-# ====================================================================
-
-sim_mvhts <- function(len_T, Phi, V, Sigma, start_year = 2000) {
-  if (NROW(Phi) != NROW(V)) {
-    stop("Phi must have the same number of rows as V")
-  }
-  n_b <- NROW(Sigma)
-  sim_mvhts_general(
-    len_T,
-    Phi_list = rep(list(Phi), n_b),
-    Omega = kronecker(Sigma, V),
-    start_year = start_year
-  )
-}
-
 # --------------------------------------------------------------------
-# General version: node i follows a VAR(1) with coefficient Phi_list[[i]],
-# and Omega is the (m n_b x m n_b) innovation covariance in node-major
-# order (variables vary fastest within each node). With a common Phi and
-# Omega = Sigma (x) V this is identical to sim_mvhts(), including the
-# random number stream.
+# Simulate every series of hierarchy S for m variables (named A, B, ...),
+# quarterly from 2000 Q1. Bottom-level node i follows a VAR(1) with
+# coefficient Phi_list[[i]], plus a quarterly sine wave with a random
+# amplitude in [0, 4]. Omega is the (m n_b x m n_b) innovation
+# covariance in node-major order (variables vary fastest within each
+# node), so Omega = Sigma (x) V gives innovation covariance V between
+# the variables and Sigma between the nodes. The aggregates are sums of
+# the bottom-level series.
 # --------------------------------------------------------------------
-sim_mvhts_general <- function(len_T, Phi_list, Omega, start_year = 2000) {
-  if (len_T %% 4 != 0) {
-    stop("len_T must be a multiple of 4 for quarterly indexing.")
-  }
-  n_b <- length(Phi_list)
+sim_hierarchy <- function(len_T, S, Phi_list, Omega) {
+  n_b <- NCOL(S)
   m <- NROW(Phi_list[[1]])
-  if (NROW(Omega) != m * n_b) {
-    stop("Omega must be (m n_b x m n_b)")
+  if (length(Phi_list) != n_b || NROW(Omega) != m * n_b) {
+    stop("Need one Phi per bottom-level node and Omega of size m n_b.")
   }
 
-  # Set up space for storing the simulation
-  B <- array(dim = c(m, n_b, len_T))
-
-  # Generate noise with N(0, Omega) distribution
+  # Innovations with N(0, Omega) distribution, as an m x n_b x T array
   noise <- mvtnorm::rmvnorm(len_T, rep(0, n_b * m), Omega)
   E <- array(t(noise), dim = c(m, n_b, len_T))
 
-  # Generate bottom level series
+  # Bottom-level series
+  B <- array(dim = c(m, n_b, len_T))
   for (i in seq(n_b)) {
     B[, i, ] <- t(
       sim_var1(Phi_list[[i]], innov = t(E[, i, ])) +
@@ -71,48 +49,15 @@ sim_mvhts_general <- function(len_T, Phi_list, Omega, start_year = 2000) {
     )
   }
 
-  Y <- array(dim = c(m, n_b + 1, len_T))
-  Y[, 1, ] <- apply(B, c(1, 3), sum)
-  Y[, -1, ] <- B
-
-  series_names <- LETTERS[seq_len(m)]
-
   tibble::tibble(
-    time = make_yearquarter(
-      year = rep(
-        start_year:(start_year + len_T / 4 - 1),
-        each = 4 * (m * (n_b + 1))
-      ),
-      quarter = rep(rep(1:4, each = m * (n_b + 1)), len_T / 4)
+    time = rep(
+      tsibble::yearquarter("2000 Q1") + seq_len(len_T) - 1,
+      each = m * n_b
     ),
-    node = rep(rep(c("Total", seq(n_b)), each = m), len_T),
-    series = rep(series_names, len_T * (n_b + 1)),
-    value = as.vector(Y)
+    node = rep(rep(colnames(S), each = m), len_T),
+    series = rep(LETTERS[seq_len(m)], n_b * len_T),
+    value = as.vector(B)
   ) |>
+    aggregate_hierarchy(S) |>
     tsibble::as_tsibble(index = time, key = c(node, series))
-}
-
-# ====================================================================
-# Aggregate the bottom-level series to create the hierarchy structure
-# ====================================================================
-
-sim_aggregate <- function(Y) {
-  bind_rows(
-    # Original bottom series
-    Y,
-
-    # First aggregated level: sum of nodes 1 and 2
-    Y |>
-      filter(node %in% c(1, 2)) |>
-      group_by(series) |>
-      summarise(value = sum(value), .groups = "drop") |>
-      mutate(node = "agg_1"),
-
-    # Second aggregated level: sum of nodes 3, 4 and 5
-    Y |>
-      filter(node %in% c(3, 4, 5)) |>
-      group_by(series) |>
-      summarise(value = sum(value), .groups = "drop") |>
-      mutate(node = "agg_2")
-  )
 }

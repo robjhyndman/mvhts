@@ -55,12 +55,7 @@ kappa_power <- function(
 # the invisible departure (also kappa = 0), and visible departures
 kappa_power_scenarios <- function() {
   tidyr::expand_grid(
-    dplyr::bind_rows(
-      tibble::tibble(family = "F0", dial = 0.7),
-      tibble::tibble(family = "F1", dial = 2),
-      tibble::tibble(family = "F2", dial = c(0.25, 0.5, 1)),
-      tibble::tibble(family = "F3", dial = c(0.2, 0.4, 0.6))
-    ),
+    sample_families(),
     hierarchy = c("small", "brazil"),
     T = c(100, 200, 500, 1000)
   )

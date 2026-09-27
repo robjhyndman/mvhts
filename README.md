@@ -19,6 +19,20 @@ The paper (`multivariate-reconciliation.qmd`) and supplement (`supplementary_mat
 The paper text is split into `sections/*.qmd`; shared LaTeX settings are in `preamble.tex` and `_quarto.yml`, and the paper uses the [quarto-journals/elsevier](https://github.com/quarto-journals/elsevier) extension bundled in `_extensions/`.
 Figures go to `Imagens/`, tables to `Tabelas/`, and in-text numbers come from the `numbers` target (used as `` `r num$name` ``).
 
+### Code in `R/`
+
+| File | Contents |
+| --- | --- |
+| `hierarchy.R` | The two hierarchies (`S`), the stacked variable-major layout used everywhere, and aggregation of bottom-level series |
+| `theory.R` | Population quantities: MinT and separate maps, kappa, the plug-in gain, the nearest Kronecker product |
+| `reconciliation.R` | Covariance estimators and the reconciliation methods compared in the paper (`reconciliation_maps()`) |
+| `base_models.R` | ARIMA, ETS and VAR base models: fitting, residuals and forecasts as matrices in stacked order |
+| `experiment1.R`, `diagnostic.R` | Experiment 1 (controlled error covariances) and the size and power of the test |
+| `simulation_functions.R`, `experiment2.R` | Experiment 2 (simulated time series with fitted base models) |
+| `application_data.R`, `application_analysis.R`, `application_prob.R` | The Brazilian employment application |
+| `results.R`, `figures.R` | Tables, in-text numbers and figures |
+| `pdet_download.R`, `pdet_extract.R` | Scripts that rebuild the employment data (not part of the pipeline; see below) |
+
 A full run takes several hours on 8 cores, mostly the ARIMA simulation and the rolling-origin application.
 Results are cached in `_targets/`, so later runs recompute only what has changed; `targets::tar_visnetwork()` shows the dependency graph.
 

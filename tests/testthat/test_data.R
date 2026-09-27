@@ -60,7 +60,6 @@ test_that("Novo CAGED is close to official national totals", {
 })
 
 test_that("remapped legacy file agrees with raw extraction for intact months", {
-  source(here::here("R/pdet_extract.R"))
   raw <- emprego[emprego$source == "CAGED", ]
   x <- merge(raw, read_legacy(), by = c("month", "UF"))
   expect_equal(nrow(x), nrow(raw))

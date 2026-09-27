@@ -2,8 +2,8 @@
 # Experiment 2: time-series data generating processes with fitted base
 # models
 #
-# Bottom-level series follow VAR(1) processes as in the original
-# simulation design (R/simulation_functions.R). Controls have the same
+# Bottom-level series follow VAR(1) processes (sim_hierarchy() in
+# R/simulation_functions.R). Controls have the same
 # dynamics at every node, so by Proposition 2 their population base
 # forecasts are coherent. The other scenarios break node invariance in a
 # way that differs between the variables.
@@ -11,7 +11,7 @@
 # For each scenario we compute exactly the one-step error covariance of
 # the population-optimal univariate AR(p) forecasts, and then run a
 # finite-sample experiment with ARIMA and VAR base models fitted by
-# fable.
+# fable (R/base_models.R).
 # ====================================================================
 
 # Permutation from variable-major to node-major order
@@ -146,18 +146,15 @@ exp2_population <- function(scenario, S, p = 20) {
   }
   W <- (W + t(W)) / 2
 
+  # Controls have (numerically) no incoherent component, and then kappa
+  # and the gain are 0 by definition
   C <- make_C(S)
-  C_star <- stack_matrix(C, m)
-  incoherence <- sum(diag(C_star %*% W %*% t(C_star))) / sum(diag(W))
+  incoherence <- incoherence_ratio(W, C, m)
   visible <- incoherence > 1e-10
   tibble::tibble(
     incoherence = incoherence,
     kappa = if (visible) kappa_mv(W, C, m) else 0,
-    gain = if (visible) {
-      1 - pop_mse(mint_map(W, C_star), W) / pop_mse(separate_map(W, C, m), W)
-    } else {
-      0
-    },
+    gain = if (visible) plugin_gain(W, C, m) else 0,
     W = list(W)
   )
 }
@@ -169,50 +166,22 @@ exp2_population <- function(scenario, S, p = 20) {
 # error over all series by method and horizon, and kappa_hat.
 # --------------------------------------------------------------------
 exp2_rep <- function(scenario, S, T_train, h = 12) {
-  Y <- sim_mvhts_general(T_train + h, scenario$Phi_list, scenario$Omega) |>
-    sim_aggregate()
+  variables <- c("A", "B")
+  Y <- sim_hierarchy(T_train + h, S, scenario$Phi_list, scenario$Omega)
   times <- sort(unique(Y$time))
   train <- Y |> dplyr::filter(time <= times[T_train])
   test <- Y |> dplyr::filter(time > times[T_train])
-  nodes <- order_nodes(unique(Y$node))
-  series <- sort(unique(Y$series))
-  cols <- paste0(
-    rep(series, each = length(nodes)),
-    ".",
-    rep(nodes, times = length(series))
-  )
-
-  fits <- list(
-    arima = fabletools::model(train, arima = fable::ARIMA(value)),
-    var = train |>
-      tidyr::pivot_wider(names_from = series, values_from = value) |>
-      fabletools::model(var = fable::VAR(vars(A, B)))
-  )
-  fcs <- list(
-    arima = fabletools::forecast(fits$arima, h = h),
-    var = fabletools::forecast(fits$var, h = h) |>
-      tidy_var_forecast(series_names = c("A", "B"))
-  )
-  actual <- make_matrix(test, "value")[, cols]
+  actual <- wide_matrix(test, "value", stacked_names(S, variables))
   C <- make_C(S)
-  C_star <- stack_matrix(C, 2)
-  n <- NROW(S)
 
+  fits <- fit_base_models(train, variables, c("arima", "var"))
   purrr::imap(fits, \(fit, name) {
-    res <- reorder_cols(get_residuals(fit, simulated = TRUE), nodes, series)
-    Yhat <- make_matrix(fcs[[name]], ".mean")[, cols]
-    W_joint <- shrinkage_cov(res)
-    W_sep <- matrix(0, 2 * n, 2 * n)
-    for (j in 1:2) {
-      idx <- var_index(j, n)
-      W_sep[idx, idx] <- shrinkage_cov(res[, idx])
-    }
-    maps <- list(
-      base = diag(2 * n),
-      joint = mint_map(W_joint, C_star),
-      separate = separate_map(W_sep, C, 2),
-      sep_blocks = separate_map(W_joint, C, 2)
-    )
+    res <- base_residuals(fit, name, S, variables)
+    Yhat <- base_forecasts(fit, name, h, S, variables)
+    W_hat <- shrinkage_cov(res)
+    # Experiment 2 compares only the MinT variants with the base forecasts
+    methods <- c("base", "joint", "separate", "sep_blocks")
+    maps <- reconciliation_maps(res, S)[methods]
     purrr::imap(maps, \(M, method) {
       err <- Yhat %*% t(M) - actual
       tibble::tibble(
@@ -224,8 +193,8 @@ exp2_rep <- function(scenario, S, T_train, h = 12) {
     }) |>
       dplyr::bind_rows() |>
       dplyr::mutate(
-        kappa_hat = kappa_mv(W_joint, C, 2),
-        gain_hat = plugin_gain(W_joint, C, 2)
+        kappa_hat = kappa_mv(W_hat, C, 2),
+        gain_hat = plugin_gain(W_hat, C, 2)
       )
   }) |>
     dplyr::bind_rows()

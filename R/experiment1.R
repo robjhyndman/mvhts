@@ -15,19 +15,6 @@
 # estimated maps, tr(M_hat W M_hat'), which needs no test errors.
 # ====================================================================
 
-# Hierarchy used in Experiment 2 and the original simulations
-small_hierarchy <- function() {
-  S <- rbind(
-    rep(1, 5),
-    c(1, 1, 0, 0, 0),
-    c(0, 0, 1, 1, 1),
-    diag(5)
-  )
-  colnames(S) <- seq(5)
-  rownames(S) <- c("Total", "agg_1", "agg_2", colnames(S))
-  S
-}
-
 # --------------------------------------------------------------------
 # Covariance from components (two variables).
 # lambda: n x 2 matrix of incoherent variances; rho: length-n vector of
@@ -106,11 +93,9 @@ exp1_covariance <- function(S, family, dial, seed = 1) {
 # --------------------------------------------------------------------
 exp1_population_one <- function(W, S) {
   C <- make_C(S)
-  C_star <- stack_matrix(C, 2)
-  M_joint <- mint_map(W, C_star)
+  M_joint <- mint_map(W, stack_matrix(C, 2))
   M_sep <- separate_map(W, C, 2)
-  S_star <- stack_matrix(S, 2)
-  M_ols <- S_star %*% solve(crossprod(S_star), t(S_star))
+  M_ols <- ols_map(S, 2)
   mse_joint <- pop_mse(M_joint, W)
   mse_sep <- pop_mse(M_sep, W)
   tibble::tibble(
@@ -141,40 +126,29 @@ exp1_population <- function(hierarchies, grid = exp1_grid()) {
 
 # --------------------------------------------------------------------
 # Part (b): finite-sample performance of estimated maps.
-# For each replication, draw T errors from N(0, W), estimate W with the
-# shrinkage estimator, and compute the expected loss tr(M W M') of:
-#   joint:        joint MinT with the shrinkage estimate of W
-#   separate:     univariate MinT per variable, each with its own
-#                 shrinkage estimate (the usual practice)
-#   sep_blocks:   univariate MinT using the diagonal blocks of the joint
-#                 shrinkage estimate
-#   oracle_joint: joint MinT with the true W (the population benchmark)
+# For each replication, draw T errors from N(0, W), estimate the maps as
+# in reconciliation_maps() (R/reconciliation.R), and compute their
+# expected loss tr(M W M'). The oracle maps use the true W and are the
+# population benchmark.
 # --------------------------------------------------------------------
 exp1_sample_one <- function(W, S, T) {
   C <- make_C(S)
-  C_star <- stack_matrix(C, 2)
-  n <- NROW(S)
   e <- mvtnorm::rmvnorm(T, sigma = W)
-  W_joint <- shrinkage_cov(e)
-  W_sep <- matrix(0, 2 * n, 2 * n)
-  for (j in 1:2) {
-    idx <- var_index(j, n)
-    W_sep[idx, idx] <- shrinkage_cov(e[, idx])
-  }
+  W_hat <- shrinkage_cov(e)
+  maps <- reconciliation_maps(e, S)
   tibble::tibble(
-    kappa_hat = kappa_mv(W_joint, C, 2),
-    gain_hat = plugin_gain(W_joint, C, 2),
-    kronecker_error_hat = nearest_kronecker(W_joint, 2)$rel_error,
-    mse_joint = pop_mse(mint_map(W_joint, C_star), W),
-    mse_separate = pop_mse(separate_map(W_sep, C, 2), W),
-    mse_sep_blocks = pop_mse(separate_map(W_joint, C, 2), W),
-    mse_oracle_joint = pop_mse(mint_map(W, C_star), W),
-    mse_oracle_sep = pop_mse(separate_map(W, C, 2), W)
+    kappa_hat = kappa_mv(W_hat, C, 2),
+    gain_hat = plugin_gain(W_hat, C, 2),
+    kronecker_error_hat = nearest_kronecker(W_hat, 2)$rel_error,
+    mse_joint = pop_mse(maps$joint, W),
+    mse_separate = pop_mse(maps$separate, W),
+    mse_sep_blocks = pop_mse(maps$sep_blocks, W)
   )
 }
 
 exp1_sample <- function(S, hierarchy, family, dial, T, reps) {
   W <- exp1_covariance(S, family, dial)
+  C <- make_C(S)
   purrr::map(seq_len(reps), \(r) exp1_sample_one(W, S, T)) |>
     dplyr::bind_rows() |>
     dplyr::mutate(
@@ -182,22 +156,47 @@ exp1_sample <- function(S, hierarchy, family, dial, T, reps) {
       family = family,
       dial = dial,
       T = T,
-      kappa = kappa_mv(W, make_C(S), 2),
+      kappa = kappa_mv(W, C, 2),
       rep = dplyr::row_number(),
       .before = 1
+    ) |>
+    dplyr::mutate(
+      mse_oracle_joint = pop_mse(mint_map(W, stack_matrix(C, 2)), W),
+      mse_oracle_sep = pop_mse(separate_map(W, C, 2), W)
     )
 }
 
-# Scenarios for part (b): a separable control, an invisible departure,
-# and three strengths of each visible departure
+# Mean expected loss of estimated joint relative to estimated separate
+# reconciliation (below 1 favours joint), and the spread of kappa_hat
+exp1_sample_summary <- function(exp1_samp) {
+  exp1_samp |>
+    dplyr::group_by(hierarchy, family, dial, kappa, T) |>
+    dplyr::summarise(
+      ratio = mean(mse_joint) / mean(mse_separate),
+      oracle_ratio = mean(mse_oracle_joint) / mean(mse_oracle_sep),
+      se = stats::sd(mse_joint / mse_separate) / sqrt(dplyr::n()),
+      kappa_hat = mean(kappa_hat),
+      kappa_hat_q10 = stats::quantile(kappa_hat, 0.1),
+      kappa_hat_q90 = stats::quantile(kappa_hat, 0.9),
+      .groups = "drop"
+    )
+}
+
+# Covariances for the finite-sample studies (part (b) here, and the
+# power study in R/diagnostic.R): a separable control, an invisible
+# departure, and three strengths of each visible departure
+sample_families <- function() {
+  dplyr::bind_rows(
+    tibble::tibble(family = "F0", dial = 0.7),
+    tibble::tibble(family = "F1", dial = 2),
+    tibble::tibble(family = "F2", dial = c(0.25, 0.5, 1)),
+    tibble::tibble(family = "F3", dial = c(0.2, 0.4, 0.6))
+  )
+}
+
 exp1_sample_scenarios <- function() {
   tidyr::expand_grid(
-    dplyr::bind_rows(
-      tibble::tibble(family = "F0", dial = 0.7),
-      tibble::tibble(family = "F1", dial = 2),
-      tibble::tibble(family = "F2", dial = c(0.25, 0.5, 1)),
-      tibble::tibble(family = "F3", dial = c(0.2, 0.4, 0.6))
-    ),
+    sample_families(),
     hierarchy = c("small", "brazil"),
     T = c(50, 100, 200, 500, 1000, 2000)
   )

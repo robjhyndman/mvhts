@@ -33,8 +33,9 @@ crps_sample <- function(y, x) {
 # idx_list gives, for each variable, an (h x K) matrix of residual row
 # indices; sharing the matrix keeps the variables' innovations jointly
 # distributed. Returns an array h x (2n) x K in stacked column order.
-app_paths <- function(fit, res, idx_list, h, K, cols) {
-  fc <- app_forecasts(fit, "arima", h, cols)
+app_paths <- function(fit, res, idx_list, h, K, S) {
+  cols <- stacked_names(S, app_series)
+  fc <- base_forecasts(fit, "arima", h, S, app_series)
   keys <- tibble::as_tibble(fit)
   out <- array(NA_real_, dim = c(h, length(cols), K))
   for (k in seq_len(NROW(keys))) {
@@ -49,7 +50,6 @@ app_paths <- function(fit, res, idx_list, h, K, cols) {
 # CRPS of net change at every node and horizon for the three ways of
 # producing coherent sample paths, from an ARIMA fit at one origin
 app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
-  cols <- app_cols(S)
   n <- NROW(S)
   h <- NROW(actual)
   # Residual rows for each step and path: shared (joint) or drawn
@@ -63,7 +63,7 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
       list(Admissões = shared, Demissões = shared),
       h,
       K,
-      cols
+      S
     ),
     independent = app_paths(
       fit,
@@ -71,7 +71,7 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
       list(Admissões = shared, Demissões = draw()),
       h,
       K,
-      cols
+      S
     )
   )
   combos <- list(

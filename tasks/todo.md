@@ -434,6 +434,21 @@ All three are marked TODO in `cas-refs.bib`.
 - [ ] P7.5 Cover letter: the contribution in three sentences.
 - [ ] P7.6 Replace arXiv:2605.17920 (the current version) with the rewrite, as a new version of the same arXiv entry, and say in the comments field that the data and conclusions changed.
 
+### Code tidy-up of `R/` (2026-09-27)
+
+Goal: remove dead code and duplication in `R/`, and make the data layout and the reconciliation steps easy to follow, while keeping every number identical.
+
+- [x] Fix `_targets.R` extra_files after `partials/elsevier/` moved to `partials/` (tar_make currently fails).
+- [x] Delete dead code: `R/reconcile.R`, `R/simulation_setup.R` (also puts a global `S` in the pipeline environment), the tsibble-to-matrix helpers in `R/helpers.R` only used by them.
+- [x] New `R/hierarchy.R`: both hierarchies, `make_C`, stacking and ordering helpers, `aggregate_hierarchy()`, in one place with the variable-major convention stated once.
+  `S_brazil` built from the metadata; the employment data and the simulations aggregated with `S` instead of by hand-written sums.
+- [x] New `R/base_models.R`: one fit/residuals/forecasts path shared by Experiment 2 and the application (replaces two parallel implementations).
+- [x] New `R/reconciliation.R`: covariance estimators and one `reconciliation_maps()` used by Experiments 1 and 2 and the application.
+- [x] Theory helpers reused instead of re-derived (`plugin_gain`, `incoherence_ratio`, `ols_map`).
+- [x] `R/results.R` and `R/figures.R`: shared label vectors and table/figure helpers instead of repeated blocks.
+- [x] Tests updated: dead-code tests replaced by tests of the new helpers; one helper file sources `R/`.
+- [x] Verify: old vs new code give identical results (Experiments 1 and 2, power study, application point and probabilistic, diagnostic, tables, numbers); tests pass.
+
 ----------------------------------------------------------------------------------------
 
 ## 8. Risks
@@ -456,3 +471,7 @@ All three are marked TODO in `cas-refs.bib`.
   Checked by diffing the PDF text against the last LaTeX build (same content, 17 + 3 pages), by comparing pages visually, with `make status` clean after `make`, and with the tests passing.
   Known differences: microtype is on, so some line breaks differ; bold maths now uses Palatino bold instead of a Computer Modern fallback.
   Tables are still raw LaTeX from `R/results.R`, cross-referenced with `\ref{tab:...}`; moving their captions into the `.qmd` files would allow native `@tbl-` references.
+- 2026-09-27: Tidied `R/` (see "Code tidy-up of `R/`" above).
+  Checked by running old and new code side by side with the same seeds: Experiments 1 and 2, the power study, one application origin (point and probabilistic), the diagnostic, all tables, the in-text numbers and all six figures (rendered PNGs) are identical.
+  Branches of `exp1_samp`, `power`, `exp2_sims` and `app_results`, replayed under their stored seeds, reproduce the stored values exactly (`exp2_sims` differs only in names on the `mse` vector, which the summaries drop).
+  Every target is now outdated because the functions changed, so the next `make` reruns the whole pipeline (about 8 hours) with the same results.

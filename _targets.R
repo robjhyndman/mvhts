@@ -19,11 +19,14 @@ tar_option_set(
 tar_source()
 
 list(
-  # Employment data, built from raw PDET microdata by R/pdet_extract.R
-  tar_target(emprego_file, "Dados/emprego_uf.csv", format = "file"),
-  tar_target(emprego, read_data(state_meta, region_meta, path = emprego_file)),
-  tar_target(S_brazil, compute_S(emprego, state_meta, region_meta)),
+  # Hierarchies (R/hierarchy.R)
+  tar_target(S_brazil, brazil_hierarchy(state_meta, region_meta)),
   tar_target(hierarchies, list(small = small_hierarchy(), brazil = S_brazil)),
+
+  # Employment data for every series of S_brazil, from state counts built
+  # from raw PDET microdata by R/pdet_extract.R (R/application_data.R)
+  tar_target(emprego_file, "Dados/emprego_uf.csv", format = "file"),
+  tar_target(emprego, read_data(emprego_file, S_brazil)),
 
   # Experiment 1: controlled error design (R/experiment1.R)
   tar_target(exp1_pop, exp1_population(hierarchies)),
@@ -142,11 +145,11 @@ list(
   tar_quarto(
     paper,
     "multivariate-reconciliation.qmd",
-    extra_files = c("_quarto.yml", "preamble.tex", "cas-refs.bib", fs::dir_ls("partials/elsevier"))
+    extra_files = c("_quarto.yml", "preamble.tex", "cas-refs.bib", fs::dir_ls("partials"))
   ),
   tar_quarto(
     supplement,
     "supplementary_material.qmd",
-    extra_files = c("_quarto.yml", "preamble.tex", "partials/supplement/title.tex")
+    extra_files = c("_quarto.yml", "preamble.tex", fs::dir_ls("partials"))
   )
 )

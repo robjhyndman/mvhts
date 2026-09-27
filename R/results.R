@@ -3,14 +3,6 @@
 # Tables are written to Tabelas/ and returned as paths (format = "file").
 # ====================================================================
 
-node_level <- function(node) {
-  dplyr::case_when(
-    node == "Total" ~ "Total",
-    grepl("^agg_", node) ~ "Regions",
-    TRUE ~ "States"
-  )
-}
-
 method_labels <- c(
   base = "Base",
   ols = "OLS",
@@ -20,16 +12,68 @@ method_labels <- c(
   joint = "MinT, joint"
 )
 
-app_series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
+exp2_scenario_labels <- c(
+  C1_sep_pos = "Separable, $\\rho = 0.7$",
+  C2_sep_neg = "Separable, $\\rho = -0.7$",
+  C3_var_dynamics = "Variable-specific dynamics",
+  N1_node_corr = "Node-varying correlation",
+  N2_var_sigma = "Variable-specific node covariance",
+  N3_node_dynamics = "Node-varying dynamics"
+)
 
 fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
 
 fmt_p <- function(p) ifelse(p < 0.001, "$<$0.001", fmt(p, 3))
 
+# "min--max" of scale * x
+fmt_range <- function(x, digits, scale = 1) {
+  paste0(fmt(scale * min(x), digits), "--", fmt(scale * max(x), digits))
+}
+
 write_table <- function(lines, file) {
   fs::dir_create(dirname(file))
   writeLines(lines, file)
   file
+}
+
+# A centred LaTeX tabular with column alignment `align`, header lines and
+# body rows
+write_tabular <- function(file, align, header, rows) {
+  write_table(
+    c(
+      "\\centering\\small",
+      paste0("\\begin{tabular}{", align, "}"),
+      "\\hline",
+      header,
+      "\\hline",
+      rows,
+      "\\hline",
+      "\\end{tabular}"
+    ),
+    file
+  )
+}
+
+# One LaTeX table row: "label & cell & cell ... \\"
+latex_row <- function(label, cells) {
+  paste0(label, " & ", paste(cells, collapse = " & "), " \\\\")
+}
+
+# Application tables with one column per variable and level. Columns of
+# the summary are named "<variable> <level>"; these are in table order.
+var_level_cols <- function() {
+  as.vector(outer(
+    c("Total", "Regions", "States"),
+    app_series,
+    \(level, variable) paste(variable, level)
+  ))
+}
+
+var_level_header <- function(first) {
+  c(
+    latex_row("", sprintf("\\multicolumn{3}{c}{%s}", app_series_labels)),
+    paste(first, "& Total & Regions & States & Total & Regions & States \\\\")
+  )
 }
 
 # --------------------------------------------------------------------
@@ -90,14 +134,7 @@ exp2_summary <- function(exp2_sims, exp2_pop) {
 }
 
 tab_exp2 <- function(summary, file) {
-  lab <- c(
-    C1_sep_pos = "Separable, $\\rho = 0.7$",
-    C2_sep_neg = "Separable, $\\rho = -0.7$",
-    C3_var_dynamics = "Variable-specific dynamics",
-    N1_node_corr = "Node-varying correlation",
-    N2_var_sigma = "Variable-specific node covariance",
-    N3_node_dynamics = "Node-varying dynamics"
-  )
+  lab <- exp2_scenario_labels
   wide <- summary |>
     dplyr::select(
       scenario,
@@ -129,19 +166,14 @@ tab_exp2 <- function(summary, file) {
     fmt(wide$log_ratio_se_var),
     fmt(100 * wide$gain_hat_arima, 1)
   )
-  write_table(
+  write_tabular(
+    file,
+    "lrrrrrrr",
     c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrrrrrr}",
-      "\\hline",
       " & & \\multicolumn{3}{c}{Population} & \\multicolumn{2}{c}{Joint / separate} & \\\\",
-      "Scenario & $T$ & Incoh. & $\\kappa$ & Gain & ARIMA & VAR & $\\widehat\\gamma$ \\\\",
-      "\\hline",
-      rows,
-      "\\hline",
-      "\\end{tabular}"
+      "Scenario & $T$ & Incoh. & $\\kappa$ & Gain & ARIMA & VAR & $\\widehat\\gamma$ \\\\"
     ),
-    file
+    rows
   )
 }
 
@@ -172,35 +204,18 @@ tab_app_accuracy <- function(accuracy, file, base_model = "arima") {
     dplyr::mutate(col = paste(series, level)) |>
     dplyr::select(method, col, rel) |>
     tidyr::pivot_wider(names_from = col, values_from = rel)
-  order_cols <- as.vector(outer(
-    names(app_series_labels),
-    c("Total", "Regions", "States"),
-    paste
-  ))
-  order_cols <- order_cols[c(1, 3, 5, 2, 4, 6)]
-  tab <- tab[match(names(method_labels), tab$method), c("method", order_cols)]
-  rows <- apply(tab, 1, \(r) {
-    paste0(
-      method_labels[r[["method"]]],
-      " & ",
-      paste(fmt(as.numeric(r[-1])), collapse = " & "),
-      " \\\\"
-    )
-  })
-  write_table(
-    c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrrrrr}",
-      "\\hline",
-      " & \\multicolumn{3}{c}{Admissions} & \\multicolumn{3}{c}{Dismissals} \\\\",
-      "Method & Total & Regions & States & Total & Regions & States \\\\",
-      "\\hline",
-      rows,
-      "\\hline",
-      "\\end{tabular}"
-    ),
-    file
+  tab <- tab[match(names(method_labels), tab$method), ]
+  rows <- vapply(
+    seq_len(NROW(tab)),
+    \(i) {
+      latex_row(
+        method_labels[[tab$method[i]]],
+        fmt(unlist(tab[i, var_level_cols()]))
+      )
+    },
+    character(1)
   )
+  write_tabular(file, "lrrrrrr", var_level_header("Method"), rows)
 }
 
 # --------------------------------------------------------------------
@@ -219,19 +234,14 @@ tab_app_diag <- function(app_diag, file) {
     fmt(100 * app_diag$incoherence, 1),
     fmt(app_diag$kronecker_error, 3)
   )
-  write_table(
+  write_tabular(
+    file,
+    "lrrrrrrrr",
     c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrrrrrrr}",
-      "\\hline",
       " & & & & \\multicolumn{2}{c}{$F$} & & & \\\\",
-      "Base model & $T$ & $\\widehat\\kappa$ & $\\widehat\\gamma$ & Adm. & Dis. & $p$ & Incoh. & Kron. \\\\",
-      "\\hline",
-      rows,
-      "\\hline",
-      "\\end{tabular}"
+      "Base model & $T$ & $\\widehat\\kappa$ & $\\widehat\\gamma$ & Adm. & Dis. & $p$ & Incoh. & Kron. \\\\"
     ),
-    file
+    rows
   )
 }
 
@@ -270,17 +280,18 @@ app_net_point <- function(app_point) {
 tab_app_prob <- function(prob_summary, net_point, file) {
   lv <- c("Total", "Regions", "States")
   row <- function(label, df, m) {
-    v <- df$rel[match(paste(m, lv), paste(df$method, df$level))]
-    paste0(label, " & ", paste(fmt(v), collapse = " & "), " \\\\")
+    latex_row(
+      label,
+      fmt(df$rel[match(paste(m, lv), paste(df$method, df$level))])
+    )
   }
   np <- net_point |> dplyr::filter(model == "arima")
-  write_table(
+  pr <- prob_summary
+  write_tabular(
+    file,
+    "lrrr",
+    " & Total & Regions & States \\\\",
     c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrr}",
-      "\\hline",
-      " & Total & Regions & States \\\\",
-      "\\hline",
       "\\multicolumn{4}{l}{\\emph{Point forecasts (MSE)}} \\\\",
       row("\\quad MinT, separate", np, "separate"),
       row("\\quad MinT, separate (joint estimate)", np, "sep_blocks"),
@@ -288,23 +299,16 @@ tab_app_prob <- function(prob_summary, net_point, file) {
       "\\multicolumn{4}{l}{\\emph{Sample paths (CRPS)}} \\\\",
       row(
         "\\quad Independent innovations, separate reconciliation",
-        prob_summary,
+        pr,
         "independent + separate"
       ),
       row(
         "\\quad Joint innovations, separate reconciliation",
-        prob_summary,
+        pr,
         "joint + separate"
       ),
-      row(
-        "\\quad Joint innovations, joint reconciliation",
-        prob_summary,
-        "joint + joint"
-      ),
-      "\\hline",
-      "\\end{tabular}"
-    ),
-    file
+      row("\\quad Joint innovations, joint reconciliation", pr, "joint + joint")
+    )
   )
 }
 
@@ -347,21 +351,18 @@ numbers_exp2 <- function(exp2_sum) {
   ar <- exp2_sum |> dplyr::filter(model == "arima")
   ctrl400 <- ar |> dplyr::filter(grepl("^C", scenario), T == 400)
   va <- exp2_sum |> dplyr::filter(model == "var")
-  rng <- function(x, d, scale = 1) {
-    paste0(fmt(scale * min(x), d), "--", fmt(scale * max(x), d))
-  }
   list(
-    expTwoIncohRange = rng(ns$incoherence, 1, 100),
-    expTwoKappaRange = rng(ns$pop_kappa, 2),
-    expTwoGainRange = rng(ns$pop_gain, 1, 100),
-    expTwoSepVsBaseRange = rng(1 - ar$sep_vs_base, 0, 100),
+    expTwoIncohRange = fmt_range(ns$incoherence, 1, 100),
+    expTwoKappaRange = fmt_range(ns$pop_kappa, 2),
+    expTwoGainRange = fmt_range(ns$pop_gain, 1, 100),
+    expTwoSepVsBaseRange = fmt_range(1 - ar$sep_vs_base, 0, 100),
     expTwoCtrlGainMax = fmt(100 * (1 - min(ctrl400$joint_vs_sep)), 1),
     expTwoNonsepGainMax = fmt(
       100 * (1 - min(ar$joint_vs_sep[grepl("^N", ar$scenario) & ar$T == 400])),
       1
     ),
-    expTwoArimaSmallRange = rng(ar$joint_vs_sep[ar$T == 108], 3),
-    expTwoArimaLargeRange = rng(ar$joint_vs_sep[ar$T == 400], 3),
+    expTwoArimaSmallRange = fmt_range(ar$joint_vs_sep[ar$T == 108], 3),
+    expTwoArimaLargeRange = fmt_range(ar$joint_vs_sep[ar$T == 400], 3),
     expTwoVarMaxDiff = fmt(100 * max(abs(1 - va$joint_vs_sep)), 1),
     expTwoBlocksMaxDiff = fmt(100 * max(abs(1 - exp2_sum$blocks_vs_sep)), 1)
   )
@@ -410,9 +411,17 @@ numbers_app <- function(
     tidyr::pivot_wider(names_from = method, values_from = rel) |>
     dplyr::mutate(ratio = joint / separate)
   pr <- prob_summary
+  # Percentage reductions in CRPS (sample paths) and MSE (point forecasts)
+  # of net change, at each level
   skill <- function(m, l) {
     fmt(100 * (1 - pr$rel[pr$method == m & pr$level == l]), 0)
   }
+  point_skill <- function(l) {
+    np <- net_point |>
+      dplyr::filter(model == "arima", method == "joint", level == l)
+    fmt(100 * (1 - np$rel), 0)
+  }
+  joint_vs_sep <- function(m) fmt_range(js$ratio[js$model == m], 3)
   list(
     appTArima = d$arima$T,
     appKappaArima = fmt(d$arima$kappa, 2),
@@ -427,57 +436,18 @@ numbers_app <- function(
     appGainVar = fmt(100 * d$var$gain, 1),
     appIncohVar = fmt(100 * d$var$incoherence, 0),
     appKronArima = fmt(d$arima$kronecker_error, 2),
-    appJointSepArimaRange = paste0(
-      fmt(min(js$ratio[js$model == "arima"]), 3),
-      "--",
-      fmt(max(js$ratio[js$model == "arima"]), 3)
-    ),
-    appJointSepVarRange = paste0(
-      fmt(min(js$ratio[js$model == "var"]), 3),
-      "--",
-      fmt(max(js$ratio[js$model == "var"]), 3)
-    ),
-    appJointSepEtsRange = paste0(
-      fmt(min(js$ratio[js$model == "ets"]), 3),
-      "--",
-      fmt(max(js$ratio[js$model == "ets"]), 3)
-    ),
+    appJointSepArimaRange = joint_vs_sep("arima"),
+    appJointSepVarRange = joint_vs_sep("var"),
+    appJointSepEtsRange = joint_vs_sep("ets"),
     appNetJointSepStates = skill("joint + separate", "States"),
     appNetJointSepTotal = skill("joint + separate", "Total"),
     appNetJointJointStates = skill("joint + joint", "States"),
     appNetJointJointTotal = skill("joint + joint", "Total"),
     appNetJointJointRegions = skill("joint + joint", "Regions"),
     appNetJointSepRegions = skill("joint + separate", "Regions"),
-    appNetPointTotal = fmt(
-      100 *
-        (1 -
-          net_point$rel[
-            net_point$model == "arima" &
-              net_point$method == "joint" &
-              net_point$level == "Total"
-          ]),
-      0
-    ),
-    appNetPointRegions = fmt(
-      100 *
-        (1 -
-          net_point$rel[
-            net_point$model == "arima" &
-              net_point$method == "joint" &
-              net_point$level == "Regions"
-          ]),
-      0
-    ),
-    appNetPointStates = fmt(
-      100 *
-        (1 -
-          net_point$rel[
-            net_point$model == "arima" &
-              net_point$method == "joint" &
-              net_point$level == "States"
-          ]),
-      0
-    ),
+    appNetPointTotal = point_skill("Total"),
+    appNetPointRegions = point_skill("Regions"),
+    appNetPointStates = point_skill("States"),
     appNetPlugTotal = fmt(100 * d$arima$net_gain_total, 1),
     appNetPlugRegions = fmt(100 * d$arima$net_gain_regions, 1),
     appNetPlugStates = fmt(100 * d$arima$net_gain_states, 1),
@@ -493,14 +463,7 @@ numbers_app <- function(
 
 # Experiment 2: MSE of separate and joint reconciliation relative to base
 tab_supp_exp2 <- function(exp2_sum, file) {
-  lab <- c(
-    C1_sep_pos = "Separable, $\\rho = 0.7$",
-    C2_sep_neg = "Separable, $\\rho = -0.7$",
-    C3_var_dynamics = "Variable-specific dynamics",
-    N1_node_corr = "Node-varying correlation",
-    N2_var_sigma = "Variable-specific node covariance",
-    N3_node_dynamics = "Node-varying dynamics"
-  )
+  lab <- exp2_scenario_labels
   x <- exp2_sum |>
     dplyr::mutate(joint_vs_base = joint / base) |>
     dplyr::select(scenario, T, model, sep_vs_base, joint_vs_base) |>
@@ -518,19 +481,14 @@ tab_supp_exp2 <- function(exp2_sum, file) {
     fmt(x$sep_vs_base_var),
     fmt(x$joint_vs_base_var)
   )
-  write_table(
+  write_tabular(
+    file,
+    "lrrrrr",
     c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrrrr}",
-      "\\hline",
       " & & \\multicolumn{2}{c}{ARIMA} & \\multicolumn{2}{c}{VAR} \\\\",
-      "Scenario & $T$ & Separate & Joint & Separate & Joint \\\\",
-      "\\hline",
-      rows,
-      "\\hline",
-      "\\end{tabular}"
+      "Scenario & $T$ & Separate & Joint & Separate & Joint \\\\"
     ),
-    file
+    rows
   )
 }
 
@@ -557,33 +515,12 @@ tab_supp_horizon <- function(app_point, file, base_model = "arima") {
     dplyr::mutate(col = paste(series, level)) |>
     dplyr::select(hgroup, col, ratio) |>
     tidyr::pivot_wider(names_from = col, values_from = ratio)
-  order_cols <- as.vector(outer(
-    names(app_series_labels),
-    c("Total", "Regions", "States"),
-    paste
-  ))[c(1, 3, 5, 2, 4, 6)]
-  rows <- apply(x[, c("hgroup", order_cols)], 1, \(r) {
-    paste0(
-      r[[1]],
-      " & ",
-      paste(fmt(as.numeric(r[-1])), collapse = " & "),
-      " \\\\"
-    )
-  })
-  write_table(
-    c(
-      "\\centering\\small",
-      "\\begin{tabular}{lrrrrrr}",
-      "\\hline",
-      " & \\multicolumn{3}{c}{Admissions} & \\multicolumn{3}{c}{Dismissals} \\\\",
-      "Horizon & Total & Regions & States & Total & Regions & States \\\\",
-      "\\hline",
-      rows,
-      "\\hline",
-      "\\end{tabular}"
-    ),
-    file
+  rows <- vapply(
+    seq_len(NROW(x)),
+    \(i) latex_row(x$hgroup[i], fmt(unlist(x[i, var_level_cols()]))),
+    character(1)
   )
+  write_tabular(file, "lrrrrrr", var_level_header("Horizon"), rows)
 }
 
 # Application: every node, MSE relative to base (ARIMA)
@@ -594,15 +531,12 @@ tab_supp_nodes <- function(accuracy, file, base_model = "arima") {
     tidyr::pivot_wider(names_from = c(series, method), values_from = rel)
   lvl <- factor(x$level, levels = c("Total", "Regions", "States"))
   x <- x[order(lvl, x$node), ]
-  regions_en <- c(
-    "Centro-Oeste" = "Midwest",
-    "Nordeste" = "Northeast",
-    "Norte" = "North",
-    "Sudeste" = "Southeast",
-    "Sul" = "South"
+  # English names for the regions; states keep their abbreviations
+  regions_en <- stats::setNames(
+    region_meta$region_label,
+    paste0("agg_", region_meta$Região)
   )
-  node_lab <- sub("^agg_", "", x$node)
-  node_lab <- dplyr::coalesce(unname(regions_en[node_lab]), node_lab)
+  node_lab <- dplyr::coalesce(unname(regions_en[x$node]), x$node)
   rows <- sprintf(
     "%s & %s & %s & %s & %s \\\\",
     node_lab,

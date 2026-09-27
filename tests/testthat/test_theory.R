@@ -1,16 +1,8 @@
 # Numerical checks of the results in R/theory.R
 
 library(testthat)
-source(here::here("R/theory.R"))
-source(here::here("R/simulation_functions.R"))
 
-# Hierarchy used in the simulations: Total, two aggregates, five bottom
-S <- rbind(
-  rep(1, 5),
-  c(1, 1, 0, 0, 0),
-  c(0, 0, 1, 1, 1),
-  diag(5)
-)
+S <- small_hierarchy()
 C <- make_C(S)
 n <- NROW(S)
 m <- 2
@@ -175,9 +167,6 @@ test_that("plug-in gain is zero exactly when kappa is zero, and positive otherwi
 })
 
 test_that("cross_test holds its size under the null and detects strong departures", {
-  source(here::here("R/helpers.R"))
-  source(here::here("R/experiment1.R"))
-  source(here::here("R/diagnostic.R"))
   set.seed(10)
   H <- small_hierarchy()
   p_null <- replicate(300, cross_test(mvtnorm::rmvnorm(200, sigma = exp1_covariance(H, "F1", 2)), H)$p_value)
