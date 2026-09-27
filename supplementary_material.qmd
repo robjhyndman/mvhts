@@ -1,7 +1,7 @@
 ---
 format:
   elsevier-pdf:
-    # No citations here, so skip natbib and its empty bibliography
+  # No citations here, so skip natbib and its empty bibliography
     cite-method: citeproc
 subtitle: Supplementary material
 header-includes: |
