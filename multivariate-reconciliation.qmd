@@ -32,3 +32,7 @@ num <- tar_read(numbers)
 {{< include sections/application.qmd >}}
 
 {{< include sections/discussion.qmd >}}
+
+# Reproducibility {.unnumbered}
+
+The data and code needed to reproduce this paper and its supplementary material are available at <https://github.com/robjhyndman/mvhts>.
