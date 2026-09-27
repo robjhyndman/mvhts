@@ -10,7 +10,7 @@ The second simulates time series in which every node shares the same dynamics, a
 For each of two variables, the base forecast errors are $\bm{e}_j = \bm{S}\bm{u}_j + \bm{v}_j$.
 The coherent component $\bm{S}\bm{u}_j$ is invisible to reconciliation (@cor-invariance).
 The incoherent component $\bm{v}_j$ has independent entries across series, with variance $\psi_{ij}$ for series $i$ and correlation $\rho_i$ between the two variables at series $i$.
-With this structure, condition (e) of @prp-equivalence holds exactly when $d_i = \rho_i(\psi_{i2}/\psi_{i1})^{1/2}$ is the same for every series.
+With this structure, and because the hierarchy has a single total, condition (e) of @prp-equivalence holds for both pairs of variables exactly when $\rho_i(\psi_{i2}/\psi_{i1})^{1/2}$ and $\rho_i(\psi_{i1}/\psi_{i2})^{1/2}$ are each the same for every series; that is, when $\rho_i$ and $\psi_{i2}/\psi_{i1}$ are both constant across series, or $\rho_i = 0$ for all $i$.
 We consider five families of covariance matrices, each indexed by a parameter that controls the departure from the conditions of @prp-equivalence.
 Let $a_i$ be the number of bottom-level series summed by series $i$.
 
@@ -25,10 +25,10 @@ F2, variable-specific profiles.
     As $\delta$ grows, the second variable's incoherent errors become increasingly concentrated at the aggregate levels.
 
 F3, node-varying correlation.
-:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = 0.3 + \delta\omega_i$, where $\omega_i \in [-1, 1]$ is a fixed pattern that alternates in sign within each level.
+:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = 0.3 + \delta\omega_i$, where the $\omega_i$ are fixed values in $[-1, 1]$, spread evenly and assigned to the series in a scrambled order.
 
 F4, OLS case.
-:   $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$.
+:   $\bm{W} = \bm{V} \otimes \bm{I}_n + \bm{S}_*\bm{K}\bm{S}_*'$, with unit variances and cross-variable correlation $0.7$ in $\bm{V}$, so that separate reconciliation of each variable is OLS reconciliation.
 
 F0, F1 and F4 satisfy @prp-equivalence; F2 and F3 do not when $\delta > 0$.
 We use two hierarchies: the eight-series hierarchy of @fig-hierarchy, and a 33-series hierarchy in which 27 bottom-level series aggregate to five intermediate series and then to a single total.
@@ -37,7 +37,7 @@ The second has the structure of the Brazilian employment data analysed in @sec-a
 #### Population results
 
 @fig-exp1-gain shows the exact MSE reduction from joint rather than separate reconciliation, $\gamma(\bm{W})$, against $\kappa(\bm{W})$.
-For F0, F1 and F4 both are zero to machine precision, whatever the strength of cross-variable correlation, and for F4 joint MinT coincides with OLS reconciliation.
+For F0, F1 and F4 both are zero to numerical precision, whatever the strength of cross-variable correlation, and for F4 joint MinT coincides with OLS reconciliation.
 For F2 and F3 the gain rises with $\kappa$, but it is moderate: at most `r num$gainFtwoBrazilMax`% for variable-specific profiles in the Brazilian hierarchy, where $\kappa$ reaches `r num$kappaFtwoBrazilMax`, and at most `r num$gainFthreeSmallMax`% for node-varying correlations (in the small hierarchy).
 Departures from the conditions of @prp-equivalence have to be large before joint reconciliation gains more than a few per cent.
 
@@ -97,7 +97,7 @@ knitr::include_graphics(tar_read(fig_noise))
 To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ error vectors from $N(\bm{0}, \bm{W})$ for F0, F1, and three strengths each of F2 and F3, in both hierarchies, and applied the test to each sample (1000 replications).
 @fig-power shows the results.
 Under both separable and separable-plus-invisible covariances, the rejection rate at the 5% level lies between `r num$testSizeMin`% and `r num$testSizeMax`% across all sample sizes and both hierarchies.
-Power grows with the size of the departure and with $T$; the smallest departures, with population gains below 1%, are detected reliably only with around a thousand observations.
+Power grows with the size of the departure and with $T$. Departures with population gains below 1% are detected in at most `r num$powerSmallMonthlyMax`% of samples of 100 or 200 observations, the lengths of typical monthly series, and the smallest of them, a gain of `r num$powerWeakGain`%, is detected only `r num$powerWeakRejection`% of the time even with 1000.
 
 ```{r}
 #| label: fig-power
@@ -119,14 +119,14 @@ By @prp-coherent, all three have coherent population forecasts.
 The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
 
 For each scenario we computed the exact one-step error covariance of the population-optimal univariate AR(20) forecasts of all 16 series.
-@tbl-exp2 gives its incoherent share, $\kappa$ and $\gamma$.
+@tbl-exp2 gives $\kappa$, $\gamma$ and the size of the incoherent component, measured by the ratio $\operatorname{tr}(\bm{C}_*\bm{W}\bm{C}_*')/\operatorname{tr}(\bm{W})$ of the total variance of the incoherences to that of the errors.
 The controls are coherent to machine precision.
-In the other scenarios the incoherent component is only `r num$expTwoIncohRange`% of the error variance.
+In the other scenarios this ratio is only `r num$expTwoIncohRange`%.
 So although $\kappa$ is large (`r num$expTwoKappaRange`), the population gain from joint reconciliation is only `r num$expTwoGainRange`%.
 
 We then simulated 500 replications of each scenario, with series of length $T + 12$ for $T = 108$ and $T = 400$, fitted automatically selected ARIMA models to every series and a bivariate VAR at every node, and reconciled their forecasts for horizons 1--12.
 Reconciliation improves on the ARIMA base forecasts (by `r num$expTwoSepVsBaseRange`% in MSE), but joint and separate reconciliation are nearly indistinguishable.
-With $T = 108$ the ratio of joint to separate MSE lies between `r num$expTwoArimaSmallRange` for ARIMA base forecasts, and with VAR base forecasts the two never differ by more than `r num$expTwoVarMaxDiff`%.
+With $T = 108$ the ratio of joint to separate MSE lies in the range `r num$expTwoArimaSmallRange` for ARIMA base forecasts, and with VAR base forecasts the two never differ by more than `r num$expTwoVarMaxDiff`%.
 
 With $T = 400$ and ARIMA base forecasts, joint reconciliation is no worse in any scenario and is better by up to `r num$expTwoCtrlGainMax`% in the controls and up to `r num$expTwoNonsepGainMax`% in the non-separable scenarios, so the gain is at least as large in the controls.
 This does not contradict @prp-coherent.
@@ -142,6 +142,6 @@ cat(readLines(tar_read(table_exp2)), sep = "\n")
 ```
 
 Experiment 2.
-Population quantities for the optimal AR forecasts: incoherent share of error variance (%), $\kappa$, and MSE reduction from joint reconciliation (%).
+Population quantities for the optimal AR forecasts: incoherence variance ratio $\operatorname{tr}(\bm{C}_*\bm{W}\bm{C}_*')/\operatorname{tr}(\bm{W})$ (%), $\kappa$, and MSE reduction from joint reconciliation (%).
 Fitted base models: MSE of joint relative to separate reconciliation, averaged over 500 replications, 16 series and horizons 1--12, with the standard error of the log ratio in parentheses; mean plug-in gain $\widehat\gamma$ (%, ARIMA).
 :::

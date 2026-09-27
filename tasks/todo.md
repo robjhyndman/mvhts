@@ -480,10 +480,18 @@ Goal: remove dead code and duplication in `R/`, and make the data layout and the
 
 ## Review pass before coauthor circulation (27 September 2026)
 
-- [x] Read every section; check the mathematics of Sections 2--4 (proofs verified line by line)
+- [x] Read every section; check the mathematics of Sections 2--4 (proofs verified line by line, plus an independent check against the code)
 - [x] Verify cited references (Crossref/arXiv)
-- [ ] Text edits: clarity, accuracy, deslop
-- [ ] Add references only where needed; fix bib entries
-- [ ] After Rob's `make` finishes: check every number-dependent sentence against the new results
-- [ ] Re-render and check PDF (cross-references, tables, figures)
-- [ ] Commit (no push)
+- [x] Text edits: clarity, accuracy, deslop
+- [x] Add references only where needed; fix bib entries
+- [x] After Rob's `make` finished (21:39): check every number-dependent sentence against the new results
+- [x] Re-render and check PDF (cross-references, tables, figures); `make test` passes (198)
+- [x] Commit (no push)
+
+### Review
+
+- Errors fixed: the Experiment 1 condition (both ordered pairs of variables must satisfy (e), so rho_i and psi_i2/psi_i1 must both be constant, not just d_i); F4 is V (x) I_n + S*KS*' in the code, not S*KS*' + tau I; the F3 pattern does not alternate in sign; tr(C*WC*')/tr(W) is a ratio of total variances, not a share of the error variance (it can exceed 100%).
+- The power sentence overstated detection of small departures; it now quotes computed values.
+- Supplement numbers now come from the pipeline; the F3 maximum is filtered to the small hierarchy, as the text says.
+- Render date is shown under the title of both documents.
+- Not changed, for Rob to decide: Experiment 2 simulates the VAR(1) from zero with no burn-in (the proposition assumes stationarity; the effect is small, but fixing it means rerunning Experiment 2); the Journal of Forecasting abstract limit is unverified (now about 247 words); the paper has no data availability statement, which most Wiley journals ask for (check the JF policy).

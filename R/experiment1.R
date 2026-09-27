@@ -5,10 +5,12 @@
 #   e_j = S u_j + v_j,
 # where S u_j is a coherent component (invisible to reconciliation) and
 # v_j is incoherent noise with variances lambda_ij at each series i and
-# cross-variable correlation rho_i. With two variables and diagonal
-# incoherent noise, joint and separate reconciliation coincide exactly
-# when d_i = rho_i sqrt(lambda_2i / lambda_1i) is the same at every
-# series (condition (e) of the proposition in sections/theory.tex).
+# cross-variable correlation rho_i. With two variables, diagonal
+# incoherent noise and a hierarchy with a single total, joint and
+# separate reconciliation coincide exactly when rho_i and
+# lambda_2i / lambda_1i are both the same at every series, or rho_i = 0
+# (condition (e) of the proposition in sections/theory.qmd, which must
+# hold for both ordered pairs of variables).
 #
 # Part (a) computes population quantities exactly. Part (b) estimates
 # W from T simulated errors and evaluates the expected loss of the
@@ -35,8 +37,8 @@ w_components <- function(S, lambda, rho, U = NULL) {
   W
 }
 
-# Fixed node pattern in [-1, 1] for node-varying correlations: alternates
-# in sign across the series of each level so it is not a level effect
+# Fixed node pattern in [-1, 1] for node-varying correlations: evenly
+# spaced values in a scrambled order, so the pattern is not a level effect
 node_pattern <- function(S) {
   z <- seq(-1, 1, length.out = NROW(S))
   z[order(sin(seq_len(NROW(S)) * 2.4))]

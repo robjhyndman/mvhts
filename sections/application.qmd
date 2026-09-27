@@ -52,7 +52,7 @@ MinT is applied separately to each variable, jointly to both, and separately usi
 @tbl-app-diag reports the diagnostics computed from the one-step residuals of models fitted to the whole of 2007--2019.
 For the ARIMA base forecasts the estimated error covariance is close to separable by the generic measure (nearest-Kronecker error `r num$appKronArima`), and joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num[["appKappaArima"]]`$) for a plug-in gain of only `r num$appGainArima`% in mean squared error.
 The likelihood ratio test rejects the conditions of @prp-equivalence at the 5% level ($p = `r num[["appPArima"]]`$), so the departure is not pure estimation noise, but it is small.
-The incoherent component is `r num$appIncohArima`% of the one-step error variance.
+The total variance of the incoherences is `r num$appIncohArima`% of that of the one-step errors.
 The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test.
 With no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
 
@@ -66,20 +66,20 @@ cat(readLines(tar_read(table_app_diag)), sep = "\n")
 ```
 
 Application: diagnostics from the one-step residuals over 2007--2019.
-Estimated $\widehat\kappa$ and plug-in gain $\widehat\gamma$ (%); Rao $F$ statistics for the other variable's incoherences in the regression of each variable's errors (`r num$appDfOneArima` and `r num$appDfTwoArima` degrees of freedom for ARIMA, `r num$appDfOneVar` and `r num$appDfTwoVar` for VAR), and the Bonferroni $p$-value; incoherent share of error variance (%); relative error of the nearest Kronecker product.
+Estimated $\widehat\kappa$ and plug-in gain $\widehat\gamma$ (%); Rao $F$ statistics for the other variable's incoherences in the regression of each variable's errors (`r num$appDfOneArima` and `r num$appDfTwoArima` degrees of freedom for ARIMA, `r num$appDfOneVar` and `r num$appDfTwoVar` for VAR), and the Bonferroni $p$-value; incoherence variance ratio $\operatorname{tr}(\bm{C}_*\bm{W}\bm{C}_*')/\operatorname{tr}(\bm{W})$ (%); relative error of the nearest Kronecker product.
 :::
 
 ## Forecast accuracy
 
 @tbl-app-accuracy-arima gives the mean squared error of each method relative to the ARIMA base forecasts.
 Separate MinT reconciliation improves on the base forecasts at every level and for both variables, and it is better than OLS and structural WLS reconciliation, which damage the state-level forecasts.
-Joint and separate MinT are close: the ratio of their mean squared errors ranges from `r num$appJointSepArimaRange` across the six combinations of variable and level.
+Joint and separate MinT are close: across the six combinations of variable and level, the ratio of their mean squared errors lies in the range `r num$appJointSepArimaRange`.
 Joint reconciliation is slightly better for dismissals at the national and regional levels and slightly worse elsewhere.
 The averages hide a horizon pattern (Supplementary Table\ S3): for national dismissals, joint reconciliation is worse at short horizons and better at long ones.
 There is no systematic gain from reconciling the two variables together, consistent with the small departure found by the diagnostics.
 With VAR base forecasts (@tbl-app-accuracy-var), joint reconciliation is better than separate reconciliation at every level (ratios `r num$appJointSepVarRange`), but the VAR base forecasts are poorer to begin with: their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts, on average over the series.
 This is consistent with the lesson of Experiment 2 that the cross-variable structure joint reconciliation exploits can come from the errors of the base models themselves.
-With ETS base forecasts (Supplementary Table\ S2) the ratios of joint to separate MSE range from `r num$appJointSepEtsRange`: joint reconciliation is better for admissions at every level and roughly neutral for dismissals.
+With ETS base forecasts (Supplementary Table\ S2) the ratios of joint to separate MSE lie in the range `r num$appJointSepEtsRange`: joint reconciliation is better for admissions at every level and roughly neutral for dismissals.
 
 ::: {#tbl-app-accuracy-arima}
 ```{r}

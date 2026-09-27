@@ -52,6 +52,6 @@ $$
   \widehat{\bm{W}}_1 = \lambda\widehat{\bm{W}}_{1,D}
                        + (1 - \lambda)\widehat{\bm{W}}_{1,S},
 $$ {#eq-shrink}
-$\widehat{\bm{W}}_{1,S}$ is the sample covariance matrix of the one-step in-sample residuals, $\widehat{\bm{W}}_{1,D}$ is its diagonal, and the intensity $\lambda$ is estimated as in @schafer2005shrinkage.
+$\widehat{\bm{W}}_{1,S}$ is the sample covariance matrix of the one-step in-sample residuals, computed about zero, $\widehat{\bm{W}}_{1,D}$ is its diagonal, and the intensity $\lambda$ is estimated as in @schafer2005shrinkage.
 The scale $k_h$ cancels from ([-@eq-mint]).
 For separate reconciliation the estimator is applied to each variable's residuals on its own, so each variable has its own shrinkage intensity.

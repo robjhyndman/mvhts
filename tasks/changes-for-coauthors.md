@@ -44,3 +44,8 @@
 - **Kappa's scaling changed.** Each variable is now standardised by the average variance of its incoherences (the diagonal of `C W_jj C'`) rather than of all its base forecast errors.
   This makes the value of kappa, not just whether it is zero, unaffected by error components that reconciliation ignores.
   All kappa values in the paper change.
+- **Review pass (27 September 2026).** Numbers checked against the full pipeline rerun.
+  Corrected the stated condition for Experiment 1 (both the cross-variable correlation and the variance ratio must be constant across series), the descriptions of families F3 and F4, and the "incoherent share", which is the ratio of the total variance of the incoherences to that of the errors.
+  The Experiment 1 variances are now psi (lambda is the shrinkage intensity).
+  Added Panagiotelis et al. (2023) for reconciling sample paths.
+  Abstract trimmed to under 250 words.

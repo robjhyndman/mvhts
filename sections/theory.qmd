@@ -115,7 +115,7 @@ A natural simulation design gives every node the same dynamics, and it produces 
 ::: {#prp-coherent}
 Let $\bm{x}_{i,t}$ be the $m$-vector of the bottom-level series at node $i$, with $\bm{x}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, where $\bm{\mu}_{i,t}$ is deterministic and $\bm{\eta}_{i,t} = \bm{\Phi}\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$ is a stationary VAR(1) with the same $\bm{\Phi}$ at every node.
 Suppose the innovations are serially uncorrelated with $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$ for an $(m \times m)$ matrix $\bm{R}$ and an $(n_b \times n_b)$ matrix $\bm{\Sigma} = [\sigma_{ii'}]$.
-Let the base forecast of each series be the best linear predictor of its stochastic component from its own past, plus its deterministic component.
+Let the base forecast of each series be the best linear predictor of its stochastic component from its own past (or from a fixed number of its own lags), plus its deterministic component.
 Then the base forecasts are coherent and the base forecast errors lie in the column space of $\bm{S}_*$.
 Their covariance is singular, so the MinT formula ([-@eq-joint-map]) is not defined, but every linear reconciliation $\bm{S}_*\bm{P}$ with $\bm{P}\bm{S}_* = \bm{I}$, joint or separate, leaves coherent forecasts unchanged.
 :::

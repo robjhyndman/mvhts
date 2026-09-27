@@ -319,7 +319,7 @@ numbers_exp1 <- function(exp1_pop, exp1_summary, exp1_samp) {
   f2b <- exp1_pop |>
     dplyr::filter(family == "F2", hierarchy == "brazil") |>
     dplyr::slice_max(gain, n = 1)
-  f3 <- exp1_pop |> dplyr::filter(family == "F3")
+  f3 <- exp1_pop |> dplyr::filter(family == "F3", hierarchy == "small")
   sep <- exp1_summary |> dplyr::filter(family == "F0", T == min(T))
   weak <- exp1_summary |>
     dplyr::filter(family == "F3", hierarchy == "brazil") |>
@@ -364,7 +364,11 @@ numbers_exp2 <- function(exp2_sum) {
     expTwoArimaSmallRange = fmt_range(ar$joint_vs_sep[ar$T == 108], 3),
     expTwoArimaLargeRange = fmt_range(ar$joint_vs_sep[ar$T == 400], 3),
     expTwoVarMaxDiff = fmt(100 * max(abs(1 - va$joint_vs_sep)), 1),
-    expTwoBlocksMaxDiff = fmt(100 * max(abs(1 - exp2_sum$blocks_vs_sep)), 1)
+    expTwoBlocksMaxDiff = fmt(100 * max(abs(1 - exp2_sum$blocks_vs_sep)), 1),
+    # Supplementary material: reconciliation relative to the base forecasts
+    suppArimaVsBaseRange = fmt_range(1 - c(ar$sep_vs_base, ar$joint / ar$base), 0, 100),
+    suppVarVsBaseRange = fmt_range(1 - c(va$sep_vs_base, va$joint / va$base), 0, 100),
+    suppMaxSepJointDiff = fmt(max(abs(exp2_sum$sep_vs_base - exp2_sum$joint / exp2_sum$base)), 3)
   )
 }
 
@@ -373,9 +377,18 @@ numbers_exp2 <- function(exp2_sum) {
 # --------------------------------------------------------------------
 numbers_power <- function(power) {
   null <- power |> dplyr::filter(family %in% c("F0", "F1"))
+  alt <- power |> dplyr::filter(!family %in% c("F0", "F1"))
+  # The departure with the smallest population gain
+  weak <- alt |> dplyr::filter(gain == min(gain))
   list(
     testSizeMin = fmt(100 * min(null$rejection), 1),
-    testSizeMax = fmt(100 * max(null$rejection), 1)
+    testSizeMax = fmt(100 * max(null$rejection), 1),
+    powerSmallMonthlyMax = fmt(
+      100 * max(alt$rejection[alt$gain < 0.01 & alt$T <= 200]),
+      0
+    ),
+    powerWeakGain = fmt(100 * weak$gain, 1),
+    powerWeakRejection = fmt(100 * weak$rejection[weak$T == max(weak$T)], 0)
   )
 }
 
