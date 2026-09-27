@@ -10,6 +10,8 @@ execute:
 
 # Metadata shared by the paper and the supplementary material
 title: When does multivariate forecast reconciliation help?
+date: today
+date-format: "D MMMM YYYY"
 author:
   - name: Ana Caroline Pinheiro
     affiliations:
