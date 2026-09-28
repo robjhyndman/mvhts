@@ -33,6 +33,8 @@ cat(readLines(tar_read(table_supp_exp2)), sep = "\n")
 Experiment 2: MSE of separate and joint MinT reconciliation relative to the base forecasts, averaged over 500 replications, 16 series and horizons 1--12.
 :::
 
+`\clearpage`{=latex}
+
 # Application: ETS base forecasts {.unnumbered}
 
 @tbl-app-accuracy-ets repeats the accuracy comparison of the main text with base forecasts from automatically selected ETS models.
@@ -63,6 +65,8 @@ cat(readLines(tar_read(table_supp_horizon)), sep = "\n")
 
 Application (ARIMA base forecasts): MSE of joint relative to separate MinT reconciliation by forecast horizon, geometric mean over the series at each level.
 :::
+
+`\clearpage`{=latex}
 
 # Application: results for every series {.unnumbered}
 

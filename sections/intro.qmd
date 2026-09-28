@@ -16,28 +16,25 @@ In a grouped hierarchy, such as sales disaggregated by both region and product t
 Here unit sales are never added to revenue.
 The stacked summing matrix is block diagonal by variable, and the only link between the variables is the error covariance.
 
-We write MinT as a regression of the base forecast errors on the observed incoherences of the base forecasts.
-Joint reconciliation of several variables coincides with separate reconciliation if and only if, once each variable has been reconciled on its own, its remaining errors are uncorrelated with the incoherences of every other variable.
-Two known results are special cases.
+Some cross-variable dependence is already known to be of no use to reconciliation.
 MinT is unaffected by any component of the error covariance that lies in the coherent subspace [@wickramasuriya2021properties], so cross-variable dependence of that form is invisible.
 When the error covariance is separable, a Kronecker product of a cross-variable matrix and a cross-series matrix, joint and separate reconciliation coincide whatever the cross-variable correlation.
-This is a special case of a result of @girolimetto2025cross for cross-temporal reconciliation, and the reconciliation analogue of Zellner's observation [@zellner1962efficient] that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares.
+This follows from a result of @girolimetto2025cross for cross-temporal reconciliation, and it is the reconciliation analogue of Zellner's observation [@zellner1962efficient] that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares.
+These conditions are sufficient, but they do not say which forms of dependence joint reconciliation can exploit, or by how much.
 
-In practice, we need to know whether each variable's separately reconciled errors are correlated with the other variables' incoherences, and if so, how much this affects the forecasts.
+Our approach is to write MinT as a regression of the base forecast errors on the observed incoherences of the base forecasts.
+In this form, the question becomes whether one variable's incoherences carry information about another variable's errors beyond what that variable's own incoherences provide.
+This leads to a necessary and sufficient condition for joint and separate reconciliation to coincide, which includes the known cases above.
+
+In practice, we need to know whether this condition holds for a given data set, and if not, how much the departure affects the forecasts.
 We propose two effect sizes: $\kappa$, the weight that the joint reconciliation places on other variables' incoherences, and $\gamma$, the reduction in mean squared error that it would deliver if the estimated covariance were correct.
-We also propose a likelihood ratio test of the characterising condition, which uses the regression form of MinT and needs no simulation.
+We also propose a likelihood ratio test of the condition, which uses the regression form of MinT and needs no simulation.
 
-In two simulation experiments, joint reconciliation offers little.
-When the error covariance is known, even substantial departures from separability reduce the mean squared error by at most `r num$gainFtwoBrazilMax`% in our designs, and usually by much less.
-When it is estimated, joint reconciliation pays for the extra cross-variable blocks: with separable errors it is worse than separate reconciliation at small sample sizes, and it recovers small population gains only with long series.
-With fitted ARIMA and VAR base models, joint and separate reconciliation are indistinguishable for series of typical monthly length.
-In an application to monthly worker admissions and dismissals in Brazil's 27 federative units, which aggregate to five regions and to the country, the test detects a small correlation between each variable's separately reconciled errors and the other variable's incoherences, but with ARIMA base forecasts joint reconciliation does not systematically improve the forecasts of either admissions or dismissals.
-
-Joint modelling does matter for quantities that combine the variables.
+We study the effect of joint reconciliation in two simulation experiments, one in which the error covariance is controlled directly and one in which base forecasting models are fitted to simulated series.
+We also explore joint reconciliation in an application to monthly worker admissions and dismissals in Brazil's 27 federative units, which aggregate to five regions and to the country.
+Besides the forecasts of each variable, we consider quantities that combine the variables.
 Net employment change, the difference between admissions and dismissals, is the headline figure in Brazil's official monthly employment statistics.
-MinT with the true covariance minimises the whole reconciled error covariance matrix in the positive semidefinite order, not just its trace, so when the characterising condition fails, joint reconciliation can help a combination of variables even when it does not help any variable on its own.
-In the application it reduces the mean squared error of the national net change by `r num$appNetPointTotal`%.
-For probabilistic forecasts, most of the gain comes before reconciliation: simulating the base forecasts jointly, so that the dependence between the variables is kept, reduces the CRPS of the national net change by `r num$appNetJointSepTotal`%, and reconciling the paths jointly raises this to `r num$appNetJointJointTotal`%.
+Its forecast distribution depends on the joint distribution of the base forecasts, so for probabilistic forecasts we ask whether the dependence between the variables should be modelled when the base forecasts are simulated, when they are reconciled, or both.
 
 @sec-setup sets out notation and the reconciliation problem for several variables.
 @sec-theory gives the characterisation and its consequences.

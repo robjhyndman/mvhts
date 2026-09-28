@@ -15,3 +15,7 @@
 - 2026-09-25: Check `~/.ssh/config` before giving rsync/scp commands to Rob's hosts.
   `desktop`, `laptop` and `tvpc` force `RemoteCommand zsh -l`, so plain rsync fails with code 255.
   Always add `-e "ssh -o RemoteCommand=none -o RequestTTY=no"`.
+- 2026-09-28: No results in the introduction.
+  The intro sets out the problem, the gap in the literature and the approach (methods, experiments, data), then the outline.
+  Findings, numbers and verdicts belong in the abstract and in the later sections, not in the intro.
+  Known results from the literature are background and can stay; the paper's own theorems are described by what they deliver, not stated.
