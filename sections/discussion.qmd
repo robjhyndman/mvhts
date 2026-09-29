@@ -8,9 +8,11 @@ What remains is dependence that varies across the hierarchy differently for each
 This has three practical consequences.
 
 First, simulation designs need care.
-A design in which every node shares the same dynamics produces coherent population forecasts (@prp-coherent), so any difference between joint and separate reconciliation comes from estimation error in the base models.
+The usual design aggregates correlated bottom-level series and forecasts every series on its own.
+Its population forecasts are incoherent only because a univariate forecast of an aggregate ignores the pasts of its components, and in Experiment 2 these population incoherences are a small fraction of the error variance.
+When every node shares the same dynamics they vanish altogether, and any difference between joint and separate reconciliation comes from estimation error in the base models.
 Experiment 2 shows that this estimation error can itself have exploitable cross-variable structure, but that the resulting gains are small and appear only with long series.
-Varying the cross-variable correlation in such a design, however strongly, says nothing about the value of joint reconciliation for the data-generating process.
+Varying the cross-variable correlation in such designs, however strongly, says little about the value of joint reconciliation for the data-generating process.
 
 Second, check before reconciling jointly.
 The diagnostic of @sec-diagnostic estimates how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise.

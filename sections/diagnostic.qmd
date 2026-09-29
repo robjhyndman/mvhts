@@ -15,7 +15,7 @@ $$ {#eq-kappa}
 where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$.
 Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{C}\bm{W}_{jj}\bm{C}'$, the variances of its incoherences.
 This makes $\kappa$ free of units.
-By @prp-equivalence, $\kappa = 0$ exactly when joint and separate reconciliation coincide.
+By @prp-equivalence, $\kappa = 0$ if and only if joint and separate reconciliation coincide.
 Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), and since $\bm{C}\bm{S} = \bm{0}$ it leaves the standardisation unchanged too, so the value of $\kappa$ does not depend on such components.
 
 The second measure describes the value of the joint map.
@@ -25,7 +25,7 @@ $$
   = 1
     - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
 $$ {#eq-gain}
-MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality exactly when the conditions of @prp-equivalence hold.
+MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality if and only if the conditions of @prp-equivalence hold.
 Positive semidefinite components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove.
 Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the errors, because the gain from any reconciliation comes only from that component.
 So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences.
