@@ -2,7 +2,7 @@
 
 library(testthat)
 
-test_that("the Brazil hierarchy has Total, five regions and 27 states", {
+test_that("the Brazilian hierarchy has Total, five regions and 27 states", {
   S <- brazil_hierarchy(state_meta, region_meta)
   expect_equal(dim(S), c(33, 27))
   expect_equal(

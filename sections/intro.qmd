@@ -13,7 +13,7 @@ We ask when joint reconciliation is better than reconciling each variable separa
 
 Joint reconciliation of several variables is not the same problem as reconciling a grouped hierarchy.
 In a grouped hierarchy, such as sales disaggregated by both region and product type, the categories of each grouping variable are linked by aggregation constraints: total sales is the sum over products or over regions, and that total is itself forecast.
-Here unit sales are never added to revenue.
+In the retail example, by contrast, unit sales are never added to revenue.
 The stacked summing matrix is block diagonal by variable, and the only link between the variables is the error covariance.
 
 Some cross-variable dependence is already known to be of no use to reconciliation.
@@ -27,7 +27,7 @@ In this form, the question becomes whether one variable's incoherences carry inf
 This leads to a necessary and sufficient condition for joint and separate reconciliation to coincide, which includes the known cases above.
 
 In practice, we need to know whether this condition holds for a given data set, and if not, how much the departure affects the forecasts.
-We propose two effect sizes: $\kappa$, the weight that the joint reconciliation places on other variables' incoherences, and $\gamma$, the reduction in mean squared error that it would deliver if the estimated covariance were correct.
+We propose two measures of the departure from this condition: $\kappa$, the weight that the joint reconciliation places on other variables' incoherences, and $\gamma$, the reduction in mean squared error that it would deliver if the estimated covariance were correct.
 We also propose a likelihood ratio test of the condition, which uses the regression form of MinT and needs no simulation.
 
 We study the effect of joint reconciliation in two simulation experiments, one in which the error covariance is controlled directly and one in which base forecasting models are fitted to simulated series.
@@ -38,5 +38,5 @@ Its forecast distribution depends on the joint distribution of the base forecast
 
 @sec-setup sets out notation and the reconciliation problem for several variables.
 @sec-theory gives necessary and sufficient conditions for joint and separate reconciliation to coincide, and their consequences.
-@sec-diagnostic develops the effect sizes and the test.
-@sec-simulation reports the two experiments, @sec-application the application to Brazilian employment, and @sec-discussion discusses the implications.
+@sec-diagnostic develops the measures and the test.
+@sec-simulation reports the two experiments, @sec-application the application to Brazilian employment, and @sec-discussion draws out the implications.

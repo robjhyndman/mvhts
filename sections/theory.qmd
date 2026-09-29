@@ -2,7 +2,7 @@
 
 ## Joint and separate reconciliation
 
-Stack the $m$ variables as in ([-@eq-vec]), so that the summing and constraint matrices of the stacked system are $\bm{S}_* = \bm{I}_m \otimes \bm{S}$ and $\bm{C}_* = \bm{I}_m \otimes \bm{C}$.
+Stack the $m$ variables as in ([-@eq-vec]), with summing matrix $\bm{S}_*$ and constraint matrix $\bm{C}_*$.
 Let $\bm{W}$ be the $(mn \times mn)$ covariance matrix of the stacked base forecast errors $\bm{e} = (\bm{e}_1', \dots, \bm{e}_m')'$, where $\bm{e}_j$ holds the $n$ errors of variable $j$, and write $\bm{W}_{jk} = \cov(\bm{e}_j, \bm{e}_k)$ for its $(n \times n)$ blocks.
 We drop the horizon subscript $h$ throughout this section.
 
@@ -88,6 +88,7 @@ This is the argument used by @wickramasuriya2021properties [Proposition 1] to sh
 It is an instance of the classical result that generalised least squares is unaffected by adding $\bm{X}\bm{K}\bm{X}'$ to the error covariance, where $\bm{X}$ is the regressor matrix [@rao1967least; @zyskind1967canonical].
 Only the part of the error covariance that is visible through the incoherences matters.
 Any cross-variable dependence of the form $\bm{S}\bm{K}_{jk}\bm{S}'$ is invisible to both joint and separate reconciliation.
+The same invariance gives the known condition $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$ under which MinT reduces to OLS reconciliation [@hyndman2011optimal; @wickramasuriya2021properties].
 
 ::: {#cor-separable name="Separability"}
 If $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0$ for positive definite matrices $\bm{V}$ $(m \times m)$ and $\bm{\Sigma}_0$ $(n \times n)$, then $\bm{M} = \bm{M}^{\mathrm{sep}} = \bm{I}_m \otimes \bm{M}_0$, where $\bm{M}_0 = \bm{I} - \bm{\Sigma}_0\bm{C}'(\bm{C}\bm{\Sigma}_0\bm{C}')^{-1}\bm{C}$, whatever the sign or strength of the cross-variable dependence in $\bm{V}$.
@@ -102,10 +103,11 @@ Then $\bm{W}_{jk}\bm{C}' = (v_{jk}/v_{jj})\bm{W}_{jj}\bm{C}'$, and condition (e)
 It is the reconciliation analogue of the result that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares [@zellner1962efficient]: every variable shares the same summing matrix, so cross-variable correlation alone cannot be exploited.
 Corollaries [-@cor-invariance] and [-@cor-separable] combine: every $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0 + \bm{S}_*\bm{K}\bm{S}_*'$ satisfies the conditions of @prp-equivalence, however far it is from a Kronecker product.
 So separability is sufficient but far from necessary.
-Rearranging $\bm{W}$ so that each block $\bm{W}_{jk}$ becomes a row, $\bm{W}$ is a Kronecker product if and only if the rearranged matrix has rank one, and the relative error of the nearest Kronecker approximation [@vanloan1993approximation] is $\{1 - \sigma_1^2/\sum_i\sigma_i^2\}^{1/2}$, where $\sigma_i$ are its singular values.
+
+This limits the value of measuring separability directly.
+If $\bm{W}$ is rearranged so that each block $\bm{W}_{jk}$ becomes a row, it is a Kronecker product if and only if the rearranged matrix has rank one, and the relative error of the nearest Kronecker approximation [@vanloan1993approximation] is $\{1 - \sigma_1^2/\sum_i\sigma_i^2\}^{1/2}$, where $\sigma_i$ are the singular values of the rearranged matrix.
 Likelihood ratio tests of separability are also available [@lu2005likelihood; @mitchell2006likelihood].
-Both respond to components $\bm{S}_*\bm{K}\bm{S}_*'$ that do not change the reconciled forecasts, and a departure that does change them may leave the Kronecker error small.
-The same invariance gives the known condition $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' + \tau\bm{I}$ under which MinT reduces to OLS reconciliation [@hyndman2011optimal; @wickramasuriya2021properties].
+Both measures of separability respond to components $\bm{S}_*\bm{K}\bm{S}_*'$ that do not change the reconciled forecasts, and a departure that does change them may leave the Kronecker error small.
 
 ## Remarks
 

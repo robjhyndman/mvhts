@@ -15,13 +15,14 @@ Experiment 2 shows that this estimation error can itself have exploitable cross-
 Varying the cross-variable correlation in such designs, however strongly, says little about the value of joint reconciliation for the data-generating process.
 
 Second, check before reconciling jointly.
-The diagnostic of @sec-diagnostic estimates how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise.
+The measures of @sec-diagnostic estimate how much joint reconciliation would change the forecasts ($\kappa$) and how much it would improve them ($\gamma$), and a likelihood ratio test of condition (d) says whether the departure is distinguishable from estimation noise.
 When it is not, separate reconciliation is preferable: it does not need the cross-variable blocks of the error covariance, and Experiment 1 shows that estimating those blocks costs accuracy when they carry no information.
 
 Third, think about the quantity being forecast.
 Many quantities of interest are functions of several variables, such as net employment change.
 Their forecast distributions depend on the joint distribution of the base forecasts, and in the application, keeping that dependence reduced the CRPS of the national net change by `r num$appNetJointSepTotal`%.
-Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map, so separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
+Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map.
+So separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
 When they fail, joint reconciliation can still help such combinations while barely changing each variable's average accuracy, as it did for the national and regional net change in Brazil.
 The plug-in gain $\widehat\gamma_{\bm{\ell}}$ for the combination of interest is a better guide than the average gain $\widehat\gamma$.
 
@@ -32,5 +33,5 @@ With them $\bm{C}_*$ is no longer block diagonal, separate reconciliation is not
 
 Several extensions are natural.
 The shrinkage estimator treats cross-variable covariances like any other off-diagonal entry; an estimator that shrinks towards the set of covariance matrices satisfying @prp-equivalence would interpolate between separate and joint reconciliation, with the data choosing how far to move.
-The diagnostic could also be applied pairwise to decide which groups of variables to reconcile together when there are many.
-Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, where the conditions of @prp-equivalence for joint and separate reconciliation to coincide extend directly.
+The measures and the test could also be applied pairwise to decide which groups of variables to reconcile together when there are many.
+Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, to which the conditions of @prp-equivalence for joint and separate reconciliation to coincide extend directly.

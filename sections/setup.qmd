@@ -32,7 +32,7 @@ This distinguishes the setting from a grouped hierarchy, where the categories of
 
 ## Forecast reconciliation
 
-Let $\widehat{\bm{y}}_h$ be the stacked base forecasts of all $mn$ series at time $T+h$, given data up to time $T$ and produced without regard to the constraints, and let $\bm{W}_h$ be the covariance matrix of their errors.
+Let $\widehat{\bm{y}}_h$ be the stacked base forecasts of all $mn$ series at time $T+h$, given data up to time $T$ and produced without regard to the constraints, and let $\bm{W}_h$ be the covariance matrix of their errors $\bm{y}_{T+h} - \widehat{\bm{y}}_h$.
 Linear reconciliation maps the base forecasts to coherent forecasts $\widetilde{\bm{y}}_h = \bm{S}_*\bm{G}\widehat{\bm{y}}_h$ for some matrix $\bm{G}$ with $\bm{G}\bm{S}_* = \bm{I}$.
 The minimum trace (MinT) choice [@wickramasuriya2019optimal] minimises the trace of the reconciled error covariance and gives
 $$
@@ -52,6 +52,6 @@ $$
   \widehat{\bm{W}}_1 = \lambda\widehat{\bm{W}}_{1,D}
                        + (1 - \lambda)\widehat{\bm{W}}_{1,S},
 $$ {#eq-shrink}
-$\widehat{\bm{W}}_{1,S}$ is the sample covariance matrix of the one-step in-sample residuals, computed about zero, $\widehat{\bm{W}}_{1,D}$ is its diagonal, and the intensity $\lambda$ is estimated as in @schafer2005shrinkage.
+in which $\widehat{\bm{W}}_{1,S}$ is the sample covariance matrix of the one-step in-sample residuals, computed about zero, $\widehat{\bm{W}}_{1,D}$ is its diagonal, and the intensity $\lambda$ is estimated as in @schafer2005shrinkage.
 The scale $k_h$ cancels from ([-@eq-mint]).
 For separate reconciliation the estimator is applied to each variable's residuals on its own, so each variable has its own shrinkage intensity.

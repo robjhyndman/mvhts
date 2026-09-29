@@ -12,7 +12,7 @@ fig_ramp <- c("#86b6ef", "#3987e5", "#1c5cab", "#0d366b")
 
 hierarchy_labels <- c(
   small = "Small hierarchy (8 series)",
-  brazil = "Brazil hierarchy (33 series)"
+  brazil = "Brazilian hierarchy (33 series)"
 )
 
 family_labels <- c(
@@ -345,8 +345,7 @@ fig_kappa_power <- function(power, file) {
 
 # --------------------------------------------------------------------
 # Figure: national admissions, dismissals and net change. The period
-# after 2019 (Novo CAGED, COVID-19) is shaded; it is not used in the
-# main analysis.
+# after 2019 (Novo CAGED, COVID-19) is shaded; it is not used.
 # --------------------------------------------------------------------
 fig_app_data <- function(emprego, file) {
   nat <- emprego |>

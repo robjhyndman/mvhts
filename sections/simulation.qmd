@@ -11,7 +11,7 @@ For each of two variables, the base forecast errors are $\bm{e}_j = \bm{S}\bm{u}
 The coherent component $\bm{S}\bm{u}_j$ is invisible to reconciliation (@cor-invariance).
 The incoherent component $\bm{v}_j$ has independent entries across series, with variance $\psi_{ij}$ for series $i$ and correlation $\rho_i$ between the two variables at series $i$.
 With this structure, and because the hierarchy has a single total, condition (e) of @prp-equivalence holds for both pairs of variables if and only if $\rho_i(\psi_{i2}/\psi_{i1})^{1/2}$ and $\rho_i(\psi_{i1}/\psi_{i2})^{1/2}$ are each the same for every series; that is, when $\rho_i$ and $\psi_{i2}/\psi_{i1}$ are both constant across series, or $\rho_i = 0$ for all $i$.
-We consider five families of covariance matrices, each indexed by a parameter that controls the departure from the conditions of @prp-equivalence.
+We consider five families of covariance matrices, each indexed by a parameter: $\rho$ for F0, the size of $\bm{K}$ for F1 and F4, and $\delta$ for F2 and F3.
 Let $s_i$ be the number of bottom-level series summed by series $i$ (the $i$th row sum of $\bm{S}$).
 
 F0, separable.
@@ -37,8 +37,8 @@ The second has the structure of the Brazilian employment data analysed in @sec-a
 #### Population results
 
 @fig-exp1-gain shows the exact MSE reduction from joint rather than separate reconciliation, $\gamma(\bm{W})$, against $\kappa(\bm{W})$.
-For F0, F1 and F4 both are zero to numerical precision, whatever the strength of cross-variable correlation, and for F4 joint MinT coincides with OLS reconciliation.
-For F2 and F3 the gain rises with $\kappa$, but it is moderate: at most `r num$gainFtwoBrazilMax`% for variable-specific profiles in the Brazilian hierarchy, where $\kappa$ reaches `r num$kappaFtwoBrazilMax`, and at most `r num$gainFthreeSmallMax`% for node-varying correlations (in the small hierarchy).
+For F0, F1 and F4 both measures are zero to numerical precision, whatever the strength of cross-variable correlation, and for F4 joint MinT coincides with OLS reconciliation.
+For F2 and F3 the gain rises with $\kappa$, but it is moderate: at most `r num$gainFtwoBrazilMax`% for variable-specific profiles in the Brazilian hierarchy, where $\kappa$ reaches `r num$kappaFtwoBrazilMax`, and at most `r num$gainFthreeSmallMax`% for node-varying correlations in the small hierarchy.
 Departures from the conditions of @prp-equivalence have to be large before joint reconciliation gains more than a few per cent.
 
 ```{r}
@@ -55,7 +55,7 @@ For F1 the Kronecker error rises with no gain at all, because the departure is i
 
 ```{r}
 #| label: fig-kronecker
-#| fig-cap: 'Experiment 1: population MSE reduction from joint rather than separate reconciliation against the relative error of the nearest Kronecker approximation to $\bm{W}$.'
+#| fig-cap: 'Experiment 1: population MSE reduction from joint rather than separate reconciliation against the relative error of the nearest Kronecker approximation to $\bm{W}$. Each line joins the points for one family in order of its parameter, starting from the origin, where $\bm{W}$ is separable. For F1 the Kronecker error grows with the size of the invisible component while the gain stays at zero. For F2 the gain rises throughout, but the Kronecker error rises and then falls as $\delta$ increases, so the line doubles back.'
 #| out-width: 100%
 
 knitr::include_graphics(tar_read(fig_kronecker))
@@ -80,8 +80,8 @@ knitr::include_graphics(tar_read(fig_samplesize))
 ```
 
 The same replications show the finite-sample behaviour of $\widehat\kappa$ (@fig-noise).
-Under a separable covariance the median of $\widehat\kappa$ is about `r num$kappaNoiseSep` at the sample sizes of monthly data and falls only slowly with $T$.
-For the strongest node-varying departure (F3) in the Brazilian hierarchy, $\widehat\kappa$ is below its population value at every sample size, because of shrinkage, and at $T \le 200$ it is about the same as, or smaller than, under separability.
+Under a separable covariance the median of $\widehat\kappa$ is about `r num$kappaNoiseSep` at sample sizes typical of monthly data and falls only slowly with $T$.
+For the strongest node-varying departure (F3) in the Brazilian hierarchy, $\widehat\kappa$ is below its population value at every sample size, because of shrinkage, and at $T \le 200$ it is about the same as, or smaller than, its value under separability.
 The raw value of $\widehat\kappa$ cannot distinguish the two.
 
 ```{r}
@@ -94,15 +94,16 @@ knitr::include_graphics(tar_read(fig_noise))
 
 #### Size and power of the test
 
-To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ error vectors from $N(\bm{0}, \bm{W})$ for F0, F1, and three strengths each of F2 and F3, in both hierarchies, and applied the test to each sample (1000 replications).
+To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ error vectors from $N(\bm{0}, \bm{W})$ for F0, F1 and three strengths each of F2 and F3, in both hierarchies, and applied the test to each sample (1000 replications).
 @fig-power shows the results.
 Under both separable and separable-plus-invisible covariances, the rejection rate at the 5% level lies between `r num$testSizeMin`% and `r num$testSizeMax`% across all sample sizes and both hierarchies.
-Power grows with the size of the departure and with $T$. Departures with population gains below 1% are detected in at most `r num$powerSmallMonthlyMax`% of samples of 100 or 200 observations, the lengths of typical monthly series, and the smallest of them, a gain of `r num$powerWeakGain`%, is detected only `r num$powerWeakRejection`% of the time even with 1000.
+Power grows with the size of the departure and with $T$.
+Departures with population gains below 1% are detected in at most `r num$powerSmallMonthlyMax`% of samples of 100 or 200 observations, the lengths of typical monthly series, and the smallest of them, a gain of `r num$powerWeakGain`%, is detected only `r num$powerWeakRejection`% of the time even with $T = 1000$.
 
 ```{r}
 #| label: fig-power
 #| fig-cap: >-
-#|   Experiment 1: rejection rate at the 5% level of the test of condition (d), by sample size (1000 replications).
+#|   Experiment 1: rejection rate of the test of condition (d) at the 5% level, by sample size (1000 replications).
 #|   For the separable (F0) and separable-plus-invisible (F1) covariances the rejection rate is the size of the test.
 #| out-width: 100%
 
@@ -114,17 +115,17 @@ knitr::include_graphics(tar_read(fig_power))
 The second experiment simulates time series and fits base models to them.
 The two bottom-level series at node $i$ are $\bm{x}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, with a deterministic quarterly component $\bm{\mu}_{i,t}$ and a bivariate VAR(1) $\bm{\eta}_{i,t} = \bm{\Phi}_i\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$, aggregated over the eight-series hierarchy of @fig-hierarchy.
 We use six scenarios.
-In three controls every node has the same dynamics and the innovation covariances have the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$: cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, and variable-specific dynamics ($\bm{\Phi}_i = \operatorname{diag}(0.9, 0.2)$).
-The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
+The three controls have the same dynamics at every node and innovation covariances of the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$; they differ in having cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, or variable-specific dynamics $\bm{\Phi}_i = \operatorname{diag}(0.9, 0.2)$.
+The other three scenarios break this common structure across nodes in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
 
 The controls are a degenerate case.
 When every node has the same dynamics and the innovation covariances have this form, the autocovariances of every aggregate are proportional to those of the bottom-level series, so the best linear predictor of each series from its own past applies the same filter at every node.
 A linear filter commutes with aggregation, so the population forecasts are coherent, and any gain from reconciliation, joint or separate, comes from estimation error in the fitted models.
-When the dynamics vary across nodes, as in the other three scenarios and in most simulation designs, a univariate forecast of an aggregate uses only the aggregate's own past, which carries less information than the pasts of its components, so even the population forecasts are incoherent.
+When this proportionality fails, as in the other three scenarios and in most simulation designs, a univariate forecast of an aggregate uses only the aggregate's own past, which carries less information than the pasts of its components, so even the population forecasts are incoherent.
 
-For each scenario we computed the exact one-step error covariance of the population-optimal univariate AR(20) forecasts of all 16 series.
+For each scenario we computed the one-step error covariance of the population-optimal univariate linear forecasts of all 16 series from AR(20) projections on the exact autocovariances (the results are unchanged to four digits with 40 lags).
 @tbl-exp2 gives $\kappa$, $\gamma$ and the size of the incoherent component, measured by the ratio $\operatorname{tr}(\bm{C}_*\bm{W}\bm{C}_*')/\operatorname{tr}(\bm{W})$ of the total variance of the incoherences to that of the errors.
-The controls are coherent to machine precision.
+The population forecasts in the controls are coherent to machine precision.
 In the other scenarios this ratio is only `r num$expTwoIncohRange`%.
 So although $\kappa$ is large (`r num$expTwoKappaRange`), the population gain from joint reconciliation is only `r num$expTwoGainRange`%.
 
@@ -132,7 +133,7 @@ We then simulated 500 replications of each scenario, with series of length $T + 
 Reconciliation improves on the ARIMA base forecasts (by `r num$expTwoSepVsBaseRange`% in MSE), but joint and separate reconciliation are nearly indistinguishable.
 With $T = 108$ the ratio of joint to separate MSE lies in the range `r num$expTwoArimaSmallRange` for ARIMA base forecasts, and with VAR base forecasts the two never differ by more than `r num$expTwoVarMaxDiff`%.
 
-With $T = 400$ and ARIMA base forecasts, joint reconciliation is no worse in any scenario and is better by up to `r num$expTwoCtrlGainMax`% in the controls and up to `r num$expTwoNonsepGainMax`% in the non-separable scenarios, so the gain is at least as large in the controls.
+With $T = 400$ and ARIMA base forecasts, joint reconciliation is no worse in any scenario and is better by up to `r num$expTwoCtrlGainMax`% in the controls and up to `r num$expTwoNonsepGainMax`% in the other three scenarios, so the gain is no smaller in the controls, where the population forecasts are coherent.
 The fitted models differ from node to node and are estimated from correlated data, so their forecasts are incoherent even in the controls, and the cross-variable structure of this estimation error need not satisfy @prp-equivalence.
 Using the diagonal blocks of the joint covariance estimate for separate reconciliation changes the MSE by at most `r num$expTwoBlocksMaxDiff`%, so the gain comes from the cross-variable blocks rather than from differences in shrinkage.
 In these designs, joint reconciliation exploits the structure of the base models' estimation error rather than that of the data-generating process, and the resulting gains are small.
