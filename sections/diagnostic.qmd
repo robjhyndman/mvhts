@@ -7,16 +7,16 @@ We need a measure of how far an estimated covariance is from satisfying it, and 
 
 We measure the conditions of @prp-equivalence directly, rather than distance from a Kronecker product (@sec-theory).
 The first measure describes the structure of the joint map.
-Since $\bm{G}$ contains the regression coefficients of the base forecast errors on the incoherences, and its off-diagonal blocks are the coefficients on other variables' incoherences, we define
+Since $\bm{L}$ contains the regression coefficients of the base forecast errors on the incoherences, and its off-diagonal blocks are the coefficients on other variables' incoherences, we define
 $$
   \kappa(\bm{W})
-  = \left( \frac{\sum_{j \ne k}\|\bm{G}_{jk}\|_F^2}{\|\bm{G}\|_F^2} \right)^{1/2},
+  = \left( \frac{\sum_{j \ne k}\|\bm{L}_{jk}\|_F^2}{\|\bm{L}\|_F^2} \right)^{1/2},
 $$ {#eq-kappa}
-where $\bm{G}_{jk}$ is the $(n \times n_a)$ block of $\bm{G}$ relating the errors of variable $j$ to the incoherences of variable $k$.
-Rescaling variable $k$ by $c_k$ multiplies $\bm{G}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{C}\bm{W}_{jj}\bm{C}'$, the variances of its incoherences.
+where $\bm{L}_{jk}$ is the $(n \times n_a)$ block of $\bm{L}$ relating the errors of variable $j$ to the incoherences of variable $k$.
+Rescaling variable $k$ by $c_k$ multiplies $\bm{L}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean diagonal of $\bm{C}\bm{W}_{jj}\bm{C}'$, the variances of its incoherences.
 This makes $\kappa$ free of units.
 By @prp-equivalence, $\kappa = 0$ if and only if joint and separate reconciliation coincide.
-Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{G}$ unchanged (@cor-invariance), and since $\bm{C}\bm{S} = \bm{0}$ it leaves the standardisation unchanged too, so the value of $\kappa$ does not depend on such components.
+Adding a component $\bm{S}_*\bm{K}\bm{S}_*'$ to $\bm{W}$ leaves $\bm{L}$ unchanged (@cor-invariance), and since $\bm{C}\bm{S} = \bm{0}$ it leaves the standardisation unchanged too, so the value of $\kappa$ does not depend on such components.
 
 The second measure describes the value of the joint map.
 If $\bm{W}$ were the true error covariance, the proportional reduction in mean squared error from reconciling jointly rather than separately would be
@@ -31,13 +31,13 @@ Unlike $\kappa$, $\gamma$ depends on the size of the incoherent component of the
 So $\gamma$ is small whenever that component is small, however strongly the joint map leans on other variables' incoherences.
 A large $\kappa$ with a small $\gamma$ says that joint reconciliation would change the forecasts but not improve them by much on average.
 Because $\gamma$ averages over all series, it can hide a larger gain for a particular combination of variables.
-For a combination $\bm{a}'\bm{y}$ of interest we therefore also compute
+For a combination $\bm{\ell}'\bm{y}$ of interest we therefore also compute
 $$
-  \gamma_{\bm{a}}(\bm{W})
+  \gamma_{\bm{\ell}}(\bm{W})
   = 1
-    - \frac{\bm{a}'\bm{M}\bm{W}\bm{M}'\bm{a}}{\bm{a}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{a}},
+    - \frac{\bm{\ell}'\bm{M}\bm{W}\bm{M}'\bm{\ell}}{\bm{\ell}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{\ell}},
 $$ {#eq-gain-a}
-which is also non-negative for every $\bm{a}$ (@sec-theory).
+which is also non-negative for every $\bm{\ell}$ (@sec-theory).
 
 ## Estimation and testing
 
@@ -52,10 +52,10 @@ A direct test of the conditions follows from the regression reading of @prp-equi
 Given its own incoherences $\bm{z}_j = \bm{C}\bm{e}_j$, the errors of variable $j$ are determined by their bottom-level part $\bm{e}_{j}^{b}$, since the aggregate errors equal $\bm{z}_j + \bm{A}\bm{e}_j^{b}$.
 Condition (d) says that, in the multivariate regression
 $$
-  \bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{B}_{jj}'\bm{z}_{j,t}
-                     + \sum_{k \ne j}\bm{B}_{jk}'\bm{z}_{k,t} + \bm{u}_{j,t},
+  \bm{e}_{j,t}^{b} = \bm{\alpha}_j + \bm{\Theta}_{jj}'\bm{z}_{j,t}
+                     + \sum_{k \ne j}\bm{\Theta}_{jk}'\bm{z}_{k,t} + \bm{\xi}_{j,t},
 $$ {#eq-test-regression}
-the other variables' incoherences add nothing: $\bm{B}_{jk} = \bm{0}$ for all $k \ne j$.
+the other variables' incoherences add nothing: $\bm{\Theta}_{jk} = \bm{0}$ for all $k \ne j$.
 This is a standard linear hypothesis in a multivariate regression with $n_b$ responses and $(m - 1)n_a$ restrictions per response.
 We test it with the likelihood ratio statistic, Wilks' $\Lambda$, using Rao's $F$ approximation to its null distribution [@rao1951asymptotic], applied to the one-step residuals of the base models.
 With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction.

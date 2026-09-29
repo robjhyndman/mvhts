@@ -56,7 +56,7 @@ The total variance of the incoherences is `r num$appIncohArima`% of that of the 
 The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test.
 With no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
 
-The plug-in gain for net employment change, $\widehat\gamma_{\bm{a}}$ with $\bm{a}$ selecting admissions minus dismissals at a node, is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
+The plug-in gain for net employment change, $\widehat\gamma_{\bm{\ell}}$ with $\bm{\ell}$ selecting admissions minus dismissals at a node, is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states, on average.
 
 ::: {#tbl-app-diag}
 ```{r}

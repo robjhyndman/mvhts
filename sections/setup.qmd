@@ -32,13 +32,13 @@ This distinguishes the setting from a grouped hierarchy, where the categories of
 
 ## Forecast reconciliation
 
-Let $\widehat{\bm{y}}_{T+h|T}$ be the stacked $h$-step base forecasts of all $mn$ series, produced without regard to the constraints, and let $\bm{W}_h$ be the covariance matrix of their errors.
-Linear reconciliation maps the base forecasts to coherent forecasts $\widetilde{\bm{y}}_{T+h|T} = \bm{S}_*\bm{P}\widehat{\bm{y}}_{T+h|T}$ for some matrix $\bm{P}$ with $\bm{P}\bm{S}_* = \bm{I}$.
+Let $\widehat{\bm{y}}_h$ be the stacked base forecasts of all $mn$ series at time $T+h$, given data up to time $T$ and produced without regard to the constraints, and let $\bm{W}_h$ be the covariance matrix of their errors.
+Linear reconciliation maps the base forecasts to coherent forecasts $\widetilde{\bm{y}}_h = \bm{S}_*\bm{G}\widehat{\bm{y}}_h$ for some matrix $\bm{G}$ with $\bm{G}\bm{S}_* = \bm{I}$.
 The minimum trace (MinT) choice [@wickramasuriya2019optimal] minimises the trace of the reconciled error covariance and gives
 $$
-  \widetilde{\bm{y}}_{T+h|T}
-  = \bm{S}_*(\bm{S}_*'\bm{W}_h^{-1}\bm{S}_*)^{-1}\bm{S}_*'\bm{W}_h^{-1}\widehat{\bm{y}}_{T+h|T}
-  = \big[\bm{I} - \bm{W}_h\bm{C}_*'(\bm{C}_*\bm{W}_h\bm{C}_*')^{-1}\bm{C}_*\big]\widehat{\bm{y}}_{T+h|T},
+  \widetilde{\bm{y}}_h
+  = \bm{S}_*(\bm{S}_*'\bm{W}_h^{-1}\bm{S}_*)^{-1}\bm{S}_*'\bm{W}_h^{-1}\widehat{\bm{y}}_h
+  = \big[\bm{I} - \bm{W}_h\bm{C}_*'(\bm{C}_*\bm{W}_h\bm{C}_*')^{-1}\bm{C}_*\big]\widehat{\bm{y}}_h,
 $$ {#eq-mint}
 the second form being the zero-constrained representation of @di2023cross.
 Applied to the stacked system this is ordinary MinT with summing matrix $\bm{S}_*$; we call it *joint* reconciliation.
@@ -47,7 +47,7 @@ Joint reconciliation can use the cross-variable blocks of $\bm{W}_h$, and it is 
 @sec-theory shows when that expectation holds.
 
 In practice $\bm{W}_h$ is unknown.
-Following @wickramasuriya2019optimal, we set $\bm{W}_h = k_h\widehat{\bm{W}}_1$, where $\widehat{\bm{W}}_1$ is the shrinkage estimator
+Following @wickramasuriya2019optimal, we set $\widehat{\bm{W}}_h = k_h\widehat{\bm{W}}_1$, where $\widehat{\bm{W}}_1$ is the shrinkage estimator
 $$
   \widehat{\bm{W}}_1 = \lambda\widehat{\bm{W}}_{1,D}
                        + (1 - \lambda)\widehat{\bm{W}}_{1,S},

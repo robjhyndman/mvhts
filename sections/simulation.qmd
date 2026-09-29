@@ -12,20 +12,20 @@ The coherent component $\bm{S}\bm{u}_j$ is invisible to reconciliation (@cor-inv
 The incoherent component $\bm{v}_j$ has independent entries across series, with variance $\psi_{ij}$ for series $i$ and correlation $\rho_i$ between the two variables at series $i$.
 With this structure, and because the hierarchy has a single total, condition (e) of @prp-equivalence holds for both pairs of variables if and only if $\rho_i(\psi_{i2}/\psi_{i1})^{1/2}$ and $\rho_i(\psi_{i1}/\psi_{i2})^{1/2}$ are each the same for every series; that is, when $\rho_i$ and $\psi_{i2}/\psi_{i1}$ are both constant across series, or $\rho_i = 0$ for all $i$.
 We consider five families of covariance matrices, each indexed by a parameter that controls the departure from the conditions of @prp-equivalence.
-Let $a_i$ be the number of bottom-level series summed by series $i$.
+Let $s_i$ be the number of bottom-level series summed by series $i$ (the $i$th row sum of $\bm{S}$).
 
 F0, separable.
-:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = \rho$, with $\rho$ from $-0.9$ to $0.9$.
+:   $\psi_{i1} = \psi_{i2} = s_i$ and $\rho_i = \rho$, with $\rho$ from $-0.9$ to $0.9$.
 
 F1, separable plus invisible.
 :   F0 with $\rho = 0.7$, plus a non-separable coherent component $\bm{S}_*\bm{K}\bm{S}_*'$ of increasing size.
 
 F2, variable-specific profiles.
-:   $\psi_{i1} = a_i$, $\psi_{i2} = a_i^{1+\delta}$ and $\rho_i = 0.7$.
+:   $\psi_{i1} = s_i$, $\psi_{i2} = s_i^{1+\delta}$ and $\rho_i = 0.7$.
     As $\delta$ grows, the second variable's incoherent errors become increasingly concentrated at the aggregate levels.
 
 F3, node-varying correlation.
-:   $\psi_{i1} = \psi_{i2} = a_i$ and $\rho_i = 0.3 + \delta\omega_i$, where the $\omega_i$ are fixed values in $[-1, 1]$, spread evenly and assigned to the series in a scrambled order.
+:   $\psi_{i1} = \psi_{i2} = s_i$ and $\rho_i = 0.3 + \delta\omega_i$, where the $\omega_i$ are fixed values in $[-1, 1]$, spread evenly and assigned to the series in a scrambled order.
 
 F4, OLS case.
 :   $\bm{W} = \bm{V} \otimes \bm{I}_n + \bm{S}_*\bm{K}\bm{S}_*'$, with unit variances and cross-variable correlation $0.7$ in $\bm{V}$, so that separate reconciliation of each variable is OLS reconciliation.
@@ -114,7 +114,7 @@ knitr::include_graphics(tar_read(fig_power))
 The second experiment simulates time series and fits base models to them.
 The two bottom-level series at node $i$ are $\bm{x}_{i,t} = \bm{\mu}_{i,t} + \bm{\eta}_{i,t}$, with a deterministic quarterly component $\bm{\mu}_{i,t}$ and a bivariate VAR(1) $\bm{\eta}_{i,t} = \bm{\Phi}_i\bm{\eta}_{i,t-1} + \bm{\varepsilon}_{i,t}$, aggregated over the eight-series hierarchy of @fig-hierarchy.
 We use six scenarios.
-In three controls every node has the same dynamics and the innovation covariances have the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$: cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, and variable-specific dynamics ($\bm{\Phi} = \operatorname{diag}(0.9, 0.2)$).
+In three controls every node has the same dynamics and the innovation covariances have the form $\cov(\bm{\varepsilon}_{i,t}, \bm{\varepsilon}_{i',t}) = \sigma_{ii'}\bm{R}$: cross-variable correlation $0.7$ in $\bm{R}$, correlation $-0.7$, and variable-specific dynamics ($\bm{\Phi}_i = \operatorname{diag}(0.9, 0.2)$).
 The other three break node invariance in a way that differs between the variables: a cross-variable innovation correlation that varies across nodes from $-0.6$ to $0.9$; a different node covariance for each variable; and dynamics that vary across nodes in opposite directions for the two variables.
 
 The controls are a degenerate case.

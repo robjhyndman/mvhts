@@ -8,23 +8,23 @@ We drop the horizon subscript $h$ throughout this section.
 
 Joint MinT reconciliation in zero-constrained form [@di2023cross] is $\widetilde{\bm{y}} = \bm{M}\widehat{\bm{y}}$ with
 $$
-  \bm{M} = \bm{I} - \bm{G}\bm{C}_*,
+  \bm{M} = \bm{I} - \bm{L}\bm{C}_*,
   \qquad
-  \bm{G} = \bm{W}\bm{C}_*'(\bm{C}_*\bm{W}\bm{C}_*')^{-1}.
+  \bm{L} = \bm{W}\bm{C}_*'(\bm{C}_*\bm{W}\bm{C}_*')^{-1}.
 $$ {#eq-joint-map}
 Separate reconciliation applies univariate MinT to each variable using its own error covariance $\bm{W}_{jj}$.
 Its map is block diagonal, $\bm{M}^{\mathrm{sep}} = \operatorname{diag}(\bm{M}_1, \dots, \bm{M}_m)$, with
 $$
-  \bm{M}_j = \bm{I} - \bm{G}_j\bm{C},
+  \bm{M}_j = \bm{I} - \bm{L}_j\bm{C},
   \qquad
-  \bm{G}_j = \bm{W}_{jj}\bm{C}'(\bm{C}\bm{W}_{jj}\bm{C}')^{-1}.
+  \bm{L}_j = \bm{W}_{jj}\bm{C}'(\bm{C}\bm{W}_{jj}\bm{C}')^{-1}.
 $$ {#eq-sep-map}
 
 Both maps have a regression interpretation.
-The incoherence of the base forecasts, $\bm{C}_*\widehat{\bm{y}} = -\bm{C}_*\bm{e}$, is observable, and $\bm{G}$ is the matrix of population regression coefficients of the errors $\bm{e}$ on the incoherences $\bm{C}_*\bm{e}$, since $\cov(\bm{e}, \bm{C}_*\bm{e}) = \bm{W}\bm{C}_*'$.
-MinT adds the fitted value of this regression, an estimate of the base forecast error computed from the observed incoherences, to the base forecasts: $\widetilde{\bm{y}} = \widehat{\bm{y}} + \bm{G}\bm{C}_*\bm{e}$.
+The incoherence of the base forecasts, $\bm{C}_*\widehat{\bm{y}} = -\bm{C}_*\bm{e}$, is observable, and $\bm{L}$ is the matrix of population regression coefficients of the errors $\bm{e}$ on the incoherences $\bm{C}_*\bm{e}$, since $\cov(\bm{e}, \bm{C}_*\bm{e}) = \bm{W}\bm{C}_*'$.
+MinT adds the fitted value of this regression, an estimate of the base forecast error computed from the observed incoherences, to the base forecasts: $\widetilde{\bm{y}} = \widehat{\bm{y}} + \bm{L}\bm{C}_*\bm{e}$.
 Separate reconciliation runs the same regression for each variable, using only its own incoherences $\bm{C}\bm{e}_j$.
-The off-diagonal blocks of $\bm{G}$ are the coefficients on the other variables' incoherences, and joint reconciliation can only improve on separate reconciliation through them.
+The off-diagonal blocks of $\bm{L}$ are the coefficients on the other variables' incoherences, and joint reconciliation can only improve on separate reconciliation through them.
 
 ## When joint and separate reconciliation coincide
 
@@ -34,37 +34,37 @@ The following statements are equivalent.
 
 (a) $\bm{M} = \bm{M}^{\mathrm{sep}}$: joint and separate reconciliation give the same forecasts for every base forecast.
 (b) $\bm{M}$ is block diagonal by variable.
-(c) $\bm{G}$ is block diagonal by variable.
+(c) $\bm{L}$ is block diagonal by variable.
 (d) $\bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{0}$ for all $j \ne k$; that is, $\cov(\bm{M}_j\bm{e}_j, \bm{C}\bm{e}_k) = \bm{0}$.
 (e) The column space of $\bm{W}_{jk}\bm{C}'$ is contained in that of $\bm{W}_{jj}\bm{C}'$ for all $j \ne k$.
 :::
 
 ::: {.proof}
 Let $\bm{Q} = \bm{C}_*\bm{W}\bm{C}_*'$, with blocks $\bm{Q}_{jk} = \bm{C}\bm{W}_{jk}\bm{C}'$.
-Because $\bm{W}$ is positive definite and $\bm{C}_*$ has full row rank, $\bm{Q}$ is invertible, so $\bm{G}$ is the unique solution of $\bm{G}\bm{Q} = \bm{W}\bm{C}_*'$.
+Because $\bm{W}$ is positive definite and $\bm{C}_*$ has full row rank, $\bm{Q}$ is invertible, so $\bm{L}$ is the unique solution of $\bm{L}\bm{Q} = \bm{W}\bm{C}_*'$.
 Block $(j,k)$ of the right-hand side is $\bm{W}_{jk}\bm{C}'$.
 
 (c)$\Rightarrow$(a).
-Let $\bm{G} = \operatorname{diag}(\bm{H}_1, \dots, \bm{H}_m)$.
-Block $(j,j)$ of $\bm{G}\bm{Q} = \bm{W}\bm{C}_*'$ gives $\bm{H}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}'$, so $\bm{H}_j = \bm{G}_j$.
-Hence $\bm{M} = \bm{I} - \bm{G}\bm{C}_* = \operatorname{diag}(\bm{I} - \bm{G}_j\bm{C}) = \bm{M}^{\mathrm{sep}}$.
+Let $\bm{L} = \operatorname{diag}(\bm{H}_1, \dots, \bm{H}_m)$.
+Block $(j,j)$ of $\bm{L}\bm{Q} = \bm{W}\bm{C}_*'$ gives $\bm{H}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}'$, so $\bm{H}_j = \bm{L}_j$.
+Hence $\bm{M} = \bm{I} - \bm{L}\bm{C}_* = \operatorname{diag}(\bm{I} - \bm{L}_j\bm{C}) = \bm{M}^{\mathrm{sep}}$.
 
 (a)$\Rightarrow$(b) is immediate.
 
 (b)$\Rightarrow$(c).
-$\bm{G}\bm{C}_* = \bm{I} - \bm{M}$ is block diagonal.
-Since $\bm{C}_*$ is block diagonal with full row rank, it has the block diagonal right inverse $\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$, and $\bm{G} = (\bm{G}\bm{C}_*)\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$ is block diagonal.
+$\bm{L}\bm{C}_* = \bm{I} - \bm{M}$ is block diagonal.
+Since $\bm{C}_*$ is block diagonal with full row rank, it has the block diagonal right inverse $\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$, and $\bm{L} = (\bm{L}\bm{C}_*)\bm{C}_*'(\bm{C}_*\bm{C}_*')^{-1}$ is block diagonal.
 
 (c)$\Leftrightarrow$(d).
-By the argument for (c)$\Rightarrow$(a), $\bm{G}$ is block diagonal if and only if $\bm{G} = \bm{G}^{\mathrm{sep}} = \operatorname{diag}(\bm{G}_1, \dots, \bm{G}_m)$.
-By uniqueness, this holds if and only if $\bm{G}^{\mathrm{sep}}\bm{Q} = \bm{W}\bm{C}_*'$.
-Blocks $(j,j)$ of this equation hold by the definition of $\bm{G}_j$.
-Blocks $(j,k)$ with $j \ne k$ read $\bm{G}_j\bm{C}\bm{W}_{jk}\bm{C}' = \bm{W}_{jk}\bm{C}'$, that is, $(\bm{I} - \bm{G}_j\bm{C})\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{0}$.
+By the argument for (c)$\Rightarrow$(a), $\bm{L}$ is block diagonal if and only if $\bm{L} = \bm{L}^{\mathrm{sep}} = \operatorname{diag}(\bm{L}_1, \dots, \bm{L}_m)$.
+By uniqueness, this holds if and only if $\bm{L}^{\mathrm{sep}}\bm{Q} = \bm{W}\bm{C}_*'$.
+Blocks $(j,j)$ of this equation hold by the definition of $\bm{L}_j$.
+Blocks $(j,k)$ with $j \ne k$ read $\bm{L}_j\bm{C}\bm{W}_{jk}\bm{C}' = \bm{W}_{jk}\bm{C}'$, that is, $(\bm{I} - \bm{L}_j\bm{C})\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{0}$.
 Finally, $\cov(\bm{M}_j\bm{e}_j, \bm{C}\bm{e}_k) = \bm{M}_j\bm{W}_{jk}\bm{C}'$.
 
 (d)$\Leftrightarrow$(e).
-Condition (d) states $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{B}_{jk}$ with $\bm{B}_{jk} = (\bm{C}\bm{W}_{jj}\bm{C}')^{-1}\bm{C}\bm{W}_{jk}\bm{C}'$, so (d) implies (e).
-Conversely, if $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{B}$ for some $\bm{B}$, then $\bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jj}\bm{C}'\bm{B} = \bm{0}$, because $\bm{M}_j\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}' - \bm{G}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{0}$.
+Condition (d) states $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{D}_{jk}$ with $\bm{D}_{jk} = (\bm{C}\bm{W}_{jj}\bm{C}')^{-1}\bm{C}\bm{W}_{jk}\bm{C}'$, so (d) implies (e).
+Conversely, if $\bm{W}_{jk}\bm{C}' = \bm{W}_{jj}\bm{C}'\bm{D}$ for some $\bm{D}$, then $\bm{M}_j\bm{W}_{jk}\bm{C}' = \bm{M}_j\bm{W}_{jj}\bm{C}'\bm{D} = \bm{0}$, because $\bm{M}_j\bm{W}_{jj}\bm{C}' = \bm{W}_{jj}\bm{C}' - \bm{L}_j\bm{C}\bm{W}_{jj}\bm{C}' = \bm{0}$.
 :::
 
 Condition (d) has a direct reading.
@@ -75,17 +75,17 @@ If the reconciled forecasts of one variable depend on the base forecasts of anot
 Two known results are special cases of @prp-equivalence.
 
 ::: {#cor-invariance name="Invariance"}
-For any $\bm{K}$ such that $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ is positive definite, replacing $\bm{W}$ by $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ leaves $\bm{M}$, $\bm{M}^{\mathrm{sep}}$ and $\bm{G}$ unchanged.
+For any $\bm{K}$ such that $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ is positive definite, replacing $\bm{W}$ by $\bm{W} + \bm{S}_*\bm{K}\bm{S}_*'$ leaves $\bm{M}$, $\bm{M}^{\mathrm{sep}}$ and $\bm{L}$ unchanged.
 :::
 
 ::: {.proof}
 Since $\bm{C}\bm{S} = \bm{0}$, we have $\bm{C}_*\bm{S}_* = \bm{0}$, so $(\bm{W} + \bm{S}_*\bm{K}\bm{S}_*')\bm{C}_*' = \bm{W}\bm{C}_*'$ and $\bm{C}_*(\bm{W} + \bm{S}_*\bm{K}\bm{S}_*')\bm{C}_*' = \bm{C}_*\bm{W}\bm{C}_*'$.
-Hence $\bm{G}$, and so $\bm{M}$, is unchanged.
-The diagonal blocks change by $\bm{S}\bm{K}_{jj}\bm{S}'$, which leaves each $\bm{G}_j$, and so $\bm{M}^{\mathrm{sep}}$, unchanged by the same argument.
+Hence $\bm{L}$, and so $\bm{M}$, is unchanged.
+The diagonal blocks change by $\bm{S}\bm{K}_{jj}\bm{S}'$, which leaves each $\bm{L}_j$, and so $\bm{M}^{\mathrm{sep}}$, unchanged by the same argument.
 :::
 
 This is the argument used by @wickramasuriya2021properties [Proposition 1] to show that the GLS reconciliation of @hyndman2011optimal and MinT coincide.
-It is an instance of the classical result that generalised least squares is unaffected by adding $\bm{X}\bm{\Lambda}\bm{X}'$ to the error covariance [@rao1967least; @zyskind1967canonical].
+It is an instance of the classical result that generalised least squares is unaffected by adding $\bm{X}\bm{K}\bm{X}'$ to the error covariance, where $\bm{X}$ is the regressor matrix [@rao1967least; @zyskind1967canonical].
 Only the part of the error covariance that is visible through the incoherences matters.
 Any cross-variable dependence of the form $\bm{S}\bm{K}_{jk}\bm{S}'$ is invisible to both joint and separate reconciliation.
 
@@ -94,7 +94,7 @@ If $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0$ for positive definite matrices $\bm{V
 :::
 
 ::: {.proof}
-Here $\bm{W}_{jk} = v_{jk}\bm{\Sigma}_0$, so $\bm{G}_j = \bm{\Sigma}_0\bm{C}'(\bm{C}\bm{\Sigma}_0\bm{C}')^{-1}$ and $\bm{M}_j = \bm{M}_0$ for every $j$.
+Here $\bm{W}_{jk} = v_{jk}\bm{\Sigma}_0$, so $\bm{L}_j = \bm{\Sigma}_0\bm{C}'(\bm{C}\bm{\Sigma}_0\bm{C}')^{-1}$ and $\bm{M}_j = \bm{M}_0$ for every $j$.
 Then $\bm{W}_{jk}\bm{C}' = (v_{jk}/v_{jj})\bm{W}_{jj}\bm{C}'$, and condition (e) holds.
 :::
 
@@ -115,8 +115,8 @@ The same invariance gives the known condition $\bm{W} = \bm{S}_*\bm{K}\bm{S}_*' 
 Full shrinkage therefore makes joint reconciliation identical to reconciling each variable separately with its own diagonal target, and partial shrinkage scales the estimated cross-variable blocks of $\bm{W}$ towards zero.
 
 *Linear combinations.* MinT minimises not only the trace of the reconciled error covariance but the whole matrix in the positive semidefinite order, since it is the generalised least squares projection [@wickramasuriya2019optimal].
-Separate reconciliation is another linear reconciliation of this form (its $\bm{P}$ satisfies $\bm{P}\bm{S}_* = \bm{I}$), so for every linear combination $\bm{a}'\bm{y}$ of the stacked series, such as the difference between two variables at one node, joint reconciliation with the true $\bm{W}$ has no larger error variance.
+Separate reconciliation is another linear reconciliation of this form (its $\bm{G}$ satisfies $\bm{G}\bm{S}_* = \bm{I}$), so for every linear combination $\bm{\ell}'\bm{y}$ of the stacked series, such as the difference between two variables at one node, joint reconciliation with the true $\bm{W}$ has no larger error variance.
 When the conditions of @prp-equivalence fail, the gain need not be spread evenly: it can be negligible for each variable's own series yet substantial for combinations that load on several variables.
 
 *More than two variables.* @prp-equivalence holds for any $m$, and condition (d) can be checked pair by pair.
-Joint reconciliation of $m$ variables can be split into separate reconciliations of groups of variables whenever the off-diagonal blocks of $\bm{G}$ between groups vanish.
+Joint reconciliation of $m$ variables can be split into separate reconciliations of groups of variables whenever the off-diagonal blocks of $\bm{L}$ between groups vanish.

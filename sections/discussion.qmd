@@ -23,7 +23,7 @@ Many quantities of interest are functions of several variables, such as net empl
 Their forecast distributions depend on the joint distribution of the base forecasts, and in the application, keeping that dependence reduced the CRPS of the national net change by `r num$appNetJointSepTotal`%.
 Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map, so separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
 When they fail, joint reconciliation can still help such combinations while barely changing each variable's average accuracy, as it did for the national and regional net change in Brazil.
-The plug-in gain $\gamma_{\bm{a}}$ for the combination of interest is a better guide than the average gain $\gamma$.
+The plug-in gain $\widehat\gamma_{\bm{\ell}}$ for the combination of interest is a better guide than the average gain $\widehat\gamma$.
 
 Joint reconciliation is needed when a constraint does link the variables.
 If net employment change were forecast as a series in its own right, the constraint that it equals admissions minus dismissals would couple the two variables, and no variable-by-variable reconciliation could satisfy it.
