@@ -26,7 +26,7 @@ MinT adds the fitted value of this regression, an estimate of the base forecast 
 Separate reconciliation runs the same regression for each variable, using only its own incoherences $\bm{C}\bm{e}_j$.
 The off-diagonal blocks of $\bm{G}$ are the coefficients on the other variables' incoherences, and joint reconciliation can only improve on separate reconciliation through them.
 
-## A characterisation
+## When joint and separate reconciliation coincide
 
 ::: {#prp-equivalence}
 Let $\bm{W}$ be positive definite.
@@ -98,7 +98,7 @@ Here $\bm{W}_{jk} = v_{jk}\bm{\Sigma}_0$, so $\bm{G}_j = \bm{\Sigma}_0\bm{C}'(\b
 Then $\bm{W}_{jk}\bm{C}' = (v_{jk}/v_{jj})\bm{W}_{jj}\bm{C}'$, and condition (e) holds.
 :::
 
-@cor-separable is the special case of a result of @girolimetto2025cross for cross-temporal reconciliation in which the second dimension carries no aggregation constraints.
+@cor-separable is a special case of a result of @girolimetto2025cross for cross-temporal reconciliation in which the second dimension carries no aggregation constraints.
 It is the reconciliation analogue of the result that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares [@zellner1962efficient]: every variable shares the same summing matrix, so cross-variable correlation alone cannot be exploited.
 Corollaries [-@cor-invariance] and [-@cor-separable] combine: every $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0 + \bm{S}_*\bm{K}\bm{S}_*'$ satisfies the conditions of @prp-equivalence, however far it is from a Kronecker product.
 So separability is sufficient but far from necessary, and existing measures of departure from it do not answer our question.

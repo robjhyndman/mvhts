@@ -18,7 +18,7 @@ The stacked summing matrix is block diagonal by variable, and the only link betw
 
 Some cross-variable dependence is already known to be of no use to reconciliation.
 MinT is unaffected by any component of the error covariance that lies in the coherent subspace [@wickramasuriya2021properties], so cross-variable dependence of that form is invisible.
-When the error covariance is separable, a Kronecker product of a cross-variable matrix and a cross-series matrix, joint and separate reconciliation coincide whatever the cross-variable correlation.
+When the error covariance is separable (i.e., a Kronecker product of a cross-variable matrix and a cross-series matrix), joint and separate reconciliation coincide whatever the cross-variable correlation.
 This follows from a result of @girolimetto2025cross for cross-temporal reconciliation, and it is the reconciliation analogue of Zellner's observation [@zellner1962efficient] that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares.
 These conditions are sufficient, but they do not say which forms of dependence joint reconciliation can exploit, or by how much.
 
@@ -37,6 +37,6 @@ Net employment change, the difference between admissions and dismissals, is the 
 Its forecast distribution depends on the joint distribution of the base forecasts, so for probabilistic forecasts we ask whether the dependence between the variables should be modelled when the base forecasts are simulated, when they are reconciled, or both.
 
 @sec-setup sets out notation and the reconciliation problem for several variables.
-@sec-theory gives the characterisation and its consequences.
+@sec-theory gives necessary and sufficient conditions for joint and separate reconciliation to coincide, and their consequences.
 @sec-diagnostic develops the effect sizes and the test.
 @sec-simulation reports the two experiments, @sec-application the application to Brazilian employment, and @sec-discussion discusses the implications.

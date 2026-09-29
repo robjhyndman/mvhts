@@ -31,4 +31,4 @@ With them $\bm{C}_*$ is no longer block diagonal, separate reconciliation is not
 Several extensions are natural.
 The shrinkage estimator treats cross-variable covariances like any other off-diagonal entry; an estimator that shrinks towards the set of covariance matrices satisfying @prp-equivalence would interpolate between separate and joint reconciliation, with the data choosing how far to move.
 The diagnostic could also be applied pairwise to decide which groups of variables to reconcile together when there are many.
-Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, where the characterisation of @sec-theory extends directly.
+Finally, the same questions arise for temporal and cross-temporal hierarchies with several variables, where the conditions of @prp-equivalence for joint and separate reconciliation to coincide extend directly.
