@@ -40,9 +40,5 @@ The map of Brazilian regions (`Imagens/mapa_reg.pdf`) downloads state boundaries
 
 ## Employment data
 
-The pipeline reads three files of monthly admissions and dismissals, without seasonal adjustment (`read_states()` in `R/application_data.R`):
-
-- `Dados/caged_uf_2004_2019.csv`: old CAGED counts for the 27 federative units, January 2004 to December 2019, as exported from PDET (Ministry of Labour and Employment), with one column per month running from December 2019 back to January 2004.
-- `Dados/novo_caged_admissoes_2020_2023.csv` and `Dados/novo_caged_desligamentos_2020_2023.csv`: Novo CAGED admissions and dismissals by municipality for 2020–2023, downloaded from IpeaData on 14 October 2026 and summed to states.
-
-The analysis uses January 2005 to December 2019; 2020–2023 appear only in the data figure.
+`Dados/caged_uf_2004_2019.csv` holds monthly admissions and dismissals, without seasonal adjustment, for the 27 federative units from January 2004 to December 2019, as exported from PDET (Ministry of Labour and Employment).
+It has one column per month, running from December 2019 back to January 2004, and is read by `read_caged_uf()` in `R/application_data.R`.

@@ -344,8 +344,7 @@ fig_kappa_power <- function(power, file) {
 }
 
 # --------------------------------------------------------------------
-# Figure: national admissions, dismissals and net change. The period
-# after 2019 (Novo CAGED, COVID-19) is shaded; it is not used.
+# Figure: national admissions, dismissals and net change
 # --------------------------------------------------------------------
 fig_app_data <- function(emprego, file) {
   nat <- emprego |>
@@ -383,17 +382,7 @@ fig_app_data <- function(emprego, file) {
         )
       )
     )
-  shade <- tibble::tibble(
-    xmin = as.Date("2020-01-01"),
-    xmax = max(df$date) + 31
-  )
   p <- ggplot2::ggplot(df, ggplot2::aes(date, value, colour = series)) +
-    ggplot2::geom_rect(
-      data = shade,
-      ggplot2::aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
-      inherit.aes = FALSE,
-      fill = "grey92"
-    ) +
     ggplot2::geom_hline(
       data = tibble::tibble(
         panel = factor("Net change (millions)", levels = levels(df$panel)),

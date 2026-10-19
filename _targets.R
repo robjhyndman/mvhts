@@ -23,19 +23,10 @@ list(
   tar_target(S_brazil, brazil_hierarchy(state_meta, region_meta)),
   tar_target(hierarchies, list(small = small_hierarchy(), brazil = S_brazil)),
 
-  # Employment data for every series of S_brazil from January 2005: old
-  # CAGED state counts from PDET (2004-2019) and Novo CAGED municipal
-  # counts from IpeaData (2020-2023) (R/application_data.R)
-  tar_target(
-    emprego_files,
-    c(
-      "Dados/caged_uf_2004_2019.csv",
-      "Dados/novo_caged_admissoes_2020_2023.csv",
-      "Dados/novo_caged_desligamentos_2020_2023.csv"
-    ),
-    format = "file"
-  ),
-  tar_target(emprego, read_data(emprego_files, S_brazil, first = "2005 Jan")),
+  # Employment data for every series of S_brazil, from CAGED state counts
+  # for 2004-2019 exported from PDET (R/application_data.R)
+  tar_target(emprego_file, "Dados/caged_uf_2004_2019.csv", format = "file"),
+  tar_target(emprego, read_data(emprego_file, S_brazil)),
 
   # Experiment 1: controlled error design (R/experiment1.R)
   tar_target(exp1_pop, exp1_population(hierarchies)),
@@ -112,7 +103,7 @@ list(
   tar_target(table_exp2, tab_exp2(exp2_sum, "Tabelas/exp2.tex"), format = "file"),
   tar_target(num_exp2, numbers_exp2(exp2_sum)),
 
-  # Application: Brazilian admissions and dismissals, 2005-2019
+  # Application: Brazilian admissions and dismissals, 2004-2019
   # (R/application_analysis.R, R/application_prob.R)
   tar_target(app_origin_list, app_origins(emprego)),
   tar_target(

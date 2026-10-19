@@ -14,23 +14,16 @@ ipea_series <- function(code) {
   data.frame(month = substr(x$VALDATA, 1, 7), value = x$VALVALOR)
 }
 
-emprego <- read_states(
-  here::here("Dados/caged_uf_2004_2019.csv"),
-  here::here(c(
-    "Dados/novo_caged_admissoes_2020_2023.csv",
-    "Dados/novo_caged_desligamentos_2020_2023.csv"
-  ))
-)
-emprego$system <- ifelse(emprego$month >= "2020-01", "Novo CAGED", "CAGED")
+emprego <- read_caged_uf(here::here("Dados/caged_uf_2004_2019.csv"))
 national <- aggregate(
-  cbind(admissions, dismissals) ~ month + system,
+  cbind(admissions, dismissals) ~ month,
   data = emprego,
   FUN = sum
 )
 microdata <- read.csv(here::here("Dados/emprego_uf.csv"))
 
-compare_national <- function(sys, adm_code, dis_code) {
-  x <- national[national$system == sys, ]
+compare_national <- function(adm_code, dis_code) {
+  x <- national
   adm <- ipea_series(adm_code)
   dis <- ipea_series(dis_code)
   x$ipea_adm <- adm$value[match(x$month, adm$month)]
@@ -48,8 +41,8 @@ test_that("every month has all 27 states", {
   expect_equal(months, expected)
 })
 
-test_that("old CAGED matches official national totals", {
-  x <- compare_national("CAGED", "CAGED12_ADMIS", "CAGED12_DESLIG")
+test_that("national totals match the official series", {
+  x <- compare_national("CAGED12_ADMIS", "CAGED12_DESLIG")
   expect_false(anyNA(x$ipea_adm))
   # IpeaData gives 1,248,002 dismissals for March 2018, a digit
   # transposition of 1,284,002: its own net balance series (56,151)
@@ -59,17 +52,7 @@ test_that("old CAGED matches official national totals", {
   expect_lt(max(abs(x$dismissals / x$ipea_dis - 1)), 0.001)
 })
 
-test_that("Novo CAGED is close to official national totals", {
-  x <- compare_national("Novo CAGED", "CAGED12_ADMISN12", "CAGED12_DESLIGN12")
-  expect_false(anyNA(x$ipea_adm))
-  # The municipal series fall below the national series, by 1-4.5% in
-  # 2020 and by at most about 1% from mid-2021. Only the figure uses
-  # 2020-2023, so this is close enough.
-  expect_lt(max(abs(x$admissions / x$ipea_adm - 1)), 0.05)
-  expect_lt(max(abs(x$dismissals / x$ipea_dis - 1)), 0.05)
-})
-
-test_that("old CAGED state counts match the raw microdata exactly", {
+test_that("state counts match the raw microdata exactly", {
   raw <- microdata[microdata$source == "CAGED", ]
   x <- merge(raw, emprego, by = c("month", "UF"))
   expect_equal(nrow(x), nrow(raw))

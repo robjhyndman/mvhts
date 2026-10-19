@@ -22,8 +22,8 @@ Decisions needed:
 4. **D6 authorship.** Felix Fesca (TU Dortmund) added as fifth author on 2026-09-25.
    Final author order still to confirm.
 5. **P7.1.** The Journal of Forecasting author guidelines could not be fetched (the Wiley page is bot-protected): check length and format.
-6. **Data now 2005–2019 (19 October 2026).** The pipeline reads the corrected PDET state file and IpeaData Novo CAGED files instead of `Dados/emprego_uf.csv`, which is now only a test check.
-   Application targets need a rerun (`make`; 72 origins instead of 48, simulations are cached).
+6. **Data now 2004–2019 (19 October 2026).** The pipeline reads the corrected PDET state file and IpeaData Novo CAGED files instead of `Dados/emprego_uf.csv`, which is now only a test check.
+   Application targets need a rerun (`make`; 84 origins instead of 48, simulations are cached).
    After it, reread the application prose (accuracy, diagnostics, net change, horizon pattern) and the abstract against the new numbers.
 7. **Not done:** the 2007–2023 robustness check (P5.4); the editing and deslop pass (P6.9); the arXiv replacement (P7.6).
 

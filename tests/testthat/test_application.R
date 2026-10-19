@@ -36,16 +36,11 @@ test_that("psi weights reproduce fable's response to future innovations", {
   expect_equal(arima_psi(fit$m[[1]]$fit$model, 1), 1)
 })
 
-test_that("the employment data are coherent and match the state files", {
+test_that("the employment data are coherent and match the state file", {
   S <- brazil_hierarchy(state_meta, region_meta)
-  files <- here::here(c(
-    "Dados/caged_uf_2004_2019.csv",
-    "Dados/novo_caged_admissoes_2020_2023.csv",
-    "Dados/novo_caged_desligamentos_2020_2023.csv"
-  ))
-  emprego <- read_data(files, S, first = "2005 Jan")
-  expect_equal(min(emprego$time), yearmonth("2005 Jan"))
-  expect_equal(max(emprego$time), yearmonth("2023 Dec"))
+  emprego <- read_data(here::here("Dados/caged_uf_2004_2019.csv"), S)
+  expect_equal(min(emprego$time), yearmonth("2004 Jan"))
+  expect_equal(max(emprego$time), yearmonth("2019 Dec"))
   Y <- wide_matrix(emprego, "value", stacked_names(S, app_series))
   C_star <- stack_matrix(make_C(S), 2)
   expect_equal(max(abs(Y %*% t(C_star))), 0)
