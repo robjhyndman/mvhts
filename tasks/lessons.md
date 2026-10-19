@@ -19,3 +19,6 @@
   The intro sets out the problem, the gap in the literature and the approach (methods, experiments, data), then the outline.
   Findings, numbers and verdicts belong in the abstract and in the later sections, not in the intro.
   Known results from the literature are background and can stay; the paper's own theorems are described by what they deliver, not stated.
+- 2026-10-19: Keep data checks out of the paper and the README.
+  Cross-checks of the data (against microdata, official totals, earlier extracts) belong in the tests only.
+  The paper and README say where the data come from and what period is used, not how they were verified.

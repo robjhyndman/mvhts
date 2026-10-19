@@ -1,5 +1,7 @@
-# Check Dados/emprego_uf.csv against official national CAGED series
-# published by IpeaData (requires internet access).
+# Check the employment data against official national CAGED series
+# published by IpeaData (requires internet access), and against the
+# state counts built from raw PDET microdata (Dados/emprego_uf.csv, made
+# by R/pdet_extract.R).
 
 library(testthat)
 
@@ -12,13 +14,20 @@ ipea_series <- function(code) {
   data.frame(month = substr(x$VALDATA, 1, 7), value = x$VALVALOR)
 }
 
-emprego <- read.csv(here::here("Dados/emprego_uf.csv"))
-emprego$system <- ifelse(emprego$source == "Novo CAGED", "Novo CAGED", "CAGED")
+emprego <- read_states(
+  here::here("Dados/caged_uf_2004_2019.csv"),
+  here::here(c(
+    "Dados/novo_caged_admissoes_2020_2023.csv",
+    "Dados/novo_caged_desligamentos_2020_2023.csv"
+  ))
+)
+emprego$system <- ifelse(emprego$month >= "2020-01", "Novo CAGED", "CAGED")
 national <- aggregate(
   cbind(admissions, dismissals) ~ month + system,
   data = emprego,
   FUN = sum
 )
+microdata <- read.csv(here::here("Dados/emprego_uf.csv"))
 
 compare_national <- function(sys, adm_code, dis_code) {
   x <- national[national$system == sys, ]
@@ -53,14 +62,23 @@ test_that("old CAGED matches official national totals", {
 test_that("Novo CAGED is close to official national totals", {
   x <- compare_national("Novo CAGED", "CAGED12_ADMISN12", "CAGED12_DESLIGN12")
   expect_false(anyNA(x$ipea_adm))
-  # State totals exclude records with no identified state (about 1% of
-  # Novo CAGED records), so they fall slightly below the national series.
-  expect_lt(max(abs(x$admissions / x$ipea_adm - 1)), 0.02)
-  expect_lt(max(abs(x$dismissals / x$ipea_dis - 1)), 0.02)
+  # The municipal series fall below the national series, by 1-4.5% in
+  # 2020 and by at most about 1% from mid-2021. Only the figure uses
+  # 2020-2023, so this is close enough.
+  expect_lt(max(abs(x$admissions / x$ipea_adm - 1)), 0.05)
+  expect_lt(max(abs(x$dismissals / x$ipea_dis - 1)), 0.05)
+})
+
+test_that("old CAGED state counts match the raw microdata exactly", {
+  raw <- microdata[microdata$source == "CAGED", ]
+  x <- merge(raw, emprego, by = c("month", "UF"))
+  expect_equal(nrow(x), nrow(raw))
+  expect_equal(x$admissions.x, x$admissions.y)
+  expect_equal(x$dismissals.x, x$dismissals.y)
 })
 
 test_that("remapped legacy file agrees with raw extraction for intact months", {
-  raw <- emprego[emprego$source == "CAGED", ]
+  raw <- microdata[microdata$source == "CAGED", ]
   x <- merge(raw, read_legacy(), by = c("month", "UF"))
   expect_equal(nrow(x), nrow(raw))
   agree <- x$admissions.x == x$admissions.y & x$dismissals.x == x$dismissals.y

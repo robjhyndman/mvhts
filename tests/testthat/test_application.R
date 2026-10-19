@@ -36,15 +36,21 @@ test_that("psi weights reproduce fable's response to future innovations", {
   expect_equal(arima_psi(fit$m[[1]]$fit$model, 1), 1)
 })
 
-test_that("the employment data are coherent and match the state file", {
+test_that("the employment data are coherent and match the state files", {
   S <- brazil_hierarchy(state_meta, region_meta)
-  emprego <- read_data(here::here("Dados/emprego_uf.csv"), S)
+  files <- here::here(c(
+    "Dados/caged_uf_2004_2019.csv",
+    "Dados/novo_caged_admissoes_2020_2023.csv",
+    "Dados/novo_caged_desligamentos_2020_2023.csv"
+  ))
+  emprego <- read_data(files, S, first = "2005 Jan")
+  expect_equal(min(emprego$time), yearmonth("2005 Jan"))
+  expect_equal(max(emprego$time), yearmonth("2023 Dec"))
   Y <- wide_matrix(emprego, "value", stacked_names(S, app_series))
   C_star <- stack_matrix(make_C(S), 2)
   expect_equal(max(abs(Y %*% t(C_star))), 0)
-  raw <- read.csv(here::here("Dados/emprego_uf.csv"))
-  raw <- raw[raw$UF == "SP" & raw$month == "2010-03", ]
+  # São Paulo, March 2010, read from the PDET export by hand
   sp <- emprego |> filter(node == "SP", time == yearmonth("2010 Mar"))
-  expect_equal(sp$value[sp$series == "Admissões"], raw$admissions)
-  expect_equal(sp$value[sp$series == "Demissões"], raw$dismissals)
+  expect_equal(sp$value[sp$series == "Admissões"], 600453)
+  expect_equal(sp$value[sp$series == "Demissões"], 475264)
 })

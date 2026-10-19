@@ -31,7 +31,6 @@ Figures go to `Imagens/`, tables to `Tabelas/`, and in-text numbers come from th
   | `simulation_functions.R`, `experiment2.R`                            | Experiment 2 (simulated time series with fitted base models)                                                         |
   | `application_data.R`, `application_analysis.R`, `application_prob.R` | The Brazilian employment application                                                                                 |
   | `results.R`, `figures.R`                                             | Tables, in-text numbers and figures                                                                                  |
-  | `pdet_download.R`, `pdet_extract.R`                                  | Scripts that rebuild the employment data (not part of the pipeline; see below)                                       |
 
 A full run takes several hours on 8 cores, mostly the ARIMA simulation and the rolling-origin application.
 Results are cached in `_targets/`, so later runs recompute only what has changed; `targets::tar_visnetwork()` shows the dependency graph.
@@ -41,18 +40,9 @@ The map of Brazilian regions (`Imagens/mapa_reg.pdf`) downloads state boundaries
 
 ## Employment data
 
-`Dados/emprego_uf.csv` holds monthly admissions and dismissals for the 27 Brazilian federative units, built entirely by script from the raw CAGED microdata published by PDET (Ministry of Labour and Employment): old CAGED for 2007–2019 (PDET publishes no earlier microdata) and Novo CAGED on-time declarations for 2020–2023.
-Records with no identified state (about 1% in Novo CAGED) are dropped.
+The pipeline reads three files of monthly admissions and dismissals, without seasonal adjustment (`read_states()` in `R/application_data.R`):
 
-22 old-CAGED archives between 2008 and 2014 are damaged on the PDET server (listed in `R/pdet_download.R`).
-Those months come instead from `Dados/legacy/Dados_emprego_rgi.csv`, an earlier extract of the same data with its time order reversed within 2004–2010 and 2011–2019; `read_legacy()` in `R/pdet_extract.R` undoes the reversal.
-For every intact month the remapped legacy file agrees with the raw microdata to within one record per state, which `tests/testthat/test_data.R` checks.
-The `source` column of `Dados/emprego_uf.csv` records where each month came from, and `Dados/pdet_manifest.csv` the size and MD5 checksum of every raw file used, since PDET occasionally re-issues files.
+- `Dados/caged_uf_2004_2019.csv`: old CAGED counts for the 27 federative units, January 2004 to December 2019, as exported from PDET (Ministry of Labour and Employment), with one column per month running from December 2019 back to January 2004.
+- `Dados/novo_caged_admissoes_2020_2023.csv` and `Dados/novo_caged_desligamentos_2020_2023.csv`: Novo CAGED admissions and dismissals by municipality for 2020–2023, downloaded from IpeaData on 14 October 2026 and summed to states.
 
-Rebuilding it needs `curl` and `7z` (p7zip):
-
-```bash
-make raw-data   # download ~5GB into Dados/pdet/ (not tracked; several hours, resumable)
-make emprego    # count admissions and dismissals by month and state
-make test       # includes checking national totals against IpeaData
-```
+The analysis uses January 2005 to December 2019; 2020–2023 appear only in the data figure.

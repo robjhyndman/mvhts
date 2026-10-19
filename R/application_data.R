@@ -51,12 +51,85 @@ app_series_labels <- c("Admissões" = "Admissions", "Demissões" = "Dismissals")
 app_series <- names(app_series_labels)
 
 # --------------------------------------------------------------------
-# Monthly admissions and dismissals for every series of hierarchy S, as
-# a tsibble with columns time, node, series and value. The state counts
-# in `path` are built from raw PDET microdata by R/pdet_extract.R.
+# Old CAGED state counts, 2004-2019, as exported from PDET: one row per
+# state and movement type ("Admitidos" or "Desligados"; the state is
+# given only on the first of its two rows), one column per month from
+# "dez/19" back to "jan/04". Returns columns month ("YYYY-MM"), UF,
+# admissions and dismissals.
 # --------------------------------------------------------------------
-read_data <- function(path, S) {
-  utils::read.csv(path) |>
+read_caged_uf <- function(path) {
+  lines <- readLines(path, encoding = "latin1")
+  header <- strsplit(lines[2], ";")[[1]]
+  labels <- header[-(1:2)]
+  pt_months <- c("jan", "fev", "mar", "abr", "mai", "jun",
+                 "jul", "ago", "set", "out", "nov", "dez")
+  months <- sprintf(
+    "%d-%02d",
+    2000L + as.integer(sub(".*/", "", labels)),
+    match(sub("/.*", "", labels), pt_months)
+  )
+  stopifnot(!anyNA(months))
+  x <- utils::read.csv2(
+    text = lines[-(1:2)],
+    header = FALSE,
+    colClasses = "character"
+  )[, seq_along(header)]
+  names(x) <- c("uf", "type", months)
+  x <- x[x$type %in% c("Admitidos", "Desligados"), ]
+  # Fill the state down to its "Desligados" row; "11 - Rondônia" -> 11
+  x$ibge <- as.integer(substr(x$uf, 1, 2))
+  x |>
+    tidyr::fill(ibge) |>
+    dplyr::select(-uf) |>
+    tidyr::pivot_longer(dplyr::all_of(months), names_to = "month", values_to = "n") |>
+    dplyr::mutate(
+      n = as.numeric(n),
+      type = ifelse(type == "Admitidos", "admissions", "dismissals")
+    ) |>
+    tidyr::pivot_wider(names_from = type, values_from = n) |>
+    dplyr::inner_join(state_meta[c("UF", "ibge")], by = "ibge") |>
+    dplyr::select(month, UF, admissions, dismissals)
+}
+
+# --------------------------------------------------------------------
+# Novo CAGED counts by municipality from IpeaData ("sem ajuste"), one
+# file per movement type, with one column per month ("2020.01").
+# Summed to states; same columns as read_caged_uf(). The 33 rows with
+# no values are historical municipalities that no longer exist.
+# --------------------------------------------------------------------
+read_novo_caged <- function(admissions_path, dismissals_path) {
+  read_one <- function(path, type) {
+    utils::read.csv2(path, skip = 1, check.names = FALSE, fileEncoding = "UTF-8-BOM") |>
+      dplyr::select(UF = Sigla, dplyr::matches("^\\d{4}\\.\\d{2}$")) |>
+      tidyr::pivot_longer(-UF, names_to = "month", values_to = "n") |>
+      dplyr::mutate(month = sub(".", "-", month, fixed = TRUE)) |>
+      dplyr::summarise(n = sum(n, na.rm = TRUE), .by = c(month, UF)) |>
+      dplyr::rename("{type}" := n)
+  }
+  dplyr::inner_join(
+    read_one(admissions_path, "admissions"),
+    read_one(dismissals_path, "dismissals"),
+    by = c("month", "UF")
+  )
+}
+
+# State counts for every month, old CAGED then Novo CAGED
+read_states <- function(caged_path, novo_paths) {
+  dplyr::bind_rows(
+    read_caged_uf(caged_path),
+    read_novo_caged(novo_paths[1], novo_paths[2])
+  ) |>
+    dplyr::arrange(month, UF)
+}
+
+# --------------------------------------------------------------------
+# Monthly admissions and dismissals for every series of hierarchy S
+# from `first` on, as a tsibble with columns time, node, series and
+# value. `paths` are the old CAGED file and the two Novo CAGED files.
+# --------------------------------------------------------------------
+read_data <- function(paths, S, first = "2005 Jan") {
+  read_states(paths[1], paths[2:3]) |>
+    dplyr::filter(tsibble::yearmonth(month) >= tsibble::yearmonth(first)) |>
     dplyr::transmute(
       time = tsibble::yearmonth(month),
       node = UF,

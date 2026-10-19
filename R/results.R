@@ -435,7 +435,13 @@ numbers_app <- function(
     fmt(100 * (1 - np$rel), 0)
   }
   joint_vs_sep <- function(m) fmt_range(js$ratio[js$model == m], 3)
+  # Forecast origins, and those with all twelve horizons in the sample
+  max_h <- tapply(app_point$h, app_point$origin, max)
+  origins <- sort(names(max_h))
   list(
+    appOrigins = length(max_h),
+    appOriginsFull = sum(max_h == 12),
+    appFirstOrigin = format(tsibble::yearmonth(origins[1]), "%B %Y"),
     appTArima = d$arima$T,
     appKappaArima = fmt(d$arima$kappa, 2),
     appGainArima = fmt(100 * d$arima$gain, 1),
