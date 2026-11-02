@@ -22,3 +22,6 @@
 - 2026-10-19: Keep data checks out of the paper and the README.
   Cross-checks of the data (against microdata, official totals, earlier extracts) belong in the tests only.
   The paper and README say where the data come from and what period is used, not how they were verified.
+- 2026-11-02: After changing any function that produces in-text numbers, check every number it returns, not only the new ones.
+  An edit to `joint_vs_sep()` silently turned three existing ranges into `Inf--Inf`; I had checked only the numbers I added.
+  Compare the full `numbers` list before and after, and grep both PDFs for `Inf`, `NA` and `NaN`.

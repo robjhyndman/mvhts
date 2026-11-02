@@ -53,8 +53,8 @@ Application: MSE relative to base forecasts (ETS), geometric mean over the serie
 # Application: results by horizon {.unnumbered}
 
 @tbl-supp-horizon-arima breaks down the comparison of joint and separate reconciliation (ARIMA base forecasts) by forecast horizon.
-For admissions the ratio stays close to one at all horizons.
-For dismissals, joint reconciliation is worse at short horizons and better at long ones, especially at the national level, so the near-neutral averages in the main text combine gains and losses.
+For admissions the ratio is above one at every horizon and level, and falls towards one as the horizon grows.
+For dismissals it is below one at every horizon and level.
 
 ::: {#tbl-supp-horizon-arima}
 ```{r}
@@ -70,8 +70,9 @@ Application (ARIMA base forecasts): MSE of joint relative to separate MinT recon
 
 # Application: results for every series {.unnumbered}
 
-@tbl-supp-nodes gives the results for every series.
-Differences between joint and separate reconciliation are larger for individual states than for the aggregates, and go in both directions.
+@tbl-supp-nodes gives the results series by series.
+For dismissals, joint reconciliation is better than separate reconciliation for `r num$appNodesJointBetterDis`.
+For admissions it is better for only `r num$appNodesJointBetterAdm`, and the differences are small.
 
 ::: {#tbl-supp-nodes}
 ```{r}

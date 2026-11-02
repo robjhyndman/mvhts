@@ -94,6 +94,12 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       numeric(1)
     )
     level <- node_level(rownames(S))
+    # Share of series whose residuals are autocorrelated (Ljung-Box, 24 lags)
+    lb_p <- apply(
+      as.matrix(res),
+      2,
+      \(r) stats::Box.test(r, lag = 24, type = "Ljung-Box")$p.value
+    )
     tibble::tibble(
       model = name,
       T = NROW(res),
@@ -108,6 +114,7 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       p_value = test$p_value,
       kronecker_error = nearest_kronecker(W_hat, 2)$rel_error,
       incoherence = incoherence_ratio(W_hat, C, 2),
+      lb_share = mean(lb_p < 0.05),
       net_gain_total = mean(net_gain[level == "Total"]),
       net_gain_regions = mean(net_gain[level == "Regions"]),
       net_gain_states = mean(net_gain[level == "States"])

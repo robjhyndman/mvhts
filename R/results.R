@@ -434,7 +434,58 @@ numbers_app <- function(
       dplyr::filter(model == "arima", method == "joint", level == l)
     fmt(100 * (1 - np$rel), 0)
   }
-  joint_vs_sep <- function(m) fmt_range(js$ratio[js$model == m], 3)
+  joint_vs_sep <- function(m, s = NULL) {
+    keep <- js$model == m
+    if (!is.null(s)) keep <- keep & js$series == s
+    fmt_range(js$ratio[keep], 3)
+  }
+  p_text <- function(p) if (p < 0.001) "< 0.001" else paste("=", fmt(p, 3))
+  shrink <- net_point |>
+    dplyr::filter(model == "arima", method == "sep_blocks")
+  # ARIMA, national dismissals: share of origins at which separate MinT
+  # is worse than the base forecasts
+  by_origin <- app_point |>
+    dplyr::filter(
+      model == "arima",
+      series == "Demissões",
+      node == "Total",
+      method %in% c("base", "separate")
+    ) |>
+    dplyr::group_by(origin, method) |>
+    dplyr::summarise(mse = mean(error^2), .groups = "drop") |>
+    tidyr::pivot_wider(names_from = method, values_from = mse)
+  sep_dis_total <- acc$rel[
+    acc$model == "arima" &
+      acc$method == "separate" &
+      acc$series == "Demissões" &
+      acc$level == "Total"
+  ]
+  # ARIMA dismissals: MSE of the sum of the state base forecasts relative
+  # to that of the national base forecast
+  base_dis <- app_point |>
+    dplyr::filter(model == "arima", method == "base", series == "Demissões")
+  bottom_up <- base_dis |>
+    dplyr::filter(node_level(node) == "States") |>
+    dplyr::group_by(origin, h) |>
+    dplyr::summarise(bu = sum(error), .groups = "drop") |>
+    dplyr::inner_join(
+      dplyr::filter(base_dis, node == "Total"),
+      by = c("origin", "h")
+    )
+  # ARIMA: number of series at which joint beats separate MinT
+  nodes <- accuracy |>
+    dplyr::filter(model == "arima", method %in% c("joint", "separate")) |>
+    dplyr::select(series, node, method, rel) |>
+    tidyr::pivot_wider(names_from = method, values_from = rel)
+  n_joint_better <- function(s) {
+    x <- nodes[nodes$series == s, ]
+    sum(x$joint < x$separate)
+  }
+  n_series <- NROW(nodes) / 2
+  # "every series", or "k of the n series"
+  of_series <- function(k) {
+    if (k == n_series) "every series" else paste(k, "of the", n_series, "series")
+  }
   # Forecast origins, and those with all twelve horizons in the sample
   max_h <- tapply(app_point$h, app_point$origin, max)
   origins <- sort(names(max_h))
@@ -446,6 +497,10 @@ numbers_app <- function(
     appKappaArima = fmt(d$arima$kappa, 2),
     appGainArima = fmt(100 * d$arima$gain, 1),
     appPArima = fmt(d$arima$p_value, 3),
+    appPTextArima = p_text(d$arima$p_value),
+    appPTextVar = p_text(d$var$p_value),
+    appLbArima = fmt(100 * d$arima$lb_share, 0),
+    appLbVar = fmt(100 * d$var$lb_share, 0),
     appIncohArima = fmt(100 * d$arima$incoherence, 0),
     appDfOneArima = d$arima$df1,
     appDfTwoArima = fmt(d$arima$df2, 0),
@@ -458,6 +513,16 @@ numbers_app <- function(
     appJointSepArimaRange = joint_vs_sep("arima"),
     appJointSepVarRange = joint_vs_sep("var"),
     appJointSepEtsRange = joint_vs_sep("ets"),
+    appJointSepArimaAdm = joint_vs_sep("arima", "Admissões"),
+    appJointSepArimaDis = joint_vs_sep("arima", "Demissões"),
+    appJointSepEtsAdm = joint_vs_sep("ets", "Admissões"),
+    appJointSepEtsDis = joint_vs_sep("ets", "Demissões"),
+    appNetShrinkMax = fmt(100 * (1 - min(shrink$rel)), 1),
+    appSepDisTotalLoss = fmt(100 * (sep_dis_total - 1), 0),
+    appSepDisWorseShare = fmt(100 * mean(by_origin$separate > by_origin$base), 0),
+    appBottomUpDisLoss = fmt(100 * (mean(bottom_up$bu^2) / mean(bottom_up$error^2) - 1), 0),
+    appNodesJointBetterAdm = of_series(n_joint_better("Admissões")),
+    appNodesJointBetterDis = of_series(n_joint_better("Demissões")),
     appNetJointSepStates = skill("joint + separate", "States"),
     appNetJointSepTotal = skill("joint + separate", "Total"),
     appNetJointJointStates = skill("joint + joint", "States"),

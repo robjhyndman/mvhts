@@ -14,7 +14,7 @@ So $m = 2$, $n = 33$ and $n_b = 27$, giving 66 series in all.
 knitr::include_graphics(tar_read(fig_region_map))
 ```
 
-The monthly counts of admissions and dismissals by federative unit, without seasonal adjustment, are published by the Labour Statistics Dissemination Program (PDET) of the Ministry of Labour and Employment.
+The Labour Statistics Dissemination Program (PDET) of the Ministry of Labour and Employment publishes monthly counts of admissions and dismissals by federative unit, without seasonal adjustment.
 
 In January 2020 CAGED was replaced by Novo CAGED, which draws on different administrative sources, and the COVID-19 pandemic began soon after.
 Both events changed the joint behaviour of admissions and dismissals, and would contaminate an estimate of their forecast error covariance.
@@ -22,7 +22,7 @@ We therefore use only January 2004 to December 2019 (192 months).
 
 @fig-app-data shows the national series.
 Admissions and dismissals move together, with strong seasonality: December brings large net job losses every year.
-Net employment change was positive until 2014, negative through the recession of 2015--2016, and positive again from 2017.
+Net employment change was positive until 2014, negative through the recession of 2015--2017, and positive again from 2018.
 
 ```{r}
 #| label: fig-app-data
@@ -35,23 +35,30 @@ knitr::include_graphics(tar_read(fig_data))
 
 ## Forecasting set-up
 
-We forecast all 66 series from rolling origins with an expanding window, starting with 108 months of training data (January 2004 to December 2012) and moving the origin forward one month at a time.
-This gives `r num$appOrigins` origins, and `r num$appOriginsFull` of them have all twelve horizons within the sample.
-Base forecasts come from an ARIMA model selected automatically for each series [@hyndman2021forecasting] and from a bivariate VAR for admissions and dismissals at each node, with no seasonal terms and lag order (up to five) selected by the AICc.
-Results for ETS base forecasts are given in the Supplementary Material.
+We forecast all 66 series from rolling origins with an expanding window.
+The first origin has 108 months of training data (January 2004 to December 2012), and each later origin adds one month.
+This gives `r num$appOrigins` origins, `r num$appOriginsFull` of which have all twelve horizons within the sample.
+There are two sets of base forecasts.
+The first comes from an ARIMA model selected automatically for each series [@hyndman2021forecasting].
+The second comes from a bivariate VAR for admissions and dismissals at each node, with no seasonal terms and a lag order of up to five selected by the AICc.
+Results for ETS base forecasts are in the Supplementary Material.
 We compare the base forecasts with OLS, structurally weighted least squares (WLS) and MinT reconciliation.
-MinT is applied separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate, which isolates the effect of the cross-variable blocks from that of the different shrinkage intensities.
+MinT is applied in three ways: separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate.
+The third isolates the effect of the cross-variable blocks from that of the different shrinkage intensities of the separate and joint estimates.
 
 ## Diagnostics
 
-@tbl-app-diag reports the diagnostics computed from the one-step residuals of models fitted to the whole of 2004--2019.
-For the ARIMA base forecasts the estimated error covariance is close to separable by the nearest-Kronecker measure (relative error `r num$appKronArima`), and joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num[["appKappaArima"]]`$) for a plug-in gain of only `r num$appGainArima`% in mean squared error.
-The likelihood ratio test rejects the conditions of @prp-equivalence at the 5% level ($p = `r num[["appPArima"]]`$), so the departure is not pure estimation noise, but it is small.
-The total variance of the incoherences is `r num$appIncohArima`% of that of the one-step errors.
-The VAR residuals give larger $\widehat\kappa$ and a much smaller $p$-value, but they are strongly autocorrelated for almost every series, which invalidates the test.
-With no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
+@tbl-app-diag reports diagnostics computed from the one-step residuals of models fitted to the whole of 2004--2019.
+For the ARIMA base forecasts, the estimated error covariance is close to separable: the relative error of the nearest Kronecker product is `r num$appKronArima`.
+Joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num[["appKappaArima"]]`$), but the plug-in gain in mean squared error is only `r num$appGainArima`%.
+The incoherences account for `r num$appIncohArima`% of the total variance of the one-step errors.
+The likelihood ratio test rejects the conditions of @prp-equivalence ($p `r num$appPTextArima`$), so the departure is small but not pure estimation noise.
+The test assumes serially uncorrelated residuals, however, and a Ljung--Box test with 24 lags rejects at the 5% level for `r num$appLbArima`% of the ARIMA residual series, so the $p$-value is only indicative.
+The VAR residuals give a larger $\widehat\kappa$ (`r num$appKappaVar`) and larger $F$ statistics.
+But they are autocorrelated for `r num$appLbVar`% of the series, which invalidates the test: with no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
 
-The plug-in gain for net employment change, $\widehat\gamma_{\bm{\ell}}$ with $\bm{\ell}$ selecting admissions minus dismissals at a node, is larger than for the individual series: `r num$appNetPlugTotal`% for the national net change and, on average, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states.
+For net employment change the plug-in gain is larger.
+With $\bm{\ell}$ selecting admissions minus dismissals at a node, $\widehat\gamma_{\bm{\ell}}$ is `r num$appNetPlugTotal`% for the national net change and, on average, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states.
 
 ::: {#tbl-app-diag}
 ```{r}
@@ -67,14 +74,25 @@ Estimated $\widehat\kappa$ and plug-in gain $\widehat\gamma$ (%); Rao $F$ statis
 ## Forecast accuracy
 
 @tbl-app-accuracy-arima gives the mean squared error of each method relative to the ARIMA base forecasts.
-Separate MinT reconciliation improves on the base forecasts at every level and for both variables, and it is better than OLS and structural WLS reconciliation, which damage the state-level forecasts.
-Joint and separate MinT are close: across the six combinations of variable and level, the ratio of their mean squared errors lies in the range `r num$appJointSepArimaRange`.
-Joint reconciliation is slightly better for dismissals at the national and regional levels and slightly worse elsewhere.
-The averages hide a horizon pattern (Supplementary Table\ S3): for national dismissals, joint reconciliation is worse at short horizons and better at long ones.
-There is no systematic gain from reconciling the two variables together, consistent with the small departure found by the diagnostics.
-With VAR base forecasts (@tbl-app-accuracy-var), joint reconciliation is better than separate reconciliation at every level (ratios `r num$appJointSepVarRange`), but the VAR base forecasts are poorer to begin with: their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts, on average over the series.
-This is consistent with the lesson of Experiment 2 that the cross-variable structure exploited by joint reconciliation can come from the errors of the base models themselves.
-With ETS base forecasts (Supplementary Table\ S2) the ratios of joint to separate MSE lie in the range `r num$appJointSepEtsRange`: joint reconciliation is better for admissions at every level and roughly neutral for dismissals.
+For admissions, separate MinT reconciliation improves on the base forecasts at every level.
+It also beats OLS and structural WLS, which both damage the state-level forecasts.
+
+For dismissals, separate MinT does worse.
+At the national level its mean squared error is `r num$appSepDisTotalLoss`% higher than that of the base forecasts, and higher than that of OLS and structural WLS.
+It is worse than the base forecasts at `r num$appSepDisWorseShare`% of the origins, so a few unusual months are not the cause.
+The reason is that the national ARIMA models forecast dismissals well: summing the state base forecasts gives a mean squared error `r num$appBottomUpDisLoss`% higher than the national base forecast.
+MinT shifts weight towards the state-level forecasts, which for dismissals is the wrong direction.
+
+Joint reconciliation recovers part of that loss.
+For dismissals it beats separate MinT at every level, with ratios of mean squared errors in the range `r num$appJointSepArimaDis`, and the gain holds at every horizon (Supplementary Table\ S3).
+For admissions it is slightly worse (`r num$appJointSepArimaAdm`).
+The gain for dismissals is larger than the plug-in gain of `r num$appGainArima`% would suggest.
+
+The results depend on the base model.
+With VAR base forecasts (@tbl-app-accuracy-var), joint reconciliation is worse than separate reconciliation at every level (ratios `r num$appJointSepVarRange`).
+The VAR base forecasts are also poorer to begin with: on average over the series, their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts.
+With ETS base forecasts (Supplementary Table\ S2), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
+So the benefit for dismissals appears where separate reconciliation is itself poor.
 
 ::: {#tbl-app-accuracy-arima}
 ```{r}
@@ -97,17 +115,18 @@ Application: MSE relative to base forecasts (VAR), geometric mean over the serie
 
 ## Net employment change
 
-Net employment change is a linear combination of the two variables, so the argument of @sec-theory suggests that joint reconciliation may help it even when it does not help either variable alone.
-@tbl-app-prob confirms this.
-For point forecasts, joint reconciliation reduces the mean squared error of net change relative to separate reconciliation by `r num$appNetPointTotal`% at the national level and `r num$appNetPointRegions`% for the regions, though only `r num$appNetPointStates`% for the states.
-Joint reconciliation makes the errors in admissions and dismissals more positively correlated (a correlation of `r num$appErrCorJoint` against `r num$appErrCorSep` for separate reconciliation, pooled over all series and horizons), so more of the error cancels in the difference.
-Part of the gain comes from the different shrinkage intensity of the joint covariance estimate, as the row for separate reconciliation with the joint estimate shows.
-At the national and regional levels most of it comes from the cross-variable blocks; the small gain for the states comes entirely from the shrinkage.
+Net employment change is a linear combination of the two variables, so the argument of @sec-theory suggests that joint reconciliation may help it by more than it helps either variable alone.
+@tbl-app-prob shows that it does at the national and regional levels.
+Compared with separate reconciliation, joint reconciliation reduces the mean squared error of net change by `r num$appNetPointTotal`% at the national level, `r num$appNetPointRegions`% for the regions and `r num$appNetPointStates`% for the states.
+It makes the errors in admissions and dismissals more positively correlated, so more of the error cancels in the difference.
+Pooled over all series and horizons, their correlation is `r num$appErrCorJoint` after joint reconciliation and `r num$appErrCorSep` after separate reconciliation.
+Almost all of the gain comes from the cross-variable blocks.
+The different shrinkage intensity of the joint covariance estimate contributes little: separate reconciliation with the joint estimate reduces the mean squared error by at most `r num$appNetShrinkMax`%.
 
-For probabilistic forecasts we generated 1000 sample paths of all 66 series at each origin from the fitted ARIMA models, driven by resampled one-step residuals, and reconciled every path [@panagiotelis2023probabilistic].
-Resampling each variable's innovations independently discards the dependence between admissions and dismissals; resampling whole residual vectors keeps it.
-Keeping the dependence reduces the continuous ranked probability score (CRPS) of net change by `r num$appNetJointSepTotal`% nationally, `r num$appNetJointSepRegions`% for the regions and `r num$appNetJointSepStates`% for the states, using separate reconciliation of each variable.
-Reconciling these paths jointly rather than separately raises the reduction to `r num$appNetJointJointTotal`% nationally and `r num$appNetJointJointRegions`% for the regions.
+For probabilistic forecasts, we generated 1000 sample paths of all 66 series at each origin from the fitted ARIMA models, driven by resampled one-step residuals, and reconciled every path [@panagiotelis2023probabilistic].
+Resampling each variable's innovations independently discards the dependence between admissions and dismissals, while resampling whole residual vectors keeps it.
+With separate reconciliation, keeping the dependence reduces the continuous ranked probability score (CRPS) of net change by `r num$appNetJointSepTotal`% nationally, `r num$appNetJointSepRegions`% for the regions and `r num$appNetJointSepStates`% for the states.
+Reconciling the paths jointly raises the reduction to `r num$appNetJointJointTotal`% nationally and `r num$appNetJointJointRegions`% for the regions.
 
 ::: {#tbl-app-prob}
 ```{r}
