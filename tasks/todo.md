@@ -498,3 +498,17 @@ Goal: remove dead code and duplication in `R/`, and make the data layout and the
 - Supplement numbers now come from the pipeline; the F3 maximum is filtered to the small hierarchy, as the text says.
 - Render date is shown under the title of both documents.
 - Not changed, for Rob to decide: Experiment 2 simulates the VAR(1) from zero with no burn-in (the proposition assumes stationarity; the effect is small, but fixing it means rerunning Experiment 2); the Journal of Forecasting abstract limit is unverified (now about 247 words); the paper has no data availability statement, which most Wiley journals ask for (check the JF policy).
+
+----------------------------------------------------------------------------------------
+
+## Related work published November 2026 (8 November 2026)
+
+- [x] Girolimetto & Di Fonzo (2026, IJF, doi 10.1016/j.ijforecast.2026.10.003) and Chen & Zhao (2026, Management Science 72(8)) reviewed. Neither scoops our results.
+- [x] Intro: new paragraph on both papers (literature only).
+- [x] Setup: contrast with coherent forecast combination, stacked design (1_p ⊗ I_n)S.
+- [x] Theory: new "Forecast combination" remark. Combination is reconciliation with S = 1_q; Chen & Zhao's exchangeable case is our invariance + separability; their no-noise case has singular W (forecasts agree on the model's support, maps differ); Girolimetto & Di Fonzo's Online Appendix E (I_p ⊗ W̄) extends to V ⊗ Σ0.
+- [x] Discussion: cross-block estimation costs accuracy (Girolimetto & Di Fonzo); "pool only with heterogeneous experts" (Chen & Zhao); caveat that our application has only two variables.
+- [x] Bib: two new entries; girolimetto2025cross renamed girolimetto2026cross (published 2026).
+- [ ] Rob: decide whether the abstract's last sentence needs softening in light of Chen & Zhao's M4 results.
+
+Review: claims checked numerically in the session scratchpad (check.R): exchangeable case joint = separate to 3e-16; no-noise case maps differ (gap ~0.26 for arbitrary forecasts) but gap shrinks ∝ σ_ε for model-generated forecasts; V ⊗ Σ0 extension to 2e-14. Paper renders (18 pages), all citations resolve.

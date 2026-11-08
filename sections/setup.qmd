@@ -29,6 +29,7 @@ $$ {#eq-vec}
 with constraint matrix $\bm{C}_* = \bm{I}_m \otimes \bm{C}$.
 The stacked summing matrix is block diagonal: no constraint links one variable to another.
 This distinguishes the setting from a grouped hierarchy, where the categories of a grouping variable (such as travel purpose in the Australian tourism data of @wickramasuriya2019optimal) are linked by aggregation constraints because their total is itself observed and forecast.
+It also distinguishes it from coherent forecast combination [@girolimetto2026coherent], in which the forecasts of $p$ experts for the same hierarchy are stacked: the stacked design is then $(\bm{1}_p \otimes \bm{I}_n)\bm{S}$, which links the copies because they share one target.
 
 ## Forecast reconciliation
 

@@ -19,8 +19,14 @@ The stacked summing matrix is block diagonal by variable, and the only link betw
 Some cross-variable dependence is already known to be of no use to reconciliation.
 MinT is unaffected by any component of the error covariance that lies in the coherent subspace [@wickramasuriya2021properties], so cross-variable dependence of that form is invisible.
 When the error covariance is separable (i.e., a Kronecker product of a cross-variable matrix and a cross-series matrix), joint and separate reconciliation coincide whatever the cross-variable correlation.
-This follows from a result of @girolimetto2025cross for cross-temporal reconciliation, and it is the reconciliation analogue of Zellner's observation [@zellner1962efficient] that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares.
+This follows from a result of @girolimetto2026cross for cross-temporal reconciliation, and it is the reconciliation analogue of Zellner's observation [@zellner1962efficient] that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares.
 These conditions are sufficient, but they do not say which forms of dependence joint reconciliation can exploit, or by how much.
+
+A similar question has been asked about forecast combination.
+When several experts each forecast several variables, @chen2026combining compare combining the forecasts of each variable on its own with pooling the forecasts of all the variables.
+In a factor model of the forecast errors, they show that pooling adds nothing when the experts are exchangeable or there is no idiosyncratic noise, and in their applications pooling helps when the experts differ and many variables are pooled.
+@girolimetto2026coherent combine and reconcile the forecasts of several experts for one hierarchy in a single step.
+There the stacked forecasts are linked, because every expert forecasts the same series, whereas the variables considered here are not.
 
 Our approach is to write MinT as a regression of the base forecast errors on the observed incoherences of the base forecasts.
 In this form, the question becomes whether one variable's incoherences carry information about another variable's errors beyond what that variable's own incoherences provide.

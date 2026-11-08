@@ -99,7 +99,7 @@ Here $\bm{W}_{jk} = v_{jk}\bm{\Sigma}_0$, so $\bm{L}_j = \bm{\Sigma}_0\bm{C}'(\b
 Then $\bm{W}_{jk}\bm{C}' = (v_{jk}/v_{jj})\bm{W}_{jj}\bm{C}'$, and condition (e) holds.
 :::
 
-@cor-separable is a special case of a result of @girolimetto2025cross for cross-temporal reconciliation in which the second dimension carries no aggregation constraints.
+@cor-separable is a special case of a result of @girolimetto2026cross for cross-temporal reconciliation in which the second dimension carries no aggregation constraints.
 It is the reconciliation analogue of the result that seemingly unrelated regressions with identical regressors reduce to equation-by-equation least squares [@zellner1962efficient]: every variable shares the same summing matrix, so cross-variable correlation alone cannot be exploited.
 Corollaries [-@cor-invariance] and [-@cor-separable] combine: every $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0 + \bm{S}_*\bm{K}\bm{S}_*'$ satisfies the conditions of @prp-equivalence, however far it is from a Kronecker product.
 So separability is sufficient but far from necessary.
@@ -122,3 +122,12 @@ When the conditions of @prp-equivalence fail, the gain need not be spread evenly
 
 *More than two variables.* @prp-equivalence holds for any $m$, and condition (d) can be checked pair by pair.
 Joint reconciliation of $m$ variables can be split into separate reconciliations of groups of variables whenever the off-diagonal blocks of $\bm{L}$ between groups vanish.
+
+*Forecast combination.* Combining the forecasts of $q$ experts for a single quantity is reconciliation with $\bm{S} = \bm{1}_q$.
+The coherent vectors are those with all $q$ entries equal, the incoherences are the differences between the experts' forecasts, and MinT gives the minimum variance combination $\bm{1}_q(\bm{1}_q'\bm{W}^{-1}\bm{1}_q)^{-1}\bm{1}_q'\bm{W}^{-1}\widehat{\bm{y}}$.
+When each expert forecasts $m$ variables, the comparison of @chen2026combining between combining each variable's forecasts separately and pooling the forecasts of all variables is our comparison with $\bm{S}_* = \bm{I}_m \otimes \bm{1}_q$, so @prp-equivalence gives necessary and sufficient conditions for pooling to leave the combined forecasts unchanged.
+In their factor model, pooling adds nothing when the experts are exchangeable, which is an instance of Corollaries [-@cor-invariance] and [-@cor-separable].
+It also adds nothing when there is no idiosyncratic noise, but there $\bm{W}$ is singular: the pooled and separate combinations agree for every forecast vector the model can generate, although the two maps differ.
+In the coherent forecast combination of @girolimetto2026coherent, the forecasts of $p$ experts for the same hierarchy have stacked design $(\bm{1}_p \otimes \bm{I}_n)\bm{S}$.
+They show that when $\bm{W} = \bm{I}_p \otimes \overline{\bm{W}}$, the optimal coherent combination equals reconciling each expert's forecasts with $\overline{\bm{W}}$ and then averaging.
+The argument of @cor-separable extends this to any $\bm{W} = \bm{V} \otimes \bm{\Sigma}_0$: the combination step then uses the weights $\bm{V}^{-1}\bm{1}_p/(\bm{1}_p'\bm{V}^{-1}\bm{1}_p)$ for every series, and the reconciliation step uses $\bm{\Sigma}_0$ alone.
