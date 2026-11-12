@@ -61,3 +61,5 @@ _targets/
 **/*.quarto_ipynb
 *_files/
 *.knit.md
+
+.Rhistory
