@@ -395,6 +395,28 @@ numbers_power <- function(power) {
   )
 }
 
+# Supplement: Wilks, Pillai and Hotelling-Lawley tests in Experiment 1
+# and the application (Roy's largest root is computed but not reported)
+numbers_supp_tests <- function(power, app_diag) {
+  null <- power |> dplyr::filter(family %in% c("F0", "F1"))
+  pp <- function(x) fmt(100 * x, 1)
+  # Largest difference from Wilks, in percentage points
+  max_diff <- function(d) {
+    100 * max(abs(c(d$rejection_pillai, d$rejection_LH) - d$rejection_rao))
+  }
+  list(
+    suppTestPillaiSize = paste0(pp(min(null$rejection_pillai)), "--", pp(max(null$rejection_pillai))),
+    suppTestLHSize = paste0(pp(min(null$rejection_LH)), "--", pp(max(null$rejection_LH))),
+    suppTestMaxDiff = fmt(max_diff(power), 1),
+    suppTestMaxDiffLargeT = fmt(max_diff(power |> dplyr::filter(T >= 500)), 1),
+    # Bound on the application p-values, for use inside $...$
+    suppTestAppPBound = {
+      p_max <- max(unlist(app_diag[c("p_value", "p_value_pillai", "p_value_LH")]))
+      if (p_max < 0.001) "< 0.001" else paste("\\le", fmt(p_max, 3))
+    }
+  )
+}
+
 numbers_app <- function(
   app_diag,
   accuracy,
@@ -574,6 +596,65 @@ tab_supp_exp2 <- function(exp2_sum, file) {
     c(
       " & & \\multicolumn{2}{c}{ARIMA} & \\multicolumn{2}{c}{VAR} \\\\",
       "Scenario & $T$ & Separate & Joint & Separate & Joint \\\\"
+    ),
+    rows
+  )
+}
+
+# Experiment 1: rejection rates of the Wilks, Pillai and Hotelling-Lawley
+# tests at the two shortest sample sizes, by hierarchy and covariance design
+tab_supp_tests <- function(power, file, T_show = c(100, 200)) {
+  stats <- c("rao", "pillai", "LH")
+  stat_head <- "Wilks & Pillai & H--L"
+  n_col <- 2 + length(stats) * length(T_show)
+  dial_symbol <- c(F2 = "\\delta", F3 = "\\delta")
+  x <- power |>
+    dplyr::filter(T %in% T_show) |>
+    dplyr::arrange(hierarchy != "small", family, dial, T)
+  rows <- unlist(lapply(c("small", "brazil"), \(h) {
+    xh <- x |> dplyr::filter(hierarchy == h)
+    designs <- xh |> dplyr::distinct(family, dial, kappa)
+    body <- vapply(
+      seq_len(NROW(designs)),
+      \(i) {
+        d <- xh |>
+          dplyr::filter(family == designs$family[i], dial == designs$dial[i])
+        cells <- unlist(lapply(T_show, \(t) {
+          fmt(unlist(d[d$T == t, paste0("rejection_", stats)]), 3)
+        }))
+        label <- if (designs$family[i] %in% c("F0", "F1")) {
+          designs$family[i]
+        } else {
+          sprintf(
+            "%s, $%s = %s$",
+            designs$family[i],
+            dial_symbol[designs$family[i]],
+            format(designs$dial[i])
+          )
+        }
+        latex_row(label, c(fmt(designs$kappa[i], 3), cells))
+      },
+      character(1)
+    )
+    c(sprintf("\\multicolumn{%d}{l}{\\emph{%s}} \\\\", n_col, hierarchy_labels[h]), body)
+  }))
+  write_tabular(
+    file,
+    paste0("l", strrep("r", n_col - 1)),
+    c(
+      paste0(
+        " & & ",
+        paste(
+          sprintf("\\multicolumn{%d}{c}{$T = %d$}", length(stats), T_show),
+          collapse = " & "
+        ),
+        " \\\\"
+      ),
+      paste0(
+        "Design & $\\kappa$ & ",
+        paste(rep(stat_head, length(T_show)), collapse = " & "),
+        " \\\\"
+      )
     ),
     rows
   )

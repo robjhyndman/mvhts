@@ -122,6 +122,7 @@ list(
   tar_target(table_app_diag, tab_app_diag(app_diag, "Tabelas/app_diag.tex"), format = "file"),
   tar_target(app_net, app_net_point(app_point)),
   tar_target(table_app_ets, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_ets.tex", "ets"), format = "file"),
+  tar_target(table_supp_tests, tab_supp_tests(power, "Tabelas/supp_tests.tex"), format = "file"),
   tar_target(table_supp_exp2, tab_supp_exp2(exp2_sum, "Tabelas/supp_exp2.tex"), format = "file"),
   tar_target(table_supp_horizon, tab_supp_horizon(app_point, "Tabelas/supp_horizon_arima.tex"), format = "file"),
   tar_target(table_supp_nodes, tab_supp_nodes(app_acc, "Tabelas/supp_nodes_arima.tex"), format = "file"),
@@ -136,9 +137,10 @@ list(
   ),
   tar_target(num_power, numbers_power(power)),
   tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum, app_net, app_point)),
+  tar_target(num_supp_tests, numbers_supp_tests(power, app_diag)),
 
   # In-text numbers for the paper (R/results.R), read by the documents
-  tar_target(numbers, c(num_exp1, num_exp2, num_power, num_app)),
+  tar_target(numbers, c(num_exp1, num_exp2, num_power, num_app, num_supp_tests)),
 
   # The paper and supplement. Quarto files read their figures, tables and
   # numbers with tar_read(), so they rebuild when any of those change.

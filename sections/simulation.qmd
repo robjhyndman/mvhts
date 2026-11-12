@@ -100,6 +100,7 @@ Under both separable and separable-plus-invisible covariances, the rejection rat
 Power grows with the size of the departure and with $T$.
 Departures with population gains below 1%, all of which have $\kappa < `r num$powerSmallKappaBound`$, are detected in at most `r num$powerSmallMonthlyMax`% of samples with $T \le 200$, the length of typical monthly series.
 The weakest departure ($\kappa = `r num$powerWeakKappa`$, a population gain of `r num$powerWeakGain`%) is detected in only `r num$powerWeakRejection`% of samples even with $T = 1000$.
+Tests based on Pillai's trace and the Hotelling--Lawley trace give almost the same rejection rates as Wilks' $\Lambda$ (Supplementary Table\ S1).
 
 ```{r}
 #| label: fig-power

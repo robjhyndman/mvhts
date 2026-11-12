@@ -17,6 +17,42 @@ library(targets)
 num <- tar_read(numbers)
 ```
 
+# Experiment 1: alternative test statistics {.unnumbered}
+
+The test of condition (d) in the main text uses Wilks' $\Lambda$ with Rao's $F$ approximation.
+Wilks' $\Lambda$ is one of several standard statistics for a linear hypothesis in a multivariate regression, and here we compare it with two others.
+For variable $j$, let $\bm{E}$ and $\bm{E}_0$ be the residual sums of squares and cross-products matrices from the regression of its bottom-level errors on all the incoherences, and on its own incoherences only.
+Let $\bm{H} = \bm{E}_0 - \bm{E}$, and let $\lambda_1 \ge \dots \ge \lambda_s$ be the non-zero eigenvalues of $\bm{E}^{-1}\bm{H}$.
+The three statistics are
+$$
+  \Lambda = \prod_{i=1}^{s} \frac{1}{1 + \lambda_i}, \qquad
+  V = \sum_{i=1}^{s} \frac{\lambda_i}{1 + \lambda_i}, \qquad
+  U = \sum_{i=1}^{s} \lambda_i,
+$$
+namely Wilks' $\Lambda$, Pillai's trace $V$ and the Hotelling--Lawley trace $U$.
+Each is converted to an approximate $F$ statistic, using the same approximations as R's `anova()` for multivariate linear models.
+As in the main text, the tests for the two variables are combined with a Bonferroni correction.
+
+@tbl-supp-tests gives the rejection rates at the 5% level for the designs of Experiment 1 at $T = 100$ and $T = 200$.
+Pillai's trace and the Hotelling--Lawley trace behave almost exactly like Wilks' $\Lambda$.
+Under the separable and separable-plus-invisible covariances, their rejection rates over all four sample sizes and both hierarchies are `r num$suppTestPillaiSize`% and `r num$suppTestLHSize`% respectively.
+Their rejection rates never differ from those of Wilks' $\Lambda$ by more than `r num$suppTestMaxDiff` percentage points, and by no more than `r num$suppTestMaxDiffLargeT` for $T \ge 500$.
+Pillai's trace is slightly conservative and the Hotelling--Lawley trace slightly liberal at the smallest sample sizes, with Wilks' $\Lambda$ between the two.
+In the application, the $p$-values from Wilks' $\Lambda$, Pillai's trace and the Hotelling--Lawley trace are all $`r num$suppTestAppPBound`$ for both base models, so the choice of statistic does not change the conclusions.
+
+::: {#tbl-supp-tests}
+```{r}
+#| output: asis
+
+cat(readLines(tar_read(table_supp_tests)), sep = "\n")
+```
+
+Experiment 1: rejection rate at the 5% level of the test of condition (d) based on Wilks' $\Lambda$, Pillai's trace and the Hotelling--Lawley trace (H--L), by hierarchy, covariance design and sample size $T$ (1000 replications).
+For F0 and F1, $\kappa = 0$ and the rejection rate is the size of the test.
+:::
+
+`\clearpage`{=latex}
+
 # Experiment 2 {.unnumbered}
 
 @tbl-supp-exp2 compares separate and joint MinT reconciliation with the base forecasts in Experiment 2.

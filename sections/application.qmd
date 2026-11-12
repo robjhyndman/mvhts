@@ -84,14 +84,14 @@ The reason is that the national ARIMA models forecast dismissals well: summing t
 MinT shifts weight towards the state-level forecasts, which for dismissals is the wrong direction.
 
 Joint reconciliation recovers part of that loss.
-For dismissals it beats separate MinT at every level, with ratios of mean squared errors in the range `r num$appJointSepArimaDis`, and the gain holds at every horizon (Supplementary Table\ S3).
+For dismissals it beats separate MinT at every level, with ratios of mean squared errors in the range `r num$appJointSepArimaDis`, and the gain holds at every horizon (Supplementary Table\ S4).
 For admissions it is slightly worse (`r num$appJointSepArimaAdm`).
 The gain for dismissals is larger than the plug-in gain of `r num$appGainArima`% would suggest.
 
 The results depend on the base model.
 With VAR base forecasts (@tbl-app-accuracy-var), joint reconciliation is worse than separate reconciliation at every level (ratios `r num$appJointSepVarRange`).
 The VAR base forecasts are also poorer to begin with: on average over the series, their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts.
-With ETS base forecasts (Supplementary Table\ S2), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
+With ETS base forecasts (Supplementary Table\ S3), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
 So the benefit for dismissals appears where separate reconciliation is itself poor.
 
 ::: {#tbl-app-accuracy-arima}
