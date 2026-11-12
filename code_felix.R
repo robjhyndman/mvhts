@@ -11,7 +11,7 @@ library(clubSandwich)
 
 
 # Pillai:
-# tr(H(H+e^-1)) = tr(H * E0^-1)
+# tr(H(H+E)^-1) = tr(H * E0^-1)
 # solve(E0) %*% H ist das gleiche wie solve(E0, H) 
 
 # Zwischenschritte:
@@ -32,7 +32,7 @@ sum(eigen(solve(E) %*% H)$values)
 
 
 # Roy:
-max(eigen(solve(E, H))$values)
+max(Re(eigen(solve(E, H))$values))
 
 
 ## Code targets.R:

@@ -106,6 +106,8 @@ cross_test <- function(e, S, m = 2) {
         determinant(E)$modulus - determinant(E0)$modulus
         # exp() transforms the test statistic, but do we need to transform
         # the f-distribution as well?
+        # No: this is log|E| - log|E0|, so exp() just gives Wilks' lambda
+        # = |E| / |E0| itself, which is what Rao's approximation uses.
       ))
       # Rao's F approximation to Wilks' lambda (p = n_b responses, q
       # hypothesis degrees of freedom, nu error degrees of freedom)
@@ -118,27 +120,33 @@ cross_test <- function(e, S, m = 2) {
       stat_rao <- (1 - lb) / lb * df_rao2 / df_rao1
       
       # Pillai's trace:
-      V_P <- tr(solve(E0, H))
-      h <- qr(H)$rank # should be the same as q
+      V_P <- sum(diag(solve(E0, H)))
+      h <- q # rank(H) = min(p, q), so use q itself
       s <- min(p, h)
       mm <- abs(p-h) / 2 - 0.5
+      nn <- (nu - p - 1) / 2
       
-      df_pillai1 <- s*(2 + s + mm)
-      df_pillai2 <- (nu + mm + 0.5) * (2 + s + mm) - s * (2 + s + mm)
-      F_pillai <- V_P/(1-V_P) * df_pillai2 / df_pillai1
+      df_pillai1 <- s*(2*mm + s + 1)
+      df_pillai2 <- s*(2*nn + s + 1)
+      F_pillai <- V_P/(s-V_P) * df_pillai2 / df_pillai1
       
       # Lawley-Hotelling's trace:
-      # same degrees of freedom as Pillai
-      V_LH <- tr(solve(E, H))
-      F_LH <- V_LH / s * df_pillai2 / df_pillai1
+      # same df1 as Pillai, but a different df2
+      df_LH2 <- 2 * (s*nn + 1)
+      V_LH <- sum(diag(solve(E, H)))
+      F_LH <- V_LH / s * df_LH2 / df_pillai1
       
       # Roy's largest root:
       theta <- max(Re(eigen(solve(E, H))$values))
       # i got some complex eigenvalues and just took the real part
       # didn't think about why this happens yet
-      df_roy1 <- 2 * s
-      df_roy2 <- 2 * max(p, h) - s - 0.5
-      F_roy <- theta / (1-theta) * df_roy2 / df_roy1
+      # (solve(E, H) is not symmetric, so eigen() can return complex values
+      # from rounding error; the true eigenvalues are real, so Re() is fine.
+      # theta is an eigenvalue of E^-1 H, not of E0^-1 H, so it can exceed 1.
+      # This F is only an upper bound, so the test is oversized.)
+      df_roy1 <- max(p, h)
+      df_roy2 <- nu - max(p, h) + h
+      F_roy <- theta * df_roy2 / df_roy1
       
       c(
         stat_rao = stat_rao,
@@ -153,7 +161,7 @@ cross_test <- function(e, S, m = 2) {
         df_roy2 = df_roy2, 
         p_rao = stats::pf(stat_rao, df_rao1, df_rao2, lower.tail = FALSE),
         p_pillai = stats::pf(F_pillai, df_pillai1, df_pillai2, lower.tail = FALSE),
-        p_LH = stats::pf(F_LH, df_pillai1, df_pillai2, lower.tail = FALSE),
+        p_LH = stats::pf(F_LH, df_pillai1, df_LH2, lower.tail = FALSE),
         p_roy = stats::pf(F_roy, df_roy1, df_roy2, lower.tail = FALSE)
       )
     },
