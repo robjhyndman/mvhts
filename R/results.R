@@ -378,16 +378,19 @@ numbers_exp2 <- function(exp2_sum) {
 numbers_power <- function(power) {
   null <- power |> dplyr::filter(family %in% c("F0", "F1"))
   alt <- power |> dplyr::filter(!family %in% c("F0", "F1"))
-  # The departure with the smallest population gain
+  # The departure with the smallest population gain (one row per sample size)
   weak <- alt |> dplyr::filter(gain == min(gain))
+  stopifnot(dplyr::n_distinct(weak$hierarchy, weak$family, weak$dial) == 1)
+  # Departures with population gains below 1%
+  small <- alt |> dplyr::filter(gain < 0.01)
   list(
     testSizeMin = fmt(100 * min(null$rejection_rao), 1),
     testSizeMax = fmt(100 * max(null$rejection_rao), 1),
-    powerSmallMonthlyMax = fmt(
-      100 * max(alt$rejection_rao[alt$gain < 0.01 & alt$T <= 200]),
-      0
-    ),
-    powerWeakGain = fmt(100 * weak$gain, 1),
+    powerSmallMonthlyMax = fmt(100 * max(small$rejection_rao[small$T <= 200]), 0),
+    # Strict upper bound on their kappa, at the next multiple of 0.1
+    powerSmallKappaBound = fmt(floor(10 * max(small$kappa)) / 10 + 0.1, 1),
+    powerWeakKappa = fmt(weak$kappa[1], 2),
+    powerWeakGain = fmt(100 * weak$gain[1], 1),
     powerWeakRejection = fmt(100 * weak$rejection_rao[weak$T == max(weak$T)], 0)
   )
 }

@@ -98,7 +98,8 @@ To assess the test of @sec-diagnostic, we drew $T \in \{100, 200, 500, 1000\}$ e
 @fig-power shows the results.
 Under both separable and separable-plus-invisible covariances, the rejection rate at the 5% level lies between `r num$testSizeMin`% and `r num$testSizeMax`% across all sample sizes and both hierarchies.
 Power grows with the size of the departure and with $T$.
-Departures with population gains below 1% are detected in at most `r num$powerSmallMonthlyMax`% of samples of 100 or 200 observations, the lengths of typical monthly series, and the smallest of them, a gain of `r num$powerWeakGain`%, is detected only `r num$powerWeakRejection`% of the time even with $T = 1000$.
+Departures with population gains below 1%, all of which have $\kappa < `r num$powerSmallKappaBound`$, are detected in at most `r num$powerSmallMonthlyMax`% of samples with $T \le 200$, the length of typical monthly series.
+The weakest departure ($\kappa = `r num$powerWeakKappa`$, a population gain of `r num$powerWeakGain`%) is detected in only `r num$powerWeakRejection`% of samples even with $T = 1000$.
 
 ```{r}
 #| label: fig-power
