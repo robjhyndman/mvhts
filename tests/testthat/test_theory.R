@@ -169,10 +169,46 @@ test_that("plug-in gain is zero exactly when kappa is zero, and positive otherwi
 test_that("cross_test holds its size under the null and detects strong departures", {
   set.seed(10)
   H <- small_hierarchy()
-  p_null <- replicate(300, cross_test(mvtnorm::rmvnorm(200, sigma = exp1_covariance(H, "F1", 2)), H)$p_value)
+  p_null <- replicate(300, cross_test(mvtnorm::rmvnorm(200, sigma = exp1_covariance(H, "F1", 2)), H)$p_value_rao)
   expect_lt(abs(mean(p_null <= 0.05) - 0.05), 0.04)
-  p_alt <- cross_test(mvtnorm::rmvnorm(500, sigma = exp1_covariance(H, "F3", 0.6)), H)$p_value
+  p_alt <- cross_test(mvtnorm::rmvnorm(500, sigma = exp1_covariance(H, "F3", 0.6)), H)$p_value_rao
   expect_lt(p_alt, 1e-4)
+})
+
+test_that("cross_test statistics match stats::anova.mlm", {
+  set.seed(11)
+  H <- small_hierarchy()
+  C <- make_C(H)
+  n <- NROW(H)
+  n_a <- NROW(C)
+  e <- mvtnorm::rmvnorm(150, sigma = exp1_covariance(H, "F3", 0.3))
+  ct <- cross_test(e, H)
+  z <- lapply(1:2, \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
+  for (j in 1:2) {
+    Y <- e[, var_index(j, n)[n_a + seq_len(NCOL(H))], drop = FALSE]
+    fit_own <- stats::lm(Y ~ z[[j]])
+    fit_full <- stats::lm(Y ~ z[[j]] + z[[3 - j]])
+    ref <- vapply(
+      c("Wilks", "Pillai", "Hotelling-Lawley", "Roy"),
+      \(t) stats::anova(fit_full, fit_own, test = t)[2, "Pr(>F)"],
+      numeric(1)
+    )
+    expect_equal(
+      unname(c(ct$p_each_rao[j], ct$p_each_pillai[j], ct$p_each_LH[j], ct$p_each_roy[j])),
+      unname(ref),
+      tolerance = 1e-8
+    )
+  }
+})
+
+test_that("Pillai and Lawley-Hotelling versions of cross_test hold their size", {
+  set.seed(12)
+  H <- small_hierarchy()
+  p_null <- t(replicate(300, {
+    ct <- cross_test(mvtnorm::rmvnorm(200, sigma = exp1_covariance(H, "F1", 2)), H)
+    c(ct$p_value_pillai, ct$p_value_LH)
+  }))
+  expect_true(all(abs(colMeans(p_null <= 0.05) - 0.05) < 0.04))
 })
 
 test_that("joint MinT is no worse than separate for every linear combination", {
