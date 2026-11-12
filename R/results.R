@@ -381,14 +381,14 @@ numbers_power <- function(power) {
   # The departure with the smallest population gain
   weak <- alt |> dplyr::filter(gain == min(gain))
   list(
-    testSizeMin = fmt(100 * min(null$rejection), 1),
-    testSizeMax = fmt(100 * max(null$rejection), 1),
+    testSizeMin = fmt(100 * min(null$rejection_rao), 1),
+    testSizeMax = fmt(100 * max(null$rejection_rao), 1),
     powerSmallMonthlyMax = fmt(
-      100 * max(alt$rejection[alt$gain < 0.01 & alt$T <= 200]),
+      100 * max(alt$rejection_rao[alt$gain < 0.01 & alt$T <= 200]),
       0
     ),
     powerWeakGain = fmt(100 * weak$gain, 1),
-    powerWeakRejection = fmt(100 * weak$rejection[weak$T == max(weak$T)], 0)
+    powerWeakRejection = fmt(100 * weak$rejection_rao[weak$T == max(weak$T)], 0)
   )
 }
 

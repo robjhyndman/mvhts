@@ -309,7 +309,7 @@ fig_kappa_power <- function(power, file) {
   starts <- df |> dplyr::filter(!separable, T == min(T))
   p <- ggplot2::ggplot(
     df,
-    ggplot2::aes(T, rejection, group = interaction(family, dial))
+    ggplot2::aes(T, rejection_rao, group = interaction(family, dial))
   ) +
     ggplot2::geom_hline(yintercept = 0.05, colour = "grey40", linewidth = 0.4) +
     ggplot2::geom_line(
