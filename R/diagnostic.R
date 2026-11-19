@@ -18,6 +18,8 @@ kappa_power <- function(
   family,
   dial,
   T,
+  error = "normal",
+  param = NA,
   reps = 1000,
   alpha = 0.05
 ) {
@@ -26,7 +28,21 @@ kappa_power <- function(
   res <- t(vapply(
     seq_len(reps),
     \(r) {
-      e <- mvtnorm::rmvnorm(T, sigma = W)
+      # alt:
+      # e <- mvtnorm::rmvnorm(T, sigma = W)
+      # neu:
+      e <- switch(
+        error,
+        normal = mvtnorm::rmvnorm(T, sigma = W),
+        t = mvtnorm::rmvt(T, sigma = W, df = param),
+        # df small: heavier tailed 
+        # df -> inf: mv normal
+        GARCH = mygarch(param, W = W, T = T), 
+        AR = replicate(NCOL(W), arima.sim(n = T, list(ar = param))),
+        stop("Unknown error ", error)
+      )
+
+      # weiter:
       W_hat <- shrinkage_cov(e)
       ct <- cross_test(e, S)
       c(
@@ -44,6 +60,8 @@ kappa_power <- function(
     hierarchy = hierarchy,
     family = family,
     dial = dial,
+    error = error,
+    param = param,
     T = T,
     kappa = kappa_mv(W, C, 2),
     gain = plugin_gain(W, C, 2),
