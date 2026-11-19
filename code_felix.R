@@ -193,10 +193,10 @@ mygarch <- function(param, W,  T){
   
   # calculate W^(1/2) with eigenvalues and -vectors
   W_eigen <- eigen(W)
-  W12 <- W_eigen$vectors %*% diag(sqrt(W_eigen$values)) %*% t(W_eigen$vectors)
+  W_sqrt <- W_eigen$vectors %*% diag(sqrt(W_eigen$values)) %*% t(W_eigen$vectors)
   
   #W^(1/2) * GARCH-errors:
-  t(W12 %*% t(fitted(garch_obj)))
+  t(W_sqrt %*% t(fitted(garch_obj)))
 }
 
 # apply kappa_power function for one setting:
@@ -279,6 +279,9 @@ for(j in c("F0", "F1")){
     abline(h = 0.05, col = "grey")
   }
 }
-legend("topleft", c("Rao", "Pillai", "Hotelling-Lawley", "Roy"), 
+legend("topleft", c("Wilks", "Pillai", "Hotelling-Lawley", "Roy"), 
        lty = 1, col = c("black", "blue", "red", "orange"))
 dev.off()
+
+
+errors_df %>% filter(error == "AR", family == "F0") %>% arrange(param, T)
