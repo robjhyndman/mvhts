@@ -53,6 +53,48 @@ For F0 and F1, $\kappa = 0$ and the rejection rate is the size of the test.
 
 `\clearpage`{=latex}
 
+# Experiment 1: serially correlated errors {.unnumbered}
+
+The test of condition (d) assumes serially uncorrelated errors.
+One-step forecast errors from a well-specified model are serially uncorrelated, but fitted models are rarely exactly right.
+To see how much serial correlation matters, we repeated the size study of Experiment 1 with errors $\bm{\varepsilon}_t = \bm{W}^{1/2}\bm{u}_t$, where the elements of $\bm{u}_t$ are independent AR(1) processes $u_{it} = \phi u_{i,t-1} + (1-\phi^2)^{1/2}\eta_{it}$ with $\eta_{it} \sim N(0, 1)$ and $\phi \in \{0.1, 0.2, 0.3\}$.
+The errors still have covariance $\bm{W}$, so condition (d) holds under F0 and F1, and any rejection rate above 5% is due to the serial correlation.
+
+@tbl-supp-ar gives the rejection rates of the test based on Wilks' $\Lambda$.
+With $\phi = `r num$suppArPhiMin`$ the rejection rate is at most `r num$suppArPhiMinMax`%.
+The distortion grows with $\phi$, does not shrink as $T$ grows, and is much larger in the Brazilian hierarchy: with $\phi = 0.3$, the rejection rates are `r num$suppArSmallPhiMax`% in the small hierarchy and `r num$suppArBrazilPhiMax`% in the Brazilian hierarchy.
+
+The reason is as follows.
+For variable $j$, let $\bm{u}_t$ be the residuals from the regression of its bottom-level errors on its own incoherences, and let $\tilde{\bm{z}}_t$ be the other variable's incoherences after the same regression.
+The test statistic is a function of the sample covariances between the elements of $\bm{u}_t$ and $\tilde{\bm{z}}_t$.
+If an element of $\bm{u}_t$ and an element of $\tilde{\bm{z}}_t$ have autocorrelations $\rho_u(h)$ and $\rho_z(h)$, serial correlation multiplies the variance of their sample covariance by approximately
+$$
+  f = 1 + 2\sum_{h=1}^{\infty} \rho_u(h)\rho_z(h),
+$$
+so $f = 1$ whenever either series is serially uncorrelated.
+In the AR(1) design, $f = (1+\phi^2)/(1-\phi^2)$, shown in @tbl-supp-ar.
+The statistic for each variable then behaves roughly like $f$ times a $\chi^2_q$ variable, where $q = n_a n_b$ is the number of restrictions: 15 in the small hierarchy and 162 in the Brazilian hierarchy.
+The 95% quantile of $\chi^2_q$ exceeds its mean $q$ by about $1.645\sqrt{2q}$, a margin that shrinks relative to $q$ as $q$ grows.
+So a given $f > 1$ produces more over-rejection when there are more restrictions.
+
+For the application, we estimated $f$ from the one-step residuals for every pair of elements of $\bm{u}_t$ and $\tilde{\bm{z}}_t$, using autocorrelations up to lag 24, and averaged over pairs and over the two variables.
+The average is `r num$suppArInflArima` for the ARIMA residuals and `r num$suppArInflVar` for the VAR residuals, both below the value of `r num$suppArInflPhiMin` for $\phi = `r num$suppArPhiMin`$.
+The serial correlation that the Ljung--Box tests detect is too weak, or too poorly aligned between the residuals and the incoherences, to distort the test.
+
+::: {#tbl-supp-ar}
+```{r}
+#| output: asis
+
+cat(readLines(tar_read(table_supp_ar)), sep = "\n")
+```
+
+Experiment 1: rejection rate at the 5% level of the test based on Wilks' $\Lambda$ under the null designs F0 and F1, with errors $\bm{W}^{1/2}\bm{u}_t$ where the elements of $\bm{u}_t$ are independent AR(1) processes with coefficient $\phi$ (1000 replications).
+$\phi = 0$ is the main size and power study.
+$f$ is the variance inflation factor from serial correlation.
+:::
+
+`\clearpage`{=latex}
+
 # Experiment 2 {.unnumbered}
 
 @tbl-supp-exp2 compares separate and joint MinT reconciliation with the base forecasts in Experiment 2.

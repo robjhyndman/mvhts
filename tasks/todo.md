@@ -10,7 +10,7 @@ It does not repeat that material; it says what to build, in what order, and how 
 ## Robustness of the test and the seasonal VAR (20 November 2026)
 
 - [x] Seasonal dummies in the application VAR (`fit_app_models()`; Experiment 2 unchanged), pipeline rerun, application text revised, numbers compared before/after. Commit.
-- [ ] Supplement: size of the test under AR(1) errors (Experiment 1 designs), and the serial-correlation inflation factor for the application residuals. Commit.
+- [x] Supplement: size of the test under AR(1) errors (Experiment 1 designs), and the serial-correlation inflation factor for the application residuals. Commit.
 - [ ] Next: multivariate t and GARCH errors (wild bootstrap of Wilks; CR2/HTZ for comparison).
 
 ## Open items for Rob (as of 25 September 2026)

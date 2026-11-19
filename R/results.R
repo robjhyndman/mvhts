@@ -417,6 +417,29 @@ numbers_supp_tests <- function(power, app_diag) {
   )
 }
 
+# Supplement: size of the test under AR(1) errors, and the serial
+# correlation inflation factor of the application residuals
+numbers_supp_ar <- function(ar_size, app_diag) {
+  ar_size <- dplyr::mutate(ar_size, phi = param)
+  pp <- function(x) fmt(100 * x, 1)
+  rej <- function(h, p) ar_size$rejection_rao[ar_size$hierarchy == h & ar_size$phi == p]
+  d <- split(app_diag, app_diag$model)
+  phi_min <- min(ar_size$phi)
+  list(
+    suppArPhiMin = format(phi_min),
+    suppArInflPhiMin = fmt(ar_inflation(phi_min), 3),
+    suppArPhiMinMax = pp(max(ar_size$rejection_rao[ar_size$phi == phi_min])),
+    suppArSmallPhiMax = fmt_range(rej("small", max(ar_size$phi)), 1, 100),
+    suppArBrazilPhiMax = fmt_range(rej("brazil", max(ar_size$phi)), 1, 100),
+    suppArInflArima = fmt(d$arima$serial_inflation, 3),
+    suppArInflVar = fmt(d$var$serial_inflation, 3)
+  )
+}
+
+# Serial-correlation inflation factor (serial_inflation()) when the
+# residuals and incoherences are all AR(1) with coefficient phi
+ar_inflation <- function(phi) (1 + phi^2) / (1 - phi^2)
+
 numbers_app <- function(
   app_diag,
   accuracy,
@@ -657,6 +680,43 @@ tab_supp_tests <- function(power, file, T_show = c(100, 200)) {
         " \\\\"
       )
     ),
+    rows
+  )
+}
+
+# Supplement: rejection rate of the Wilks test at the 5% level under the
+# null designs F0 and F1, with serially uncorrelated (phi = 0, from the
+# main size and power study) and AR(1) errors
+tab_supp_ar <- function(power, ar_size, file) {
+  ar_size <- dplyr::mutate(ar_size, phi = param)
+  x <- dplyr::bind_rows(
+    power |> dplyr::filter(family %in% c("F0", "F1")) |> dplyr::mutate(phi = 0),
+    ar_size
+  )
+  Ts <- sort(unique(x$T))
+  rows <- unlist(lapply(c("small", "brazil"), \(h) {
+    xh <- x |> dplyr::filter(hierarchy == h)
+    designs <- xh |> dplyr::distinct(family, phi) |> dplyr::arrange(family, phi)
+    body <- vapply(
+      seq_len(NROW(designs)),
+      \(i) {
+        d <- xh |>
+          dplyr::filter(family == designs$family[i], phi == designs$phi[i]) |>
+          dplyr::arrange(T)
+        label <- if (designs$phi[i] == 0) designs$family[i] else ""
+        latex_row(
+          label,
+          c(format(designs$phi[i]), fmt(ar_inflation(designs$phi[i]), 3), fmt(d$rejection_rao, 3))
+        )
+      },
+      character(1)
+    )
+    c(sprintf("\\multicolumn{%d}{l}{\\emph{%s}} \\\\", 3 + length(Ts), hierarchy_labels[h]), body)
+  }))
+  write_tabular(
+    file,
+    paste0("l", strrep("r", 2 + length(Ts))),
+    paste0("Design & $\\phi$ & $f$ & ", paste(sprintf("$T = %d$", Ts), collapse = " & "), " \\\\"),
     rows
   )
 }

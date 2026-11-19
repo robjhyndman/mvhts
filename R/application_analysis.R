@@ -136,6 +136,8 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       kronecker_error = nearest_kronecker(W_hat, 2)$rel_error,
       incoherence = incoherence_ratio(W_hat, C, 2),
       lb_share = mean(lb_p < 0.05),
+      # Variance inflation of the test from serial correlation (1 = none)
+      serial_inflation = serial_inflation(as.matrix(res), S),
       net_gain_total = mean(net_gain[level == "Total"]),
       net_gain_regions = mean(net_gain[level == "Regions"]),
       net_gain_states = mean(net_gain[level == "States"])

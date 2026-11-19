@@ -112,6 +112,44 @@ sqrt_sym <- function(W) {
   ev$vectors %*% (sqrt(pmax(ev$values, 0)) * t(ev$vectors))
 }
 
+# Scenarios for the size of the test under serially correlated errors:
+# the two null designs of Experiment 1 with AR(1) errors (sim_errors())
+ar_size_scenarios <- function(phi = c(0.1, 0.2, 0.3)) {
+  tidyr::expand_grid(
+    dplyr::filter(sample_families(), family %in% c("F0", "F1")),
+    hierarchy = c("small", "brazil"),
+    T = c(100, 200, 500, 1000),
+    phi = phi
+  )
+}
+
+# --------------------------------------------------------------------
+# How much serial correlation in the errors e would distort cross_test().
+# The test is built from the sample covariances between u, the residuals
+# from regressing variable j's bottom-level errors on its own
+# incoherences, and the other variables' incoherences z after the same
+# regression. Serial correlation inflates the variance of each such
+# covariance by about f = 1 + 2 sum_h rho_u(h) rho_z(h) (Bartlett); f = 1
+# when either series is serially uncorrelated. Returns f averaged over
+# all (u, z) pairs and all m variables.
+# --------------------------------------------------------------------
+serial_inflation <- function(e, S, m = 2, lag = 24) {
+  C <- make_C(S)
+  n <- NROW(S)
+  n_a <- NROW(C)
+  n_b <- NCOL(S)
+  acfs <- \(x) apply(x, 2, \(v) stats::acf(v, lag.max = lag, plot = FALSE)$acf[-1])
+  z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
+  f <- lapply(seq_len(m), \(j) {
+    X_own <- cbind(1, z[[j]])
+    Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
+    u <- stats::lm.fit(X_own, Y)$residuals
+    z_other <- stats::lm.fit(X_own, do.call(cbind, z[-j]))$residuals
+    1 + 2 * crossprod(acfs(u), acfs(z_other))
+  })
+  mean(unlist(f))
+}
+
 # Scenarios for the size and power study: the separable null (size),
 # the invisible departure (also kappa = 0), and visible departures
 kappa_power_scenarios <- function() {

@@ -73,6 +73,22 @@ list(
     pattern = map(power_scenarios)
   ),
   tar_target(fig_power, fig_kappa_power(power, "Imagens/test_power.pdf"), format = "file"),
+  # Size of the test under AR(1) errors (Supplementary Material)
+  tar_target(ar_scenarios, ar_size_scenarios()),
+  tar_target(
+    ar_size,
+    kappa_power(
+      hierarchies[[ar_scenarios$hierarchy]],
+      ar_scenarios$hierarchy,
+      ar_scenarios$family,
+      ar_scenarios$dial,
+      ar_scenarios$T,
+      error = "AR",
+      param = ar_scenarios$phi,
+      reps = 1000
+    ),
+    pattern = map(ar_scenarios)
+  ),
 
   # Experiment 2: time-series DGPs with fitted base models (R/experiment2.R)
   tar_target(exp2_scenario_list, exp2_scenarios()),
@@ -123,6 +139,7 @@ list(
   tar_target(app_net, app_net_point(app_point)),
   tar_target(table_app_ets, tab_app_accuracy(app_acc, "Tabelas/app_accuracy_ets.tex", "ets"), format = "file"),
   tar_target(table_supp_tests, tab_supp_tests(power, "Tabelas/supp_tests.tex"), format = "file"),
+  tar_target(table_supp_ar, tab_supp_ar(power, ar_size, "Tabelas/supp_ar.tex"), format = "file"),
   tar_target(table_supp_exp2, tab_supp_exp2(exp2_sum, "Tabelas/supp_exp2.tex"), format = "file"),
   tar_target(table_supp_horizon, tab_supp_horizon(app_point, "Tabelas/supp_horizon_arima.tex"), format = "file"),
   tar_target(table_supp_nodes, tab_supp_nodes(app_acc, "Tabelas/supp_nodes_arima.tex"), format = "file"),
@@ -138,9 +155,10 @@ list(
   tar_target(num_power, numbers_power(power)),
   tar_target(num_app, numbers_app(app_diag, app_acc, app_prob_sum, app_net, app_point)),
   tar_target(num_supp_tests, numbers_supp_tests(power, app_diag)),
+  tar_target(num_supp_ar, numbers_supp_ar(ar_size, app_diag)),
 
   # In-text numbers for the paper (R/results.R), read by the documents
-  tar_target(numbers, c(num_exp1, num_exp2, num_power, num_app, num_supp_tests)),
+  tar_target(numbers, c(num_exp1, num_exp2, num_power, num_app, num_supp_tests, num_supp_ar)),
 
   # The paper and supplement. Quarto files read their figures, tables and
   # numbers with tar_read(), so they rebuild when any of those change.
