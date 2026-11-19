@@ -28,9 +28,6 @@ kappa_power <- function(
   res <- t(vapply(
     seq_len(reps),
     \(r) {
-      # alt:
-      # e <- mvtnorm::rmvnorm(T, sigma = W)
-      # neu:
       e <- switch(
         error,
         normal = mvtnorm::rmvnorm(T, sigma = W),
@@ -41,8 +38,6 @@ kappa_power <- function(
         AR = replicate(NCOL(W), arima.sim(n = T, list(ar = param))),
         stop("Unknown error ", error)
       )
-
-      # weiter:
       W_hat <- shrinkage_cov(e)
       ct <- cross_test(e, S)
       c(
