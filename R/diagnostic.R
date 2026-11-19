@@ -28,16 +28,7 @@ kappa_power <- function(
   res <- t(vapply(
     seq_len(reps),
     \(r) {
-      e <- switch(
-        error,
-        normal = mvtnorm::rmvnorm(T, sigma = W),
-        t = mvtnorm::rmvt(T, sigma = W, df = param),
-        # df small: heavier tailed 
-        # df -> inf: mv normal
-        GARCH = mygarch(param, W = W, T = T), 
-        AR = replicate(NCOL(W), arima.sim(n = T, list(ar = param))),
-        stop("Unknown error ", error)
-      )
+      e <- sim_errors(T, W, error, param)
       W_hat <- shrinkage_cov(e)
       ct <- cross_test(e, S)
       c(
@@ -72,6 +63,53 @@ kappa_power <- function(
     kappa_hat = mean(res[, 5]),
     gain_hat = mean(res[, 6])
   )
+}
+
+# --------------------------------------------------------------------
+# T x NCOL(W) errors with unconditional covariance W (up to scale for
+# "t"), for checking the size of cross_test() away from iid normality.
+# "normal": iid N(0, W).
+# "t": multivariate t with param degrees of freedom (covariance
+#   W df / (df - 2); the test is scale-invariant).
+# "GARCH": W^(1/2) u_t, with independent GARCH(1,1) u_it of unit
+#   unconditional variance, alpha = param and persistence
+#   alpha + beta = 0.95.
+# "AR": W^(1/2) u_t, with independent AR(1) u_it of coefficient param
+#   and unit variance.
+# --------------------------------------------------------------------
+sim_errors <- function(T, W, error = "normal", param = NA) {
+  N <- NCOL(W)
+  switch(
+    error,
+    normal = mvtnorm::rmvnorm(T, sigma = W),
+    t = mvtnorm::rmvt(T, sigma = W, df = param),
+    GARCH = garch_errors(T, N, alpha = param, beta = 0.95 - param) %*% sqrt_sym(W),
+    AR = vapply(
+      seq_len(N),
+      \(i) sqrt(1 - param^2) * stats::arima.sim(list(ar = param), n = T),
+      numeric(T)
+    ) %*% sqrt_sym(W),
+    stop("Unknown error ", error)
+  )
+}
+
+# T x N matrix of independent GARCH(1,1) series with normal innovations,
+# scaled to unit unconditional variance (omega = 1 - alpha - beta)
+garch_errors <- function(T, N, alpha, beta, burn = 200) {
+  spec <- rugarch::ugarchspec(
+    variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+    mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
+    distribution.model = "norm",
+    fixed.pars = list(omega = 1 - alpha - beta, alpha1 = alpha, beta1 = beta)
+  )
+  path <- rugarch::ugarchpath(spec, n.sim = T, m.sim = N, n.start = burn)
+  matrix(rugarch::fitted(path), T, N)
+}
+
+# Symmetric square root of a positive definite matrix
+sqrt_sym <- function(W) {
+  ev <- eigen(W, symmetric = TRUE)
+  ev$vectors %*% (sqrt(pmax(ev$values, 0)) * t(ev$vectors))
 }
 
 # Scenarios for the size and power study: the separable null (size),
