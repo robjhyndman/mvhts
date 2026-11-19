@@ -149,7 +149,7 @@ cbind(power_df %>% filter(hierarchy == "brazil", T == 100) %>% select(family, di
 scen_errors <- data.frame(index = 1:9, 
                           rbind(data.frame(error = "normal", param = NA), 
                           tidyr::expand_grid(error = "t", param = c(5,10)), 
-                          tidyr::expand_grid(error = "GARCH", param = c(0.05, 0.1, 0.2)),
+                          tidyr::expand_grid(error = "GARCH", param = c(0.05, 0.1, 0.15)),
                           tidyr::expand_grid(error = "AR", param = c(0.1, 0.2, 0.3))))
 
 scen_main <- tidyr::expand_grid(index = 1:9, 
@@ -163,41 +163,8 @@ scenarios_merge1 <- merge(scen_main, scen_errors, by = "index")
 scenarios_error_sim <- merge(scenarios_merge1, scen_dial, by = "family")
 
 
-# secification of GARCH model, now in the mygarch() fct in kappa_power:
-# uspec <- ugarchspec(
-#   variance.model = list(model = "sGARCH",   # Standard‑GARCH
-#                         garchOrder = c(1,1)),
-#   mean.model     = list(armaOrder = c(0,0), # reiner Fehlerprozess
-#                         include.mean = FALSE),
-#   distribution.model = "norm",            # Normalverteilung
-#   fixed.pars = list(omega = 0.05, alpha1 = 0.1, beta1 = 0.85)
-# )
-
-
-mygarch <- function(param, W,  T){
-  # specification of the GARCH model
-  uspec <- ugarchspec(
-    variance.model = list(model = "sGARCH",
-                          garchOrder = c(1,1)),
-    mean.model     = list(armaOrder = c(0,0), 
-                          include.mean = FALSE),
-    distribution.model = "norm",
-    fixed.pars = list(omega = param, alpha1 = 0.1, beta1 = 0.85)
-  )
-  
-  # simulate:
-  garch_obj <- rugarch::ugarchpath(uspec, 
-                                   n.sim = T,
-                                   m.sim = NCOL(W),
-                                   n.start = 200)
-  
-  # calculate W^(1/2) with eigenvalues and -vectors
-  W_eigen <- eigen(W)
-  W_sqrt <- W_eigen$vectors %*% diag(sqrt(W_eigen$values)) %*% t(W_eigen$vectors)
-  
-  #W^(1/2) * GARCH-errors:
-  t(W_sqrt %*% t(fitted(garch_obj)))
-}
+# GARCH and AR(1) errors are simulated by sim_errors() in R/diagnostic.R.
+# GARCH param is alpha, with alpha + beta = 0.95 and unit variance.
 
 # apply kappa_power function for one setting:
 kappa_power(S = hierarchies$small, 
