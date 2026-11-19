@@ -562,7 +562,8 @@ numbers_app <- function(
     appNetPlugStates = fmt(100 * d$arima$net_gain_states, 1),
     appErrCorSep = fmt(err_cor[["separate"]], 2),
     appErrCorJoint = fmt(err_cor[["joint"]], 2),
-    appVarVsArimaBase = fmt(100 * (var_vs_arima - 1), 0)
+    # Percentage by which the VAR base forecasts' MSE is lower than ARIMA's
+    appVarBaseGain = fmt(100 * (1 - var_vs_arima), 0)
   )
 }
 

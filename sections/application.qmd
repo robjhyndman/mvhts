@@ -40,7 +40,7 @@ The first origin has 108 months of training data (January 2004 to December 2012)
 This gives `r num$appOrigins` origins, `r num$appOriginsFull` of which have all twelve horizons within the sample.
 There are two sets of base forecasts.
 The first comes from an ARIMA model selected automatically for each series [@hyndman2021forecasting].
-The second comes from a bivariate VAR for admissions and dismissals at each node, with no seasonal terms and a lag order of up to five selected by the AICc.
+The second comes from a bivariate VAR for admissions and dismissals at each node, with monthly seasonal dummies and a lag order of up to five selected by the AICc.
 Results for ETS base forecasts are in the Supplementary Material.
 We compare the base forecasts with OLS, structurally weighted least squares (WLS) and MinT reconciliation.
 MinT is applied in three ways: separately to each variable, jointly to both, and separately using the diagonal blocks of the joint covariance estimate.
@@ -53,9 +53,8 @@ For the ARIMA base forecasts, the estimated error covariance is close to separab
 Joint reconciliation would place moderate weight on the other variable's incoherences ($\widehat\kappa = `r num[["appKappaArima"]]`$), but the plug-in gain in mean squared error is only `r num$appGainArima`%.
 The incoherences account for `r num$appIncohArima`% of the total variance of the one-step errors.
 The likelihood ratio test rejects the conditions of @prp-equivalence ($p `r num$appPTextArima`$), so the departure is small but not pure estimation noise.
-The test assumes serially uncorrelated residuals, however, and a Ljung--Box test with 24 lags rejects at the 5% level for `r num$appLbArima`% of the ARIMA residual series, so the $p$-value is only indicative.
-The VAR residuals give a larger $\widehat\kappa$ (`r num$appKappaVar`) and larger $F$ statistics.
-But they are autocorrelated for `r num$appLbVar`% of the series, which invalidates the test: with no seasonal terms and at most five lags, the per-node VARs cannot capture the annual seasonality.
+The VAR residuals give a smaller $\widehat\kappa$ (`r num$appKappaVar`) and a plug-in gain of only `r num$appGainVar`%, but the test rejects for them too ($p `r num$appPTextVar`$).
+The test assumes serially uncorrelated residuals, however, and a Ljung--Box test with 24 lags rejects at the 5% level for `r num$appLbArima`% of the ARIMA residual series and `r num$appLbVar`% of the VAR residual series, so the $p$-values are only indicative.
 
 For net employment change the plug-in gain is larger.
 With $\bm{\ell}$ selecting admissions minus dismissals at a node, $\widehat\gamma_{\bm{\ell}}$ is `r num$appNetPlugTotal`% for the national net change and, on average, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states.
@@ -89,8 +88,8 @@ For admissions it is slightly worse (`r num$appJointSepArimaAdm`).
 The gain for dismissals is larger than the plug-in gain of `r num$appGainArima`% would suggest.
 
 The results depend on the base model.
-With VAR base forecasts (@tbl-app-accuracy-var), joint reconciliation is worse than separate reconciliation at every level (ratios `r num$appJointSepVarRange`).
-The VAR base forecasts are also poorer to begin with: on average over the series, their mean squared error is `r num$appVarVsArimaBase`% higher than that of the ARIMA base forecasts.
+The VAR base forecasts are more accurate than the ARIMA base forecasts: on average over the series, their mean squared error is `r num$appVarBaseGain`% lower.
+With them (@tbl-app-accuracy-var), joint and separate reconciliation are almost indistinguishable, with ratios in the range `r num$appJointSepVarRange`, as the plug-in gain of `r num$appGainVar`% suggests.
 With ETS base forecasts (Supplementary Table\ S3), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
 So the benefit for dismissals appears where separate reconciliation is itself poor.
 

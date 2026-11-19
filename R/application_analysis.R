@@ -36,7 +36,7 @@ app_origin <- function(
     node = rep(rep(rownames(S), times = 2), each = h)
   ) |>
     dplyr::rename(h = horizon)
-  fits <- fit_base_models(train, app_series)
+  fits <- fit_app_models(train, app_series)
   out <- purrr::imap(fits, \(fit, name) {
     res <- base_residuals(fit, name, S, app_series)
     Yhat <- base_forecasts(fit, name, h, S, app_series)
@@ -60,6 +60,24 @@ app_origin <- function(
   )
 }
 
+# Base models for the application: as fit_base_models(), except that
+# the VAR at each node has monthly seasonal dummies (the employment
+# series are strongly seasonal; Experiment 2's simulated series are not),
+# with a lag order of up to five chosen by the AICc.
+fit_app_models <- function(train, variables, models = c("arima", "ets", "var")) {
+  fits <- fit_base_models(train, variables, setdiff(models, "var"))
+  if ("var" %in% models) {
+    fits$var <- train |>
+      tidyr::pivot_wider(names_from = series, values_from = value) |>
+      fabletools::model(
+        var = rlang::inject(
+          fable::VAR(vars(!!!rlang::syms(variables)) ~ season() + AR(0:5))
+        )
+      )
+  }
+  fits
+}
+
 # Forecast origins: expanding windows from `min_train` months to the
 # month before `last`
 app_origins <- function(
@@ -76,7 +94,7 @@ app_origins <- function(
 # --------------------------------------------------------------------
 app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
   train <- emprego |> dplyr::filter(time <= last)
-  fits <- fit_base_models(train, app_series, c("arima", "var"))
+  fits <- fit_app_models(train, app_series, c("arima", "var"))
   C <- make_C(S)
   n <- NROW(S)
   purrr::imap(fits, \(fit, name) {
