@@ -36,6 +36,7 @@ tidyr = "*"
 tsibble = "*"
 urca = "*"
 withr = "*"
+rugarch = "*"
 
 [dev-dependencies]
 testthat = "*"
