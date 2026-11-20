@@ -74,6 +74,24 @@ list(
   ),
   tar_target(fig_power, fig_kappa_power(power, "Imagens/test_power.pdf"), format = "file"),
   # Size of the test under AR(1) errors (Supplementary Material)
+  # Size and power of the wild bootstrap Wilks test under normal,
+  # multivariate t and GARCH errors
+  tar_target(boot_scenarios, boot_size_scenarios()),
+  tar_target(
+    boot_sims,
+    boot_size(
+      hierarchies[[boot_scenarios$hierarchy]],
+      boot_scenarios$hierarchy,
+      boot_scenarios$family,
+      boot_scenarios$dial,
+      boot_scenarios$T,
+      error = boot_scenarios$error,
+      param = boot_scenarios$param,
+      reps = 1000,
+      B = 199
+    ),
+    pattern = map(boot_scenarios)
+  ),
   tar_target(ar_scenarios, ar_size_scenarios()),
   tar_target(
     ar_size,

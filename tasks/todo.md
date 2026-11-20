@@ -11,7 +11,11 @@ It does not repeat that material; it says what to build, in what order, and how 
 
 - [x] Seasonal dummies in the application VAR (`fit_app_models()`; Experiment 2 unchanged), pipeline rerun, application text revised, numbers compared before/after. Commit.
 - [x] Supplement: size of the test under AR(1) errors (Experiment 1 designs), and the serial-correlation inflation factor for the application residuals. Commit.
-- [ ] Next: multivariate t and GARCH errors (wild bootstrap of Wilks; CR2/HTZ for comparison).
+- [x] Net change and CRPS with VAR base forecasts (ARIMA + joint MinT beats every VAR variant nationally and for regions). Commit.
+- [x] Wild bootstrap of Wilks (`cross_test_boot()`, targets `boot_sims`; `p_value_boot` in `app_diag`). Fixes multivariate t (except Brazil, 5 df, small T); does not fix GARCH, because the score products u_t z_t inherit the volatility clustering and are serially dependent. Commit.
+- [ ] Felix: CR2/HTZ Wald test (expect it to fail for GARCH for the same reason, and for Brazil because q = 162 > T at small T), lognormal errors, ATS.
+- [ ] Decide how to treat volatility clustering: score-product dependence for the ARIMA residuals is 1.39 (null range 0.94-1.08; VAR 0.95). Block wild bootstrap p-values (blocks up to 24 months) stay below 0.05 for both models. The supplement's claim that serial correlation is "too weak to distort the test" holds for linear autocorrelation only.
+- [ ] Write up the bootstrap results (supplement section; mention in Sections 4 and 5).
 
 ## Open items for Rob (as of 25 September 2026)
 

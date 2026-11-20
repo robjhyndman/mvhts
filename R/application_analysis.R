@@ -130,6 +130,8 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       p_adm = test$p_each_rao[1],
       p_dis = test$p_each_rao[2],
       p_value = test$p_value_rao,
+      # Wild bootstrap p-value, robust to heteroskedasticity
+      p_value_boot = cross_test_boot(as.matrix(res), S, B = 999)$p_value_boot,
       p_value_pillai = test$p_value_pillai,
       p_value_LH = test$p_value_LH,
       p_value_roy = test$p_value_roy,

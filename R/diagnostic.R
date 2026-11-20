@@ -124,6 +124,112 @@ ar_size_scenarios <- function(phi = c(0.1, 0.2, 0.3)) {
 }
 
 # --------------------------------------------------------------------
+# Wild bootstrap p-value for the Wilks test of cross_test(), valid under
+# heteroskedasticity of unknown form (including variance that depends on
+# the incoherences, as with multivariate t or GARCH errors).
+# For variable j the null model regresses the bottom-level errors Y on
+# X_own = (1, own incoherences), with residuals U0. Bootstrap samples are
+# Y* = X_own B0 + v * U0, where each row t is multiplied by the same
+# Rademacher sign v_t (shared across variables, so the dependence between
+# series within a period is kept). Their residuals on X_own and on X_full
+# are those of v * U0, so Wilks' lambda is recomputed from those alone.
+# Small lambda is evidence against the null. The per-variable p-values
+# are combined with a Bonferroni correction, as in cross_test().
+# --------------------------------------------------------------------
+cross_test_boot <- function(e, S, m = 2, B = 499) {
+  C <- make_C(S)
+  n <- NROW(S)
+  n_b <- NCOL(S)
+  n_a <- NROW(C)
+  T <- NROW(e)
+  z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
+  v <- matrix(sample(c(-1, 1), T * B, replace = TRUE), T, B)
+  p_each <- vapply(
+    seq_len(m),
+    \(j) {
+      Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
+      X_own <- cbind(1, z[[j]])
+      qr_own <- qr(X_own)
+      qr_full <- qr(cbind(X_own, do.call(cbind, z[-j])))
+      log_lambda <- \(U) {
+        as.numeric(
+          determinant(crossprod(qr.resid(qr_full, U)))$modulus -
+            determinant(crossprod(qr.resid(qr_own, U)))$modulus
+        )
+      }
+      U0 <- qr.resid(qr_own, Y)
+      obs <- log_lambda(U0)
+      boot <- vapply(seq_len(B), \(b) log_lambda(v[, b] * U0), numeric(1))
+      (1 + sum(boot <= obs)) / (B + 1)
+    },
+    numeric(1)
+  )
+  list(p_each_boot = p_each, p_value_boot = min(1, m * min(p_each)))
+}
+
+# Rejection rates at level alpha of the Wilks test with Rao's F
+# approximation and with the wild bootstrap (cross_test_boot()), for
+# errors from sim_errors()
+boot_size <- function(
+  S,
+  hierarchy,
+  family,
+  dial,
+  T,
+  error = "normal",
+  param = NA,
+  reps = 1000,
+  B = 199,
+  alpha = 0.05
+) {
+  W <- exp1_covariance(S, family, dial)
+  C <- make_C(S)
+  res <- t(vapply(
+    seq_len(reps),
+    \(r) {
+      e <- sim_errors(T, W, error, param)
+      c(cross_test(e, S)$p_value_rao, cross_test_boot(e, S, B = B)$p_value_boot)
+    },
+    numeric(2)
+  ))
+  tibble::tibble(
+    hierarchy = hierarchy,
+    family = family,
+    dial = dial,
+    error = error,
+    param = param,
+    T = T,
+    kappa = kappa_mv(W, C, 2),
+    reps = reps,
+    B = B,
+    rejection_rao = mean(res[, 1] <= alpha),
+    rejection_boot = mean(res[, 2] <= alpha)
+  )
+}
+
+# Scenarios for the bootstrap study: the null designs F0 and F1 under
+# normal, multivariate t and GARCH errors (size), and the departures F2
+# and F3 under normal errors (power)
+boot_size_scenarios <- function() {
+  errors <- tibble::tibble(
+    error = c("normal", "t", "t", "GARCH", "GARCH", "GARCH"),
+    param = c(NA, 5, 10, 0.05, 0.1, 0.15)
+  )
+  families <- sample_families()
+  dplyr::bind_rows(
+    tidyr::expand_grid(
+      dplyr::filter(families, family %in% c("F0", "F1")),
+      errors
+    ),
+    tidyr::expand_grid(
+      dplyr::filter(families, !family %in% c("F0", "F1")),
+      errors[1, ]
+    )
+  ) |>
+    tidyr::expand_grid(hierarchy = c("small", "brazil"), T = c(100, 200, 500, 1000))
+}
+
+# --------------------------------------------------------------------
 # How much serial correlation in the errors e would distort cross_test().
 # The test is built from the sample covariances between u, the residuals
 # from regressing variable j's bottom-level errors on its own
