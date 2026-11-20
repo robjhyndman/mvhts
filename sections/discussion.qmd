@@ -26,6 +26,7 @@ Their forecast distributions depend on the joint distribution of the base foreca
 Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map.
 So separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
 When they fail, joint reconciliation can still help such combinations even where it does little for the variables themselves, as it did for net employment change in Brazil.
+There, jointly reconciled ARIMA forecasts of net change were more accurate than those from VARs that model the two variables together, so the dependence between variables need not be built into the base models: reconciliation can supply it, more cheaply and with more flexible univariate models.
 The plug-in gain $\widehat\gamma_{\bm{\ell}}$ for the combination of interest is a better guide than the average gain $\widehat\gamma$.
 
 Joint reconciliation is needed when a constraint does link the variables.

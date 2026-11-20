@@ -252,16 +252,18 @@ tab_app_diag <- function(app_diag, file) {
 app_prob_summary <- function(app_prob_scores) {
   app_prob_scores |>
     dplyr::mutate(level = node_level(node)) |>
-    dplyr::group_by(method, level, node) |>
+    dplyr::group_by(model, method, level, node) |>
     dplyr::summarise(crps = mean(crps), .groups = "drop") |>
     dplyr::group_by(level, node) |>
-    dplyr::mutate(rel = crps / crps[method == "independent + separate"]) |>
-    dplyr::group_by(method, level) |>
+    dplyr::mutate(
+      rel = crps / crps[model == "arima" & method == "independent + separate"]
+    ) |>
+    dplyr::group_by(model, method, level) |>
     dplyr::summarise(rel = exp(mean(log(rel))), .groups = "drop")
 }
 
-# Point forecasts of net change: MSE relative to separate MinT,
-# geometric mean over the series at each level
+# Point forecasts of net change: MSE relative to separate MinT of the
+# ARIMA base forecasts, geometric mean over the series at each level
 app_net_point <- function(app_point) {
   app_point |>
     tidyr::pivot_wider(names_from = series, values_from = error) |>
@@ -271,32 +273,38 @@ app_net_point <- function(app_point) {
     ) |>
     dplyr::group_by(model, method, level, node) |>
     dplyr::summarise(mse = mean(net^2), .groups = "drop") |>
-    dplyr::group_by(model, level, node) |>
-    dplyr::mutate(rel = mse / mse[method == "separate"]) |>
+    dplyr::group_by(level, node) |>
+    dplyr::mutate(rel = mse / mse[model == "arima" & method == "separate"]) |>
     dplyr::group_by(model, method, level) |>
     dplyr::summarise(rel = exp(mean(log(rel))), .groups = "drop")
 }
 
 tab_app_prob <- function(prob_summary, net_point, file) {
   lv <- c("Total", "Regions", "States")
+  models <- c("arima", "var")
   row <- function(label, df, m) {
-    latex_row(
-      label,
-      fmt(df$rel[match(paste(m, lv), paste(df$method, df$level))])
-    )
+    cells <- unlist(lapply(models, \(mod) {
+      d <- df[df$model == mod, ]
+      fmt(d$rel[match(paste(m, lv), paste(d$method, d$level))])
+    }))
+    latex_row(label, cells)
   }
-  np <- net_point |> dplyr::filter(model == "arima")
+  np <- net_point
   pr <- prob_summary
   write_tabular(
     file,
-    "lrrr",
-    " & Total & Regions & States \\\\",
+    "lrrrrrr",
     c(
-      "\\multicolumn{4}{l}{\\emph{Point forecasts (MSE)}} \\\\",
+      " & \\multicolumn{3}{c}{ARIMA} & \\multicolumn{3}{c}{VAR} \\\\",
+      paste0(" & ", paste(rep(lv, 2), collapse = " & "), " \\\\")
+    ),
+    c(
+      "\\multicolumn{7}{l}{\\emph{Point forecasts (MSE)}} \\\\",
+      row("\\quad Base", np, "base"),
       row("\\quad MinT, separate", np, "separate"),
       row("\\quad MinT, separate (joint estimate)", np, "sep_blocks"),
       row("\\quad MinT, joint", np, "joint"),
-      "\\multicolumn{4}{l}{\\emph{Sample paths (CRPS)}} \\\\",
+      "\\multicolumn{7}{l}{\\emph{Sample paths (CRPS)}} \\\\",
       row(
         "\\quad Independent innovations, separate reconciliation",
         pr,
@@ -475,7 +483,18 @@ numbers_app <- function(
   # Percentage reductions in CRPS (sample paths) and MSE (point forecasts)
   # of net change, at each level
   skill <- function(m, l) {
-    fmt(100 * (1 - pr$rel[pr$method == m & pr$level == l]), 0)
+    fmt(100 * (1 - pr$rel[pr$model == "arima" & pr$method == m & pr$level == l]), 0)
+  }
+  # Net change with VAR base forecasts: range over the base forecasts and
+  # the reconciliation methods (MSE) or the three kinds of sample paths
+  # (CRPS), relative to the ARIMA references, at level l
+  var_net_range <- function(df, l) {
+    fmt_range(df$rel[df$model == "var" & df$level == l], 2)
+  }
+  var_point <- net_point |>
+    dplyr::filter(method %in% c("base", "separate", "sep_blocks", "joint"))
+  arima_joint <- function(df, m, l) {
+    fmt(df$rel[df$model == "arima" & df$method == m & df$level == l], 2)
   }
   point_skill <- function(l) {
     np <- net_point |>
@@ -577,6 +596,14 @@ numbers_app <- function(
     appNetJointJointTotal = skill("joint + joint", "Total"),
     appNetJointJointRegions = skill("joint + joint", "Regions"),
     appNetJointSepRegions = skill("joint + separate", "Regions"),
+    appNetVarPointTotal = var_net_range(var_point, "Total"),
+    appNetVarPointRegions = var_net_range(var_point, "Regions"),
+    appNetVarCrpsTotal = var_net_range(pr, "Total"),
+    appNetVarCrpsRegions = var_net_range(pr, "Regions"),
+    appNetArimaJointPointTotal = arima_joint(net_point, "joint", "Total"),
+    appNetArimaJointPointRegions = arima_joint(net_point, "joint", "Regions"),
+    appNetArimaJointCrpsTotal = arima_joint(pr, "joint + joint", "Total"),
+    appNetArimaJointCrpsRegions = arima_joint(pr, "joint + joint", "Regions"),
     appNetPointTotal = point_skill("Total"),
     appNetPointRegions = point_skill("Regions"),
     appNetPointStates = point_skill("States"),

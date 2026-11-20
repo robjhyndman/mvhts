@@ -117,7 +117,7 @@ Application: MSE relative to base forecasts (VAR), geometric mean over the serie
 
 Net employment change is a linear combination of the two variables, so the argument of @sec-theory suggests that joint reconciliation may help it by more than it helps either variable alone.
 @tbl-app-prob shows that it does at the national and regional levels.
-Compared with separate reconciliation, joint reconciliation reduces the mean squared error of net change by `r num$appNetPointTotal`% at the national level, `r num$appNetPointRegions`% for the regions and `r num$appNetPointStates`% for the states.
+For the ARIMA base forecasts, compared with separate reconciliation, joint reconciliation reduces the mean squared error of net change by `r num$appNetPointTotal`% at the national level, `r num$appNetPointRegions`% for the regions and `r num$appNetPointStates`% for the states.
 It makes the errors in admissions and dismissals more positively correlated, so more of the error cancels in the difference.
 Pooled over all series and horizons, their correlation is `r num$appErrCorJoint` after joint reconciliation and `r num$appErrCorSep` after separate reconciliation.
 Almost all of the gain comes from the cross-variable blocks.
@@ -128,6 +128,16 @@ Resampling each variable's innovations independently discards the dependence bet
 With separate reconciliation, keeping the dependence reduces the continuous ranked probability score (CRPS) of net change by `r num$appNetJointSepTotal`% nationally, `r num$appNetJointSepRegions`% for the regions and `r num$appNetJointSepStates`% for the states.
 Reconciling the paths jointly raises the reduction to `r num$appNetJointJointTotal`% nationally and `r num$appNetJointJointRegions`% for the regions.
 
+The VAR base forecasts model the dependence between admissions and dismissals directly, and they are the more accurate forecasts of each variable.
+Yet they forecast net change less well.
+We generated sample paths from the VARs in the same way, resampling the innovations of the two variables at each node jointly or independently.
+Relative to separate MinT of the ARIMA forecasts, the mean squared error of net change with VAR base forecasts, reconciled or not, is `r num$appNetVarPointTotal` nationally and `r num$appNetVarPointRegions` for the regions, against `r num$appNetArimaJointPointTotal` and `r num$appNetArimaJointPointRegions` for joint MinT of the ARIMA forecasts.
+The CRPS ratios tell the same story: `r num$appNetVarCrpsTotal` and `r num$appNetVarCrpsRegions` for the VAR paths, against `r num$appNetArimaJointCrpsTotal` and `r num$appNetArimaJointCrpsRegions` for jointly simulated and jointly reconciled ARIMA paths.
+At the state level the two base models are about equally accurate.
+With VAR base forecasts, neither joint innovations nor joint reconciliation improves the forecasts of net change.
+So for net change, joint reconciliation of univariate forecasts captures the dependence between the variables better than a multivariate base model does.
+It is also cheaper to compute, and it lets each series have its own model.
+
 ::: {#tbl-app-prob}
 ```{r}
 #| output: asis
@@ -135,7 +145,7 @@ Reconciling the paths jointly raises the reduction to `r num$appNetJointJointTot
 cat(readLines(tar_read(table_app_prob)), sep = "\n")
 ```
 
-Application: forecasts of net employment change (admissions minus dismissals), ARIMA base models, geometric mean over the series at each level, `r num$appOrigins` origins (`r num$appOriginsFull` with all twelve horizons), horizons 1--12.
-Top: MSE of point forecasts relative to separate MinT.
-Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation.
+Application: forecasts of net employment change (admissions minus dismissals) from ARIMA and VAR base models, geometric mean over the series at each level, `r num$appOrigins` origins (`r num$appOriginsFull` with all twelve horizons), horizons 1--12.
+Top: MSE of point forecasts relative to separate MinT of the ARIMA forecasts.
+Bottom: CRPS from 1000 sample paths relative to independent innovations with separate reconciliation of the ARIMA forecasts.
 :::

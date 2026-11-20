@@ -22,22 +22,40 @@ crps_sample <- function(y, x) {
   2 / m^2 * sum((x - y) * (m * (y < x) - seq_len(m) + 0.5))
 }
 
-# Sample paths of all series from fitted ARIMA models, driven by
+# Sample paths of all series from fitted ARIMA or VAR models, driven by
 # innovations taken from rows of the residual matrix `res`:
 #   path = point forecast + Psi e,
-# where Psi holds the psi weights of each model (arima_psi below). This
-# is the exact conditional distribution for a linear ARIMA model with
-# these innovations. (fabletools::generate() with supplied innovations
+# where Psi holds the psi weights of each model (arima_psi and var_psi
+# below). This is the exact conditional distribution for a linear model
+# with these innovations. (fabletools::generate() with supplied innovations
 # has the same response to innovations but starts from a slightly
 # different mean, so it is not used.)
 # idx_list gives, for each variable, an (h x K) matrix of residual row
 # indices; sharing the matrix keeps the variables' innovations jointly
 # distributed. Returns an array h x (2n) x K in stacked column order.
-app_paths <- function(fit, res, idx_list, h, K, S) {
+app_paths <- function(fit, model, res, idx_list, h, K, S) {
   cols <- stacked_names(S, app_series)
-  fc <- base_forecasts(fit, "arima", h, S, app_series)
+  fc <- base_forecasts(fit, model, h, S, app_series)
   keys <- tibble::as_tibble(fit)
   out <- array(NA_real_, dim = c(h, length(cols), K))
+  if (model == "var") {
+    # One bivariate VAR per node: the path of variable i is driven by the
+    # innovations of both variables through the (i, l) psi weights
+    for (k in seq_len(NROW(keys))) {
+      c_k <- match(paste0(app_series, ".", keys$node[k]), cols)
+      psi <- var_psi(keys$var[[k]]$fit, h)
+      E <- lapply(seq_along(app_series), \(l) {
+        matrix(res[c(idx_list[[app_series[l]]]), c_k[l]], h, K)
+      })
+      for (i in seq_along(app_series)) {
+        out[, c_k[i], ] <- fc[, c_k[i]] +
+          Reduce(`+`, lapply(seq_along(app_series), \(l) {
+            psi_matrix(psi[i, l, ]) %*% E[[l]]
+          }))
+      }
+    }
+    return(out)
+  }
   for (k in seq_len(NROW(keys))) {
     c_k <- match(paste0(keys$series[k], ".", keys$node[k]), cols)
     Psi <- psi_matrix(arima_psi(keys$arima[[k]]$fit$model, h))
@@ -48,8 +66,8 @@ app_paths <- function(fit, res, idx_list, h, K, S) {
 }
 
 # CRPS of net change at every node and horizon for the three ways of
-# producing coherent sample paths, from an ARIMA fit at one origin
-app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
+# producing coherent sample paths, from an ARIMA or VAR fit at one origin
+app_prob <- function(fit, model, res, maps, actual, S, origin, K = 1000) {
   n <- NROW(S)
   h <- NROW(actual)
   # Residual rows for each step and path: shared (joint) or drawn
@@ -59,6 +77,7 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
   paths <- list(
     joint = app_paths(
       fit,
+      model,
       res,
       list(Admissões = shared, Demissões = shared),
       h,
@@ -67,6 +86,7 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
     ),
     independent = app_paths(
       fit,
+      model,
       res,
       list(Admissões = shared, Demissões = draw()),
       h,
@@ -94,6 +114,7 @@ app_prob <- function(fit, res, maps, actual, S, origin, K = 1000) {
     net <- rec[, idx_a, , drop = FALSE] - rec[, idx_d, , drop = FALSE]
     tibble::tibble(
       origin = as.character(origin),
+      model = model,
       method = label,
       h = grid$h,
       node = rownames(S)[grid$node],
@@ -160,6 +181,27 @@ arima_psi <- function(model, h) {
     1,
     stats::ARMAtoMA(ar = -ar_poly[-1], ma = ma_poly[-1], lag.max = h - 1)
   )[seq_len(h)]
+}
+
+# Psi weights of a fitted fable VAR (the stored fit, with lagged terms
+# named "lag(<variable>,<lag>)"; deterministic terms do not enter):
+# an array [i, l, j + 1] giving the response of variable i to an
+# innovation in variable l j steps earlier, j = 0, ..., h - 1.
+var_psi <- function(fit, h) {
+  vars <- colnames(fit$coef)
+  k <- length(vars)
+  p <- fit$spec$p
+  A <- lapply(seq_len(p), \(lag) {
+    t(fit$coef[paste0("lag(", vars, ",", lag, ")"), , drop = FALSE])
+  })
+  psi <- array(0, dim = c(k, k, h))
+  psi[, , 1] <- diag(k)
+  for (j in seq_len(h - 1)) {
+    for (lag in seq_len(min(j, p))) {
+      psi[, , j + 1] <- psi[, , j + 1] + A[[lag]] %*% psi[, , j + 1 - lag]
+    }
+  }
+  psi
 }
 
 # Lower-triangular h x h matrix mapping future innovations to paths

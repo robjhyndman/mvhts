@@ -46,8 +46,8 @@ app_origin <- function(
       tibble::tibble(model = name, method = method, labels, error = c(err))
     }) |>
       dplyr::bind_rows()
-    prob <- if (name == "arima") {
-      app_prob(fit, res, maps, actual, S, origin, K)
+    prob <- if (name %in% c("arima", "var")) {
+      app_prob(fit, name, res, maps, actual, S, origin, K)
     } else {
       NULL
     }
@@ -56,7 +56,7 @@ app_origin <- function(
   list(
     point = dplyr::bind_rows(purrr::map(out, "point")) |>
       dplyr::mutate(origin = as.character(origin), .before = 1),
-    prob = out$arima$prob
+    prob = dplyr::bind_rows(out$arima$prob, out$var$prob)
   )
 }
 

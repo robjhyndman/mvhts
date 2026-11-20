@@ -1,15 +1,17 @@
 \centering\small
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrrrr}
 \hline
- & Total & Regions & States \\
+ & \multicolumn{3}{c}{ARIMA} & \multicolumn{3}{c}{VAR} \\
+ & Total & Regions & States & Total & Regions & States \\
 \hline
-\multicolumn{4}{l}{\emph{Point forecasts (MSE)}} \\
-\quad MinT, separate & 1.000 & 1.000 & 1.000 \\
-\quad MinT, separate (joint estimate) & 0.991 & 0.990 & 0.996 \\
-\quad MinT, joint & 0.832 & 0.865 & 0.943 \\
-\multicolumn{4}{l}{\emph{Sample paths (CRPS)}} \\
-\quad Independent innovations, separate reconciliation & 1.000 & 1.000 & 1.000 \\
-\quad Joint innovations, separate reconciliation & 0.970 & 0.978 & 0.987 \\
-\quad Joint innovations, joint reconciliation & 0.878 & 0.905 & 0.956 \\
+\multicolumn{7}{l}{\emph{Point forecasts (MSE)}} \\
+\quad Base & 1.366 & 1.163 & 0.980 & 1.240 & 1.097 & 0.954 \\
+\quad MinT, separate & 1.000 & 1.000 & 1.000 & 1.359 & 1.150 & 0.950 \\
+\quad MinT, separate (joint estimate) & 0.991 & 0.990 & 0.996 & 1.332 & 1.139 & 0.945 \\
+\quad MinT, joint & 0.832 & 0.865 & 0.943 & 1.333 & 1.161 & 0.955 \\
+\multicolumn{7}{l}{\emph{Sample paths (CRPS)}} \\
+\quad Independent innovations, separate reconciliation & 1.000 & 1.000 & 1.000 & 1.086 & 1.026 & 0.942 \\
+\quad Joint innovations, separate reconciliation & 0.970 & 0.978 & 0.987 & 1.141 & 1.057 & 0.954 \\
+\quad Joint innovations, joint reconciliation & 0.878 & 0.905 & 0.956 & 1.126 & 1.064 & 0.957 \\
 \hline
 \end{tabular}
