@@ -448,6 +448,42 @@ numbers_supp_ar <- function(ar_size, app_diag) {
 # residuals and incoherences are all AR(1) with coefficient phi
 ar_inflation <- function(phi) (1 + phi^2) / (1 - phi^2)
 
+# Supplement: size of the Wilks test with Rao's F approximation and with
+# the wild bootstrap under heavy-tailed and heteroskedastic errors, its
+# power under normal errors, and the application bootstrap p-values
+numbers_supp_boot <- function(boot_sims, app_diag) {
+  pct <- function(x) fmt_range(x, 1, 100)
+  null <- boot_sims |> dplyr::filter(family %in% c("F0", "F1"))
+  sel <- function(err, par = NA, h = c("small", "brazil"), Ts = c(100, 200, 500, 1000)) {
+    keep <- null$error == err & null$hierarchy %in% h & null$T %in% Ts
+    keep <- keep & (if (is.na(par)) is.na(null$param) else null$param %in% par)
+    null[keep, ]
+  }
+  alt <- boot_sims |> dplyr::filter(!family %in% c("F0", "F1"))
+  d <- split(app_diag, app_diag$model)
+  p_text <- function(p) if (p < 0.001) "< 0.001" else paste("=", fmt(p, 3))
+  garch_max <- max(null$param[null$error == "GARCH"])
+  list(
+    suppBootNormalRao = pct(sel("normal")$rejection_rao),
+    suppBootNormal = pct(sel("normal")$rejection_boot),
+    suppBootTTenRao = pct(sel("t", 10)$rejection_rao),
+    suppBootTTen = pct(sel("t", 10)$rejection_boot),
+    suppBootTFiveSmall = pct(sel("t", 5, "small")$rejection_boot),
+    suppBootTFiveBrazilShort = pct(sel("t", 5, "brazil", c(100, 200))$rejection_boot),
+    suppBootTFiveBrazilLong = pct(sel("t", 5, "brazil", 1000)$rejection_boot),
+    suppBootGarchAlpha = format(garch_max),
+    suppBootGarchRao = pct(sel("GARCH", garch_max)$rejection_rao),
+    suppBootGarch = pct(sel("GARCH", garch_max)$rejection_boot),
+    suppBootPowerMaxLoss = fmt(100 * max(alt$rejection_rao - alt$rejection_boot), 1),
+    appPBootTextArima = p_text(d$arima$p_value_boot),
+    appPBootTextVar = p_text(d$var$p_value_boot),
+    appPBlockTwelveArima = fmt(d$arima$p_value_boot12, 3),
+    appPBlockTwelveVar = fmt(d$var$p_value_boot12, 3),
+    appPBlockTwentyFourArima = fmt(d$arima$p_value_boot24, 3),
+    appPBlockTwentyFourVar = fmt(d$var$p_value_boot24, 3)
+  )
+}
+
 numbers_app <- function(
   app_diag,
   accuracy,
@@ -704,6 +740,70 @@ tab_supp_tests <- function(power, file, T_show = c(100, 200)) {
       paste0(
         "Design & $\\kappa$ & ",
         paste(rep(stat_head, length(T_show)), collapse = " & "),
+        " \\\\"
+      )
+    ),
+    rows
+  )
+}
+
+# Supplement: rejection rates at the 5% level of the Wilks test with
+# Rao's F approximation and with the wild bootstrap, under the null
+# designs F0 and F1 with normal, multivariate t and GARCH errors
+tab_supp_boot <- function(boot_sims, file) {
+  x <- boot_sims |> dplyr::filter(family %in% c("F0", "F1"))
+  Ts <- sort(unique(x$T))
+  errs <- x |>
+    dplyr::distinct(error, param) |>
+    dplyr::mutate(
+      ord = match(error, c("normal", "t", "GARCH")),
+      ord2 = ifelse(error == "t", -param, param)
+    ) |>
+    dplyr::arrange(ord, ord2)
+  err_label <- function(err, par) {
+    switch(
+      err,
+      normal = "Normal",
+      t = sprintf("$t$, %g df", par),
+      GARCH = sprintf("GARCH, $\\alpha = %g$", par)
+    )
+  }
+  n_col <- 2 + 2 * length(Ts)
+  rows <- unlist(lapply(c("small", "brazil"), \(h) {
+    body <- unlist(lapply(c("F0", "F1"), \(fam) {
+      vapply(
+        seq_len(NROW(errs)),
+        \(i) {
+          d <- x |>
+            dplyr::filter(
+              hierarchy == h,
+              family == fam,
+              error == errs$error[i],
+              (is.na(param) & is.na(errs$param[i])) | param %in% errs$param[i]
+            ) |>
+            dplyr::arrange(T)
+          latex_row(
+            if (i == 1) fam else "",
+            c(err_label(errs$error[i], errs$param[i]), fmt(d$rejection_rao, 3), fmt(d$rejection_boot, 3))
+          )
+        },
+        character(1)
+      )
+    }))
+    c(sprintf("\\multicolumn{%d}{l}{\\emph{%s}} \\\\", n_col, hierarchy_labels[h]), body)
+  }))
+  write_tabular(
+    file,
+    paste0("ll", strrep("r", 2 * length(Ts))),
+    c(
+      sprintf(
+        " & & \\multicolumn{%d}{c}{Rao's $F$} & \\multicolumn{%d}{c}{Wild bootstrap} \\\\",
+        length(Ts),
+        length(Ts)
+      ),
+      paste0(
+        "Design & Errors & ",
+        paste(rep(sprintf("$T = %d$", Ts), 2), collapse = " & "),
         " \\\\"
       )
     ),

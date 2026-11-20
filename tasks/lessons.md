@@ -25,3 +25,7 @@
 - 2026-11-02: After changing any function that produces in-text numbers, check every number it returns, not only the new ones.
   An edit to `joint_vs_sep()` silently turned three existing ranges into `Inf--Inf`; I had checked only the numbers I added.
   Compare the full `numbers` list before and after, and grep both PDFs for `Inf`, `NA` and `NaN`.
+- 2026-11-20: Use statistical terms precisely, and check diagnostics against a null calibration before reporting them.
+  I wrote "true only for linear autocorrelation" when I meant autocorrelation of the residuals as opposed to autocorrelation of their cross-products; autocorrelation is linear by definition.
+  The same day I reported an uncentred product-autocorrelation measure (1.39) as strong evidence of dependence; it was an artifact of the products' nonzero mean under the alternative, and the centred version is biased by about -2L/T.
+  Before quoting a new diagnostic for real data, compute it on simulated null data at the same T, in exactly the same way.

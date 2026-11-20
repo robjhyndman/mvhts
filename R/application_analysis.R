@@ -130,8 +130,11 @@ app_diagnostic <- function(emprego, S, last = tsibble::yearmonth("2019 Dec")) {
       p_adm = test$p_each_rao[1],
       p_dis = test$p_each_rao[2],
       p_value = test$p_value_rao,
-      # Wild bootstrap p-value, robust to heteroskedasticity
+      # Wild bootstrap p-values, robust to heteroskedasticity, and block
+      # versions (12 and 24 months), robust also to serial dependence
       p_value_boot = cross_test_boot(as.matrix(res), S, B = 999)$p_value_boot,
+      p_value_boot12 = cross_test_boot(as.matrix(res), S, B = 999, block = 12)$p_value_boot,
+      p_value_boot24 = cross_test_boot(as.matrix(res), S, B = 999, block = 24)$p_value_boot,
       p_value_pillai = test$p_value_pillai,
       p_value_LH = test$p_value_LH,
       p_value_roy = test$p_value_roy,

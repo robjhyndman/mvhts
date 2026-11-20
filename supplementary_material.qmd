@@ -53,6 +53,45 @@ For F0 and F1, $\kappa = 0$ and the rejection rate is the size of the test.
 
 `\clearpage`{=latex}
 
+# Experiment 1: heavy-tailed and heteroskedastic errors {.unnumbered}
+
+Rao's $F$ approximation assumes normal errors.
+To see how the test behaves without that assumption, we repeated the size study of Experiment 1 with two kinds of non-normal errors that keep condition (d) true under F0 and F1.
+The first are multivariate $t$ with 5 or 10 degrees of freedom and scale matrix $\bm{W}$, so their covariance is proportional to $\bm{W}$.
+The second are $\bm{\varepsilon}_t = \bm{W}^{1/2}\bm{u}_t$, where the elements of $\bm{u}_t$ are independent GARCH(1,1) processes with normal innovations and unit unconditional variance,
+$$
+  u_{it} = \sigma_{it}\eta_{it}, \qquad
+  \sigma_{it}^2 = (1 - \alpha - \beta) + \alpha u_{i,t-1}^2 + \beta\sigma_{i,t-1}^2,
+$$
+with $\alpha \in \{0.05, 0.1, 0.15\}$ and $\alpha + \beta = 0.95$.
+Both have covariance proportional to $\bm{W}$, but under both the conditional variance of the errors in the regression of the main text is not constant: with $t$ errors it grows with the size of the incoherences, and with GARCH errors it varies over time.
+@tbl-supp-boot gives the rejection rates of the test with Rao's $F$ approximation and with the wild bootstrap described in the main text (199 bootstrap samples, single periods).
+
+With normal errors, both tests hold their size: their rejection rates are `r num$suppBootNormalRao`% and `r num$suppBootNormal`%.
+With $t$ errors Rao's approximation fails badly, with rejection rates of `r num$suppBootTTenRao`% for 10 degrees of freedom, and the failure does not shrink as $T$ grows.
+The wild bootstrap repairs it: with 10 degrees of freedom its rejection rates are `r num$suppBootTTen`%, and with 5 degrees of freedom `r num$suppBootTFiveSmall`% in the small hierarchy.
+In the Brazilian hierarchy with 5 degrees of freedom it is still oversized, at `r num$suppBootTFiveBrazilShort`% for $T \le 200$, falling to `r num$suppBootTFiveBrazilLong`% for $T = 1000$.
+Under normal errors the bootstrap loses almost no power: over the departures F2 and F3 of Experiment 1, its rejection rate is never more than `r num$suppBootPowerMaxLoss` percentage points below that of Rao's approximation.
+
+The wild bootstrap does not repair the GARCH case.
+With $\alpha = `r num$suppBootGarchAlpha`$, the rejection rates are `r num$suppBootGarchRao`% with Rao's approximation and `r num$suppBootGarch`% with the bootstrap.
+The test statistic is a function of the sample covariances between the residuals of the restricted regression and the other variable's incoherences, that is, of sample means of their products.
+GARCH errors are serially uncorrelated, but their squares are not, so these products, which contain squares of the same GARCH processes, are serially correlated.
+A bootstrap that draws an independent sign for each period treats the products as serially uncorrelated and so misses this dependence.
+Giving the same sign to blocks of consecutive periods allows for it, but with persistent volatility the blocks must be long.
+
+::: {#tbl-supp-boot}
+```{r}
+#| output: asis
+
+cat(readLines(tar_read(table_supp_boot)), sep = "\n")
+```
+
+Experiment 1: rejection rate at the 5% level of the test based on Wilks' $\Lambda$ with Rao's $F$ approximation and with the wild bootstrap, under the null designs F0 and F1 with normal, multivariate $t$ and GARCH(1,1) errors (1000 replications; 199 bootstrap samples).
+:::
+
+`\clearpage`{=latex}
+
 # Experiment 1: serially correlated errors {.unnumbered}
 
 The test of condition (d) assumes serially uncorrelated errors.
@@ -79,7 +118,14 @@ So a given $f > 1$ produces more over-rejection when there are more restrictions
 
 For the application, we estimated $f$ from the one-step residuals for every pair of elements of $\bm{u}_t$ and $\tilde{\bm{z}}_t$, using autocorrelations up to lag 24, and averaged over pairs and over the two variables.
 The average is `r num$suppArInflArima` for the ARIMA residuals and `r num$suppArInflVar` for the VAR residuals, both below the value of `r num$suppArInflPhiMin` for $\phi = `r num$suppArPhiMin`$.
-The serial correlation that the Ljung--Box tests detect is too weak, or too poorly aligned between the residuals and the incoherences, to distort the test.
+So the serial correlation that the Ljung--Box tests detect is too weak, or too poorly aligned between the residuals and the incoherences, to distort the test.
+
+This does not settle the matter, because $f$ measures only one source of serial correlation in the products of residuals and incoherences from which the test is built.
+In general the autocovariance of such a product also has a fourth-order term, which is zero for Gaussian processes but not, for example, under volatility clustering.
+Residuals can then be serially uncorrelated while the products are not, as with the GARCH errors of @tbl-supp-boot.
+For the application we therefore also computed block wild bootstrap $p$-values, which allow for serial dependence of either kind.
+With 12-month blocks they are `r num$appPBlockTwelveArima` for the ARIMA residuals and `r num$appPBlockTwelveVar` for the VAR residuals.
+With 24-month blocks they are `r num$appPBlockTwentyFourArima` and `r num$appPBlockTwentyFourVar`, but with $T = 192$ there are then only eight blocks, and since $\Lambda$ is unchanged when every sign is reversed, only 128 distinct bootstrap statistics, so this version has little power.
 
 ::: {#tbl-supp-ar}
 ```{r}

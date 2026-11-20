@@ -54,8 +54,12 @@ Joint reconciliation would place moderate weight on the other variable's incoher
 The incoherences account for `r num$appIncohArima`% of the total variance of the one-step errors.
 The likelihood ratio test rejects the conditions of @prp-equivalence ($p `r num$appPTextArima`$), so the departure is small but not pure estimation noise.
 The VAR residuals give a smaller $\widehat\kappa$ (`r num$appKappaVar`) and a plug-in gain of only `r num$appGainVar`%, but the test rejects for them too ($p `r num$appPTextVar`$).
-The test assumes serially uncorrelated residuals.
-A Ljung--Box test with 24 lags rejects at the 5% level for `r num$appLbArima`% of the ARIMA residual series and `r num$appLbVar`% of the VAR residual series, but this serial correlation is too weak to distort the test: it inflates the variance of the test statistic by less than AR(1) errors with coefficient `r num$suppArPhiMin` would, and under those the size of the test is at most `r num$suppArPhiMinMax`% (Supplementary Table\ S2).
+These $p$-values assume normal, serially independent residuals.
+A Ljung--Box test with 24 lags rejects at the 5% level for `r num$appLbArima`% of the ARIMA residual series and `r num$appLbVar`% of the VAR residual series, but this autocorrelation is too weak to distort the test (Supplementary Table\ S3).
+The wild bootstrap of @sec-diagnostic, which does not need normality, gives $p `r num$appPBootTextArima`$ for the ARIMA residuals and $p `r num$appPBootTextVar`$ for the VAR residuals.
+Giving the same sign to blocks of 12 months, which also allows for serial dependence, gives $p = `r num$appPBlockTwelveArima`$ and $p = `r num$appPBlockTwelveVar`$.
+With 24-month blocks, $p = `r num$appPBlockTwentyFourArima`$ and $p = `r num$appPBlockTwentyFourVar`$, but there are then only eight blocks, so this version has little power.
+The evidence against condition (d) is clear for the VAR residuals, and weaker but still present for the ARIMA residuals.
 
 For net employment change the plug-in gain is larger.
 With $\bm{\ell}$ selecting admissions minus dismissals at a node, $\widehat\gamma_{\bm{\ell}}$ is `r num$appNetPlugTotal`% for the national net change and, on average, `r num$appNetPlugRegions`% for the regions and `r num$appNetPlugStates`% for the states.
@@ -84,14 +88,14 @@ The reason is that the national ARIMA models forecast dismissals well: summing t
 MinT shifts weight towards the state-level forecasts, which for dismissals is the wrong direction.
 
 Joint reconciliation recovers part of that loss.
-For dismissals it beats separate MinT at every level, with ratios of mean squared errors in the range `r num$appJointSepArimaDis`, and the gain holds at every horizon (Supplementary Table\ S5).
+For dismissals it beats separate MinT at every level, with ratios of mean squared errors in the range `r num$appJointSepArimaDis`, and the gain holds at every horizon (Supplementary Table\ S6).
 For admissions it is slightly worse (`r num$appJointSepArimaAdm`).
 The gain for dismissals is larger than the plug-in gain of `r num$appGainArima`% would suggest.
 
 The results depend on the base model.
 The VAR base forecasts are more accurate than the ARIMA base forecasts: on average over the series, their mean squared error is `r num$appVarBaseGain`% lower.
 With them (@tbl-app-accuracy-var), joint and separate reconciliation are almost indistinguishable, with ratios in the range `r num$appJointSepVarRange`, as the plug-in gain of `r num$appGainVar`% suggests.
-With ETS base forecasts (Supplementary Table\ S4), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
+With ETS base forecasts (Supplementary Table\ S5), joint reconciliation is better for dismissals (`r num$appJointSepEtsDis`) and neutral for admissions (`r num$appJointSepEtsAdm`).
 So the benefit for dismissals appears where separate reconciliation is itself poor.
 
 ::: {#tbl-app-accuracy-arima}

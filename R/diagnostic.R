@@ -135,15 +135,22 @@ ar_size_scenarios <- function(phi = c(0.1, 0.2, 0.3)) {
 # are those of v * U0, so Wilks' lambda is recomputed from those alone.
 # Small lambda is evidence against the null. The per-variable p-values
 # are combined with a Bonferroni correction, as in cross_test().
+# With block > 1, the same sign multiplies whole blocks of `block`
+# consecutive periods (a block wild bootstrap), which also allows for
+# serial dependence in the products of residuals and incoherences.
 # --------------------------------------------------------------------
-cross_test_boot <- function(e, S, m = 2, B = 499) {
+cross_test_boot <- function(e, S, m = 2, B = 499, block = 1) {
   C <- make_C(S)
   n <- NROW(S)
   n_b <- NCOL(S)
   n_a <- NROW(C)
   T <- NROW(e)
   z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
-  v <- matrix(sample(c(-1, 1), T * B, replace = TRUE), T, B)
+  n_blocks <- ceiling(T / block)
+  v <- matrix(sample(c(-1, 1), n_blocks * B, replace = TRUE), n_blocks, B)
+  if (block > 1) {
+    v <- v[rep(seq_len(n_blocks), each = block)[seq_len(T)], , drop = FALSE]
+  }
   p_each <- vapply(
     seq_len(m),
     \(j) {

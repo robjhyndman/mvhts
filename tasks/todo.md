@@ -14,8 +14,8 @@ It does not repeat that material; it says what to build, in what order, and how 
 - [x] Net change and CRPS with VAR base forecasts (ARIMA + joint MinT beats every VAR variant nationally and for regions). Commit.
 - [x] Wild bootstrap of Wilks (`cross_test_boot()`, targets `boot_sims`; `p_value_boot` in `app_diag`). Fixes multivariate t (except Brazil, 5 df, small T); does not fix GARCH, because the score products u_t z_t inherit the volatility clustering and are serially dependent. Commit.
 - [ ] Felix: CR2/HTZ Wald test (expect it to fail for GARCH for the same reason, and for Brazil because q = 162 > T at small T), lognormal errors, ATS.
-- [ ] Decide how to treat volatility clustering: score-product dependence for the ARIMA residuals is 1.39 (null range 0.94-1.08; VAR 0.95). Block wild bootstrap p-values (blocks up to 24 months) stay below 0.05 for both models. The supplement's claim that serial correlation is "too weak to distort the test" holds for linear autocorrelation only.
-- [ ] Write up the bootstrap results (supplement section; mention in Sections 4 and 5).
+- [x] Dependence in the score products u_t z_t (which f = 1 + 2 sum rho_u rho_z misses when residuals are uncorrelated but not independent). Centred product measure at T = 192 (biased down; iid-normal null mean 0.77, 90% band 0.71-0.83): ARIMA 0.85, VAR 0.70, GARCH(0.15) 0.82, AR(0.2) 0.82. So mild dependence for ARIMA, none for VAR. (An earlier uncentred value of 1.39 for ARIMA was an artifact of the nonzero product mean under the alternative.) Block wild bootstrap p-values (blocks up to 24 months) stay below 0.05 for both models.
+- [x] Bootstrap write-up: Supplementary Table S2, block bootstrap p-values for the application (12 months: ARIMA 0.018, VAR 0.002; 24 months: 0.056, 0.030), wild bootstrap in Section 3, mentions in Sections 4 and 5.
 
 ## Open items for Rob (as of 25 September 2026)
 

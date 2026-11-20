@@ -61,6 +61,10 @@ We test it with the likelihood ratio statistic, Wilks' $\Lambda$, using Rao's $F
 With $m$ variables there are $m$ such tests, which we combine with a Bonferroni correction.
 The test uses the sample covariance, so it is unaffected by the shrinkage that biases $\widehat\kappa$ and $\widehat\gamma$.
 It needs $T \ge n_b + m n_a + 1$, and its null distribution assumes independent residual vectors, so it should be applied to the residuals of base models that leave no serial correlation.
+Rao's approximation also assumes normal, homoskedastic residuals.
+A wild bootstrap relaxes this [@davidson2008wild].
+We fit the regression without the other variables' incoherences, multiply its residuals in each period by a random sign, shared by all series, and recompute $\Lambda$ from the resulting data; the $p$-value is the proportion of bootstrap statistics at least as small as the observed one.
+Giving the same sign to blocks of consecutive periods also allows for serial dependence [@shao2010dependent].
 
 We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data.
 These procedures are badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error.
