@@ -89,8 +89,20 @@ sim_errors <- function(T, W, error = "normal", param = NA) {
       \(i) sqrt(1 - param^2) * stats::arima.sim(list(ar = param), n = T),
       numeric(T)
     ) %*% sqrt_sym(W),
+    lognormal = lognormal_errors(T, N, sigma = param) %*% sqrt_sym(W),
     stop("Unknown error ", error)
   )
+}
+
+
+# T x N matrix of lognormal data with unit-variance 
+# exp(sigma*eta_{it} - exp(sigma^2/2)) / sd
+# with n_{it} N(0,1) and sd theoretical standard deviation
+lognormal_errors <- function(T, N, sigma){
+  theoretical_sd <- sqrt(exp(sigma^2) * (exp(sigma^2) - 1))
+  eta <- matrix(rnorm(N * T, mean = 0, sd = 1), nrow = T, ncol = N)
+  
+  (exp(sigma * eta) - exp(sigma^2 / 2)) / theoretical_sd
 }
 
 # T x N matrix of independent GARCH(1,1) series with normal innovations,
@@ -195,10 +207,13 @@ boot_size <- function(
     seq_len(reps),
     \(r) {
       e <- sim_errors(T, W, error, param)
-      c(cross_test(e, S)$p_value_rao, cross_test_boot(e, S, B = B)$p_value_boot)
+      c(cross_test(e, S)$p_value_rao, 
+        cross_test_boot(e, S, B = B)$p_value_boot,
+        cross_test_cr2(e, S))
     },
-    numeric(2)
+    numeric(3)
   ))
+  print(res)
   tibble::tibble(
     hierarchy = hierarchy,
     family = family,
@@ -210,7 +225,8 @@ boot_size <- function(
     reps = reps,
     B = B,
     rejection_rao = mean(res[, 1] <= alpha),
-    rejection_boot = mean(res[, 2] <= alpha)
+    rejection_boot = mean(res[, 2] <= alpha),
+    rejection_cr2 = mean(res[, 3] <= alpha, na.rm = TRUE)
   )
 }
 
@@ -219,8 +235,8 @@ boot_size <- function(
 # and F3 under normal errors (power)
 boot_size_scenarios <- function() {
   errors <- tibble::tibble(
-    error = c("normal", "t", "t", "GARCH", "GARCH", "GARCH"),
-    param = c(NA, 5, 10, 0.05, 0.1, 0.15)
+    error = c("normal", "t", "t", "GARCH", "GARCH", "GARCH", "lognormal", "lognormal"),
+    param = c(NA, 5, 10, 0.05, 0.1, 0.15, 0.5, 1)
   )
   families <- sample_families()
   dplyr::bind_rows(
@@ -390,3 +406,48 @@ cross_test <- function(e, S, m = 2) {
     p_value_roy = min(1, m * min(tests["p_roy", ]))
   )
 }
+
+
+# --------------------------------------------------------------------
+# 2. Your new test: CR2 with the HTZ correction (clubSandwich)
+#
+# For variable j, regress its bottom-level errors Y on X_full = (1, own
+# incoherences, other variable's incoherences) and test that the
+# coefficients of the other variable's incoherences are zero. The data
+# set-up below is the same as in cross_test(). Return the Bonferroni
+# p-value over the m variables, like cross_test().
+# Once it works, add it to boot_size() in R/diagnostic.R as a third
+# p-value next to cross_test() and cross_test_boot().
+# --------------------------------------------------------------------
+cross_test_cr2 <- function(e, S, m = 2) {
+  C <- make_C(S)
+  n <- NROW(S)
+  n_b <- NCOL(S)
+  n_a <- NROW(C)
+  z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
+  p_each <- vapply(
+    seq_len(m),
+    \(j) {
+      Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
+      z_own <- z[[j]]
+      z_other <- do.call(cbind, z[-j])
+      colnames(Y) <- paste0("e", 1:n_b)
+      myfit <- lm(Y ~ z_own + z_other)
+      CR2_mat <- clubSandwich::vcovCR(myfit, cluster = factor(seq_len(NROW(Y))), type = "CR2")
+      # clubSandwich::coef_test(myfit, vcov = CR2_mat, test = "Satterthwaite")
+      # tryCatch(expr = {
+      #   test_wald <- clubSandwich::Wald_test(myfit, 
+      #     constraints = clubSandwich::constrain_zero("z_other", reg_ex = TRUE), 
+      #     vcov = CR2_mat, test = "HTZ")
+      #   test_wald$p_val},
+      #   error = function(e){return(NA_real_)})
+      test_wald <- clubSandwich::Wald_test(myfit, constraints = clubSandwich::constrain_zero("z_other", reg_ex = TRUE), 
+                                           vcov = CR2_mat, test = "HTZ")
+      test_wald$p_val
+    },
+    numeric(1)
+  )
+  min(1, m * min(p_each))
+}
+
+

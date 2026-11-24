@@ -46,42 +46,14 @@ boot_size(S, "small", "F0", 0.7, T = 200, error = "t", param = 5, reps = 100)
 # All four statistics (Wilks/Rao, Pillai, Hotelling-Lawley, Roy)
 kappa_power(S, "small", "F0", 0.7, T = 200, error = "t", param = 5, reps = 100)
 
-# --------------------------------------------------------------------
-# 2. Your new test: CR2 with the HTZ correction (clubSandwich)
-#
-# For variable j, regress its bottom-level errors Y on X_full = (1, own
-# incoherences, other variable's incoherences) and test that the
-# coefficients of the other variable's incoherences are zero. The data
-# set-up below is the same as in cross_test(). Return the Bonferroni
-# p-value over the m variables, like cross_test().
-# Once it works, add it to boot_size() in R/diagnostic.R as a third
-# p-value next to cross_test() and cross_test_boot().
-# --------------------------------------------------------------------
-cross_test_cr2 <- function(e, S, m = 2) {
-  C <- make_C(S)
-  n <- NROW(S)
-  n_b <- NCOL(S)
-  n_a <- NROW(C)
-  z <- lapply(seq_len(m), \(j) e[, var_index(j, n), drop = FALSE] %*% t(C))
-  p_each <- vapply(
-    seq_len(m),
-    \(j) {
-      Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
-      z_own <- z[[j]]
-      z_other <- do.call(cbind, z[-j])
-      # TODO: fit lm(Y ~ z_own + z_other) (an mlm), compute
-      # clubSandwich::vcovCR(fit, cluster = seq_len(NROW(Y)), type = "CR2"),
-      # and test the z_other coefficients for every response with
-      # clubSandwich::Wald_test(fit, constraints = ..., vcov = ..., test = "HTZ").
-      # Return the p-value.
-      NA_real_
-    },
-    numeric(1)
-  )
-  min(1, m * min(p_each))
-}
 
+# --------------------------------------------------------------------
+# 2. CR2 with the HTZ correction (clubSandwich)
+#
+# in diagnostic.R
+# --------------------------------------------------------------------
 cross_test_cr2(e, S)
+
 
 # --------------------------------------------------------------------
 # 3. The full grid of Supplementary Table S2, in parallel
@@ -95,7 +67,7 @@ reps <- 200
 n_cores <- max(1, parallel::detectCores() - 1)
 
 scen <- boot_size_scenarios() |>
-  filter(hierarchy == "small") # remove this line for the full grid
+  filter(hierarchy == "small", T < 201) # remove this line for the full grid
 scen
 
 cl <- parallel::makeCluster(n_cores)
@@ -122,10 +94,11 @@ parallel::stopCluster(cl)
 
 saveRDS(boot, "boot_felix.rds")
 
+
 # Size (F0, F1) for each error distribution: Rao's F vs bootstrap
 boot |>
   filter(family %in% c("F0", "F1")) |>
-  select(hierarchy, family, error, param, T, rejection_rao, rejection_boot) |>
+  select(hierarchy, family, error, param, T, rejection_rao, rejection_boot, rejection_cr2) |>
   arrange(hierarchy, family, error, param, T) |>
   print(n = Inf)
 
@@ -155,7 +128,54 @@ for (i in seq_len(NROW(panels))) {
     ylab = "rejection rate"
   )
   points(d$T, d$rejection_boot, type = "b", col = "blue")
+  points(d$T, d$rejection_cr2, type = "b", col = "orange")
   abline(h = 0.05, col = "grey")
 }
-legend("topleft", c("Rao's F", "Wild bootstrap"), lty = 1, col = c("black", "blue"))
+legend("topleft", c("Rao's F", "Wild bootstrap", "CR2/HTZ"), lty = 1, col = c("black", "blue", "orange"))
 dev.off()
+
+
+# --------------------------------------------------------------------
+# 4. error scenarios for lognormal errors:
+# --------------------------------------------------------------------
+
+scen <- boot_size_scenarios() |>
+  filter(hierarchy == "small", family %in% c("F0", "F1")) # remove this line for the full grid
+scen
+
+errors <- t(sapply(X = 1:64, function(X){tryCatch(expr = {kappa_power(hierarchies[[scen$hierarchy[X]]], 
+                                                                      hierarchy = scen$hierarchy[X], 
+                                                                      family = scen$family[X], 
+                                                                      dial = scen$dial[X],
+                                                                      error = scen$error[X],
+                                                                      param = scen$param[X],
+                                                                      T = scen$T[X], 
+                                                                      reps = 1000)}, 
+                                                  error = function(e){
+                                                    tibble::tibble(
+                                                      hierarchy = scen$hierarchy[X],
+                                                      family = scen$family[X],
+                                                      dial = scen$dial[X],
+                                                      error = scen$error[X],
+                                                      param = scen$param[X],
+                                                      T = scen$T[X],
+                                                      kappa = NA,
+                                                      gain = NA,
+                                                      reps = NA,
+                                                      rejection_rao = NA,
+                                                      rejection_rao_se = NA,
+                                                      rejection_pillai = NA,
+                                                      rejection_pillai_se = NA,
+                                                      rejection_LH = NA,
+                                                      rejection_LH_se = NA,
+                                                      rejection_roy = NA,
+                                                      rejection_roy_se = NA,
+                                                      kappa_hat = NA,
+                                                      gain_hat = NA
+                                                    )
+                                                  }
+                                                  
+)}))
+errors[,-c(11,13,15,17)]
+
+
