@@ -3,7 +3,7 @@
 When several variables are observed over the same hierarchy and no constraint links them, joint MinT reconciliation can improve on reconciling each variable separately only through the covariance between one variable's reconciled errors and another variable's incoherences.
 Cross-variable correlation in the base forecast errors is not enough.
 Correlation that is common to the whole hierarchy (the separable case) and correlation in the coherent component of the errors are both invisible to reconciliation.
-What remains is dependence that varies across the hierarchy differently for each variable, and in our simulations and application it is a small fraction of the forecast error variance.
+What remains is dependence that varies across the hierarchy differently for each variable, and in Experiment 2 and the application it is a small fraction of the forecast error variance.
 
 This has three practical consequences.
 
@@ -26,7 +26,7 @@ Their forecast distributions depend on the joint distribution of the base foreca
 Because reconciliation is linear, the reconciled joint distribution is the base joint distribution pushed through the reconciliation map.
 So separate reconciliation of jointly simulated base paths already captures the cross-variable dependence, and it coincides with joint reconciliation whenever the conditions of @prp-equivalence hold.
 When they fail, joint reconciliation can still help such combinations even where it does little for the variables themselves, as it did for net employment change in Brazil.
-There, jointly reconciled ARIMA forecasts of net change were more accurate than those from VARs that model the two variables together, so the dependence between variables need not be built into the base models: reconciliation can supply it, more cheaply and with more flexible univariate models.
+There, at the national and regional levels, jointly reconciled ARIMA forecasts of net change were more accurate than those from VARs that model the two variables together, so the dependence between variables need not be built into the base models: reconciliation can supply it, more cheaply and with more flexible univariate models.
 The plug-in gain $\widehat\gamma_{\bm{\ell}}$ for the combination of interest is a better guide than the average gain $\widehat\gamma$.
 
 Joint reconciliation is needed when a constraint does link the variables.

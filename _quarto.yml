@@ -13,23 +13,23 @@ title: When does multivariate forecast reconciliation help?
 date: today
 date-format: "D MMMM YYYY"
 author:
+  - name: Rob J Hyndman
+    affiliations:
+      - ref: monash
   - name: Ana Caroline Pinheiro
     affiliations:
       - ref: ufba
       - ref: sesab
+  - name: Felix Fesca
+    affiliations:
+      - ref: dortmund
   - name: Rodrigo de Souza Bulhões
     affiliations:
       - ref: ufba
-  - name: Rob J Hyndman
-    affiliations:
-      - ref: monash
   - name: Paulo Canas Rodrigues
     affiliations:
       - ref: ufba
       - ref: pretoria
-  - name: Felix Fesca
-    affiliations:
-      - ref: dortmund
 affiliations:
   - id: ufba
     name: Department of Statistics, Federal University of Bahia

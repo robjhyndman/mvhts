@@ -34,7 +34,7 @@ This leads to a necessary and sufficient condition for joint and separate reconc
 
 In practice, we need to know whether this condition holds for a given data set, and if not, how much the departure affects the forecasts.
 We propose two measures of the departure from this condition: $\kappa$, the weight that the joint reconciliation places on other variables' incoherences, and $\gamma$, the reduction in mean squared error that it would deliver if the estimated covariance were correct.
-We also propose a likelihood ratio test of the condition, which uses the regression form of MinT and needs no simulation.
+We also propose a likelihood ratio test of the condition, based on the regression form of MinT, with a wild bootstrap version for non-normal errors.
 
 We study the effect of joint reconciliation in two simulation experiments, one in which the error covariance is controlled directly and one in which base forecasting models are fitted to simulated series.
 We also explore joint reconciliation in an application to monthly worker admissions and dismissals in Brazil's 27 federative units, which aggregate to five regions and to the country.

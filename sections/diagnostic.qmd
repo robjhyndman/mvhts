@@ -68,4 +68,4 @@ Giving the same sign to blocks of consecutive periods also allows for serial dep
 
 We also tried calibrating $\widehat\kappa$ and $\widehat\gamma$ by bootstrap, generating null data from a covariance that satisfies @prp-equivalence and is fitted to the data.
 These procedures are badly mis-sized when the number of series is large relative to $T$, because any null covariance built from $\widehat{\bm{W}}$ inherits its estimation error.
-The regression test avoids simulation altogether.
+The regression test does not need a null covariance, so it avoids this problem.
