@@ -36,3 +36,7 @@ num <- tar_read(numbers)
 # Reproducibility {.unnumbered}
 
 The data and code needed to reproduce this paper and its supplementary material are available at <https://github.com/robjhyndman/mvhts>.
+
+# Acknowledgement {.unnumbered}
+
+This research was (partially) funded in the course of TRR 391 Spatio-temporal Statistics for the Transition of Energy and Transport (520388526) by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation).
