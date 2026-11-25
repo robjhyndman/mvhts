@@ -38,10 +38,10 @@ write_table <- function(lines, file) {
 
 # A centred LaTeX tabular with column alignment `align`, header lines and
 # body rows
-write_tabular <- function(file, align, header, rows) {
+write_tabular <- function(file, align, header, rows, size = "\\small") {
   write_table(
     c(
-      "\\centering\\small",
+      paste0("\\centering", size),
       paste0("\\begin{tabular}{", align, "}"),
       "\\hline",
       header,
@@ -449,8 +449,9 @@ numbers_supp_ar <- function(ar_size, app_diag) {
 ar_inflation <- function(phi) (1 + phi^2) / (1 - phi^2)
 
 # Supplement: size of the Wilks test with Rao's F approximation and with
-# the wild bootstrap under heavy-tailed and heteroskedastic errors, its
-# power under normal errors, and the application bootstrap p-values
+# the wild bootstrap, and of the CR2/HTZ test, under heavy-tailed, skewed
+# and heteroskedastic errors, their power under normal errors, and the
+# application bootstrap p-values
 numbers_supp_boot <- function(boot_sims, app_diag) {
   pct <- function(x) fmt_range(x, 1, 100)
   null <- boot_sims |> dplyr::filter(family %in% c("F0", "F1"))
@@ -460,6 +461,9 @@ numbers_supp_boot <- function(boot_sims, app_diag) {
     null[keep, ]
   }
   alt <- boot_sims |> dplyr::filter(!family %in% c("F0", "F1"))
+  # CR2/HTZ is computed only for some scenarios (see boot_size())
+  cr2 <- null |> dplyr::filter(!is.na(rejection_cr2))
+  alt_cr2 <- alt |> dplyr::filter(!is.na(rejection_cr2))
   d <- split(app_diag, app_diag$model)
   p_text <- function(p) if (p < 0.001) "< 0.001" else paste("=", fmt(p, 3))
   garch_max <- max(null$param[null$error == "GARCH"])
@@ -475,6 +479,16 @@ numbers_supp_boot <- function(boot_sims, app_diag) {
     suppBootGarchRao = pct(sel("GARCH", garch_max)$rejection_rao),
     suppBootGarch = pct(sel("GARCH", garch_max)$rejection_boot),
     suppBootPowerMaxLoss = fmt(100 * max(alt$rejection_rao - alt$rejection_boot), 1),
+    suppBootLogHalfRao = pct(sel("lognormal", 0.5)$rejection_rao),
+    suppBootLogHalf = pct(sel("lognormal", 0.5)$rejection_boot),
+    suppBootLogOneRao = pct(sel("lognormal", 1)$rejection_rao),
+    suppBootLogOneShort = pct(sel("lognormal", 1, Ts = c(100, 200))$rejection_boot),
+    suppBootLogOneLong = pct(sel("lognormal", 1, Ts = 1000)$rejection_boot),
+    suppCrTwoNormal = pct(cr2$rejection_cr2[cr2$error == "normal"]),
+    suppCrTwoHeavy = pct(cr2$rejection_cr2[cr2$error %in% c("t", "lognormal")]),
+    suppCrTwoGarch = pct(cr2$rejection_cr2[cr2$error == "GARCH" & cr2$param == garch_max]),
+    suppCrTwoFailMax = fmt(100 * max(cr2$cr2_failed), 1),
+    suppCrTwoPowerMaxLoss = fmt(100 * max(alt_cr2$rejection_rao - alt_cr2$rejection_cr2), 1),
     appPBootTextArima = p_text(d$arima$p_value_boot),
     appPBootTextVar = p_text(d$var$p_value_boot),
     appPBlockTwelveArima = fmt(d$arima$p_value_boot12, 3),
@@ -819,7 +833,9 @@ tab_supp_boot <- function(boot_sims, file) {
         " \\\\"
       )
     ),
-    rows
+    rows,
+    # 10 columns of rates do not fit the text width at \small
+    size = "\\footnotesize\\setlength{\\tabcolsep}{4pt}"
   )
 }
 

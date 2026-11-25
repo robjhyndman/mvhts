@@ -8,7 +8,7 @@ The minimum trace (MinT) method of @wickramasuriya2019optimal chooses the adjust
 Reconciliation is almost always applied to one variable at a time, yet many hierarchies carry several variables.
 A retailer, for example, may need forecasts of both unit sales and revenue for every store, with each variable summing across stores to regional and national totals.
 The two variables are measured in different units, but both respond to the same promotions, holidays and local demand, so their forecast errors are correlated.
-Because MinT works by exploiting the covariance of the base forecast errors, it seems natural to reconcile both variables together, using a covariance matrix that spans them, and to expect this to beat reconciling each separately.
+Because MinT exploits the covariance of the base forecast errors, it seems natural to reconcile both variables together, using a covariance matrix that spans them, and to expect this to beat reconciling each separately.
 We ask when joint reconciliation is better than reconciling each variable separately.
 
 Joint reconciliation of several variables is not the same problem as reconciling a grouped hierarchy.

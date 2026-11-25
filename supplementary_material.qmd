@@ -53,10 +53,10 @@ For F0 and F1, $\kappa = 0$ and the rejection rate is the size of the test.
 
 `\clearpage`{=latex}
 
-# Experiment 1: heavy-tailed and heteroskedastic errors {.unnumbered}
+# Experiment 1: heavy-tailed, skewed and heteroskedastic errors {.unnumbered}
 
 Rao's $F$ approximation assumes normal errors.
-To see how the test behaves without that assumption, we repeated the size study of Experiment 1 with two kinds of non-normal errors that keep condition (d) true under F0 and F1.
+To see how the test behaves without that assumption, we repeated the size study of Experiment 1 with three kinds of non-normal errors that keep condition (d) true under F0 and F1.
 The first are multivariate $t$ with 5 or 10 degrees of freedom and scale matrix $\bm{W}$, so their covariance is proportional to $\bm{W}$.
 The second are $\bm{\varepsilon}_t = \bm{W}^{1/2}\bm{u}_t$, where the elements of $\bm{u}_t$ are independent GARCH(1,1) processes with normal innovations and unit unconditional variance,
 $$
@@ -64,13 +64,30 @@ $$
   \sigma_{it}^2 = (1 - \alpha - \beta) + \alpha u_{i,t-1}^2 + \beta\sigma_{i,t-1}^2,
 $$
 with $\alpha \in \{0.05, 0.1, 0.15\}$ and $\alpha + \beta = 0.95$.
-Both have covariance proportional to $\bm{W}$, but under both the conditional variance of the errors in the regression of the main text is not constant: with $t$ errors it grows with the size of the incoherences, and with GARCH errors it varies over time.
-@tbl-supp-boot gives the rejection rates of the test with Rao's $F$ approximation and with the wild bootstrap described in the main text (199 bootstrap samples, single periods).
+The third are $\bm{\varepsilon}_t = \bm{W}^{1/2}\bm{u}_t$, where the elements of $\bm{u}_t$ are independent standardised lognormal variables,
+$$
+  u_{it} = \frac{\exp(\sigma\eta_{it}) - \exp(\sigma^2/2)}{\{\exp(\sigma^2)(\exp(\sigma^2) - 1)\}^{1/2}},
+  \qquad \eta_{it} \sim \text{N}(0, 1),
+$$
+with $\sigma \in \{0.5, 1\}$.
+All three have covariance proportional to $\bm{W}$.
+Under the first two, the conditional variance of the errors in the regression of the main text is not constant: with $t$ errors it grows with the size of the incoherences, and with GARCH errors it varies over time.
+Lognormal errors are skewed as well as heavy-tailed.
 
-With normal errors, both tests hold their size: their rejection rates are `r num$suppBootNormalRao`% and `r num$suppBootNormal`%.
+@tbl-supp-boot gives the rejection rates of the test with Rao's $F$ approximation and with the wild bootstrap described in the main text (199 bootstrap samples, single periods).
+It also gives those of a heteroskedasticity-robust Wald test of the same hypothesis.
+For each variable, this test fits the regression of the main text by least squares and estimates the covariance matrix of the coefficients with the CR2 sandwich estimator of Bell and McCaffrey (2002), treating each period as a cluster, so that the errors in a period may have any covariance matrix, which may vary from period to period.
+It compares the Wald statistic with the HTZ approximation to its null distribution (Pustejovsky and Tipton, 2018), and combines the $p$-values for the two variables with a Bonferroni correction, like the main test.
+Its cost grows roughly with $T^2$, so we computed it only for the small hierarchy with $T \le 200$.
+For the Brazilian hierarchy, with 162 restrictions per variable, the robust covariance matrix is singular when $T = 100$, since it is a sum of $T$ terms of rank one.
+
+With normal errors, Rao's approximation and the bootstrap both hold their size: their rejection rates are `r num$suppBootNormalRao`% and `r num$suppBootNormal`%.
 With $t$ errors Rao's approximation fails badly, with rejection rates of `r num$suppBootTTenRao`% for 10 degrees of freedom, and the failure does not shrink as $T$ grows.
 The wild bootstrap repairs it: with 10 degrees of freedom its rejection rates are `r num$suppBootTTen`%, and with 5 degrees of freedom `r num$suppBootTFiveSmall`% in the small hierarchy.
 In the Brazilian hierarchy with 5 degrees of freedom it is still oversized, at `r num$suppBootTFiveBrazilShort`% for $T \le 200$, falling to `r num$suppBootTFiveBrazilLong`% for $T = 1000$.
+Lognormal errors behave much like $t$ errors.
+With $\sigma = 0.5$ the rejection rates are `r num$suppBootLogHalfRao`% with Rao's approximation and `r num$suppBootLogHalf`% with the bootstrap.
+With $\sigma = 1$ Rao's approximation rejects in `r num$suppBootLogOneRao`% of samples; the bootstrap rejects in `r num$suppBootLogOneShort`% for $T \le 200$, falling to `r num$suppBootLogOneLong`% for $T = 1000$.
 Under normal errors the bootstrap loses almost no power: over the departures F2 and F3 of Experiment 1, its rejection rate is never more than `r num$suppBootPowerMaxLoss` percentage points below that of Rao's approximation.
 
 The wild bootstrap does not repair the GARCH case.
@@ -79,6 +96,12 @@ The test statistic is a function of the sample covariances between the residuals
 GARCH errors are serially uncorrelated, but their squares are not, so these products, which contain squares of the same GARCH processes, are serially correlated.
 A bootstrap that draws an independent sign for each period treats the products as serially uncorrelated and so misses this dependence.
 Giving the same sign to blocks of consecutive periods allows for it, but with persistent volatility the blocks must be long.
+
+The CR2/HTZ test does no better.
+It is conservative under normal errors, with rejection rates of `r num$suppCrTwoNormal`%, and its rejection rates under $t$ and lognormal errors are `r num$suppCrTwoHeavy`%.
+Under normal errors this costs power: its rejection rate under F2 and F3 is up to `r num$suppCrTwoPowerMaxLoss` percentage points below that of Rao's approximation.
+Treating each period as a cluster allows for heteroskedasticity but not for serial dependence, so it fails in the GARCH case too, with rejection rates of `r num$suppCrTwoGarch`% for $\alpha = `r num$suppBootGarchAlpha`$.
+It could not be computed in up to `r num$suppCrTwoFailMax`% of samples (lognormal errors with $\sigma = 1$), and it is much slower than the bootstrap.
 
 ::: {#tbl-supp-boot}
 ```{r}
@@ -103,8 +126,7 @@ The errors still have covariance $\bm{W}$, so condition (d) holds under F0 and F
 With $\phi = `r num$suppArPhiMin`$ the rejection rate is at most `r num$suppArPhiMinMax`%.
 The distortion grows with $\phi$, does not shrink as $T$ grows, and is much larger in the Brazilian hierarchy: with $\phi = 0.3$, the rejection rates are `r num$suppArSmallPhiMax`% in the small hierarchy and `r num$suppArBrazilPhiMax`% in the Brazilian hierarchy.
 
-The reason is as follows.
-For variable $j$, let $\bm{u}_t$ be the residuals from the regression of its bottom-level errors on its own incoherences, and let $\tilde{\bm{z}}_t$ be the other variable's incoherences after the same regression.
+To see why, consider variable $j$. Let $\bm{u}_t$ be the residuals from the regression of its bottom-level errors on its own incoherences, and let $\tilde{\bm{z}}_t$ be the other variable's incoherences after the same regression.
 The test statistic is a function of the sample covariances between the elements of $\bm{u}_t$ and $\tilde{\bm{z}}_t$.
 If an element of $\bm{u}_t$ and an element of $\tilde{\bm{z}}_t$ have autocorrelations $\rho_u(h)$ and $\rho_z(h)$, serial correlation multiplies the variance of their sample covariance by approximately
 $$

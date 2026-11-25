@@ -136,7 +136,7 @@ The VAR base forecasts model the dependence between admissions and dismissals di
 Yet they forecast net change less well.
 We generated sample paths from the VARs in the same way, resampling the innovations of the two variables at each node jointly or independently.
 Relative to separate MinT of the ARIMA forecasts, the mean squared error of net change with VAR base forecasts, reconciled or not, is `r num$appNetVarPointTotal` nationally and `r num$appNetVarPointRegions` for the regions, against `r num$appNetArimaJointPointTotal` and `r num$appNetArimaJointPointRegions` for joint MinT of the ARIMA forecasts.
-The CRPS ratios tell the same story: `r num$appNetVarCrpsTotal` and `r num$appNetVarCrpsRegions` for the VAR paths, against `r num$appNetArimaJointCrpsTotal` and `r num$appNetArimaJointCrpsRegions` for jointly simulated and jointly reconciled ARIMA paths.
+The CRPS ratios are similar: `r num$appNetVarCrpsTotal` and `r num$appNetVarCrpsRegions` for the VAR paths, against `r num$appNetArimaJointCrpsTotal` and `r num$appNetArimaJointCrpsRegions` for jointly simulated and jointly reconciled ARIMA paths.
 At the state level the two base models are about equally accurate.
 With VAR base forecasts, neither joint innovations nor joint reconciliation improves the forecasts of net change.
 So for net change, joint reconciliation of univariate forecasts captures the dependence between the variables better than a multivariate base model does.
