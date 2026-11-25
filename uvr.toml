@@ -37,6 +37,7 @@ tsibble = "*"
 urca = "*"
 withr = "*"
 rugarch = "*"
+clubSandwich = "*"
 
 [dev-dependencies]
 testthat = "*"

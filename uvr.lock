@@ -1,4 +1,4 @@
-manifest_fingerprint = "sha256:16bc97a285eca9a41f158b8f28e0ca68b04c56fac7ba838885de278a4974ecfb"
+manifest_fingerprint = "sha256:09a4c27aea524e01c76d405543833c72e95d241346cbc9ec49e9b7b28b51c50b"
 
 [r]
 version = "4.6.1"
@@ -98,11 +98,11 @@ checksum = "md5:353d35176db9c570705a0a324c06fdca"
 
 [[package]]
 name = "RcppArmadillo"
-version = "15.6.2-4.1"
+version = "15.8.0-4.1"
 source = "cran"
-raw_version = "15.6.2-1"
-url = "https://cran.r-project.org/src/contrib/RcppArmadillo_15.6.2-1.tar.gz"
-checksum = "md5:804767e88d0e0c8cb8ee05c0ca343a6d"
+raw_version = "15.8.0-1"
+url = "https://cran.r-project.org/src/contrib/RcppArmadillo_15.8.0-1.tar.gz"
+checksum = "md5:adbd9d64fc6f9b5a423fa82738d2d442"
 requires = [
     "Rcpp",
     "Rcpp",
@@ -159,11 +159,11 @@ requires = [
 
 [[package]]
 name = "arrow"
-version = "26.0.1"
+version = "26.0.1-4.1"
 source = "cran"
-raw_version = "26.0.1"
-url = "https://cran.r-project.org/src/contrib/arrow_26.0.1.tar.gz"
-checksum = "md5:5e2300ab556c3e1ee9cedc3660a5c8c4"
+raw_version = "26.0.1.1"
+url = "https://cran.r-project.org/src/contrib/arrow_26.0.1.1.tar.gz"
+checksum = "md5:2742553165b2d561699fabde63d01845"
 requires = [
     "assertthat",
     "bit64",
@@ -349,6 +349,18 @@ url = "https://cran.r-project.org/src/contrib/cli_3.6.6.tar.gz"
 checksum = "md5:eedc08ba864ae6cd640b05eff1a607ee"
 
 [[package]]
+name = "clubSandwich"
+version = "0.7.0"
+source = "cran"
+raw_version = "0.7.0"
+url = "https://cran.r-project.org/src/contrib/clubSandwich_0.7.0.tar.gz"
+checksum = "md5:08f806bfdb8a5117a8aabaaf6264eb52"
+requires = [
+    "sandwich",
+    "lifecycle",
+]
+
+[[package]]
 name = "codetools"
 version = "0.2.20"
 source = "cran"
@@ -413,11 +425,11 @@ checksum = "md5:ae48f61864e74ea20946f0dc034ba43c"
 
 [[package]]
 name = "curl"
-version = "8.1.0"
+version = "8.2.0"
 source = "cran"
-raw_version = "8.1.0"
-url = "https://cran.r-project.org/src/contrib/curl_8.1.0.tar.gz"
-checksum = "md5:196b1c5e8adafec4b5bb9123864b52b4"
+raw_version = "8.2.0"
+url = "https://cran.r-project.org/src/contrib/curl_8.2.0.tar.gz"
+checksum = "md5:a810c0e6f0f25acadc19cde82ab3690a"
 
 [[package]]
 name = "data.table"
@@ -523,11 +535,11 @@ requires = [
 
 [[package]]
 name = "duckdb"
-version = "2.0.0"
+version = "2.0.1"
 source = "cran"
-raw_version = "2.0.0"
-url = "https://cran.r-project.org/src/contrib/duckdb_2.0.0.tar.gz"
-checksum = "md5:fbcee347ec218e95bb899fc00156d1b9"
+raw_version = "2.0.1"
+url = "https://cran.r-project.org/src/contrib/duckdb_2.0.1.tar.gz"
+checksum = "md5:7f9035cd7a1406910c048d3078bca63c"
 requires = ["DBI"]
 
 [[package]]
@@ -1226,11 +1238,11 @@ requires = [
 
 [[package]]
 name = "mvtnorm"
-version = "1.4.2"
+version = "1.5.0"
 source = "cran"
-raw_version = "1.4-2"
-url = "https://cran.r-project.org/src/contrib/mvtnorm_1.4-2.tar.gz"
-checksum = "md5:41dff32c7de1b000c61e59595ac6752d"
+raw_version = "1.5-0"
+url = "https://cran.r-project.org/src/contrib/mvtnorm_1.5-0.tar.gz"
+checksum = "md5:039cbb95c4c11960cf87fdecf26ee510"
 
 [[package]]
 name = "nanoarrow"
@@ -1595,18 +1607,27 @@ requires = [
 ]
 
 [[package]]
-name = "sass"
-version = "0.4.10"
+name = "sandwich"
+version = "3.1.3"
 source = "cran"
-raw_version = "0.4.10"
-url = "https://cran.r-project.org/src/contrib/sass_0.4.10.tar.gz"
-checksum = "md5:16054a7117a81ba75893fec17da62209"
+raw_version = "3.1-3"
+url = "https://cran.r-project.org/src/contrib/sandwich_3.1-3.tar.gz"
+checksum = "md5:f66564422dfbed1b7fe2c38ac2e49dd8"
+requires = ["zoo"]
+
+[[package]]
+name = "sass"
+version = "0.5.0"
+source = "cran"
+raw_version = "0.5.0"
+url = "https://cran.r-project.org/src/contrib/sass_0.5.0.tar.gz"
+checksum = "md5:fdc11cc1b8f6cffd1ceef6b4d96b529c"
 requires = [
     "fs",
-    "rlang",
     "htmltools",
     "R6",
     "rappdirs",
+    "rlang",
 ]
 
 [[package]]
@@ -1768,11 +1789,11 @@ requires = [
 
 [[package]]
 name = "terra"
-version = "1.9.50"
+version = "1.9.60"
 source = "cran"
-raw_version = "1.9-50"
-url = "https://cran.r-project.org/src/contrib/terra_1.9-50.tar.gz"
-checksum = "md5:e9eb3ad3d15afc7e1f872fb7f50ced94"
+raw_version = "1.9-60"
+url = "https://cran.r-project.org/src/contrib/terra_1.9-60.tar.gz"
+checksum = "md5:7201ba70b47c49a1ddb189c57aad8339"
 requires = [
     "Rcpp",
     "Rcpp",
@@ -1871,11 +1892,11 @@ requires = ["cpp11"]
 
 [[package]]
 name = "tinytex"
-version = "0.61.0"
+version = "0.62.0"
 source = "cran"
-raw_version = "0.61"
-url = "https://cran.r-project.org/src/contrib/tinytex_0.61.tar.gz"
-checksum = "md5:67e114649aa529e1631baed939110e97"
+raw_version = "0.62"
+url = "https://cran.r-project.org/src/contrib/tinytex_0.62.tar.gz"
+checksum = "md5:192393cbbb5f719b95177604840506cf"
 requires = ["xfun"]
 
 [[package]]
@@ -1980,11 +2001,11 @@ requires = [
 
 [[package]]
 name = "vecvec"
-version = "1.4.0"
+version = "1.5.0"
 source = "cran"
-raw_version = "1.4.0"
-url = "https://cran.r-project.org/src/contrib/vecvec_1.4.0.tar.gz"
-checksum = "md5:6aa8c1e7c7e865040f1f66c81d0a897a"
+raw_version = "1.5.0"
+url = "https://cran.r-project.org/src/contrib/vecvec_1.5.0.tar.gz"
+checksum = "md5:8fd7a4c38b78c9ba5e9cf2cf5116cbb3"
 requires = [
     "cli",
     "rlang",
