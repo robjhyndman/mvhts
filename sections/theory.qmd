@@ -105,7 +105,7 @@ Corollaries [-@cor-invariance] and [-@cor-separable] combine: every $\bm{W} = \b
 So separability is sufficient but far from necessary.
 
 This limits the value of measuring separability directly.
-If $\bm{W}$ is rearranged so that each block $\bm{W}_{jk}$ becomes a row, it is a Kronecker product if and only if the rearranged matrix has rank one, and the relative error of the nearest Kronecker approximation [@vanloan1993approximation] is $\{1 - \sigma_1^2/\sum_i\sigma_i^2\}^{1/2}$, where $\sigma_i$ are the singular values of the rearranged matrix.
+If $\bm{W}$ is rearranged into an $(m^2 \times n^2)$ matrix in which each block $\bm{W}_{jk}$ becomes a row, it is a Kronecker product if and only if the rearranged matrix has rank one, and the relative error of the nearest Kronecker approximation [@vanloan1993approximation] is $\{1 - \sigma_1^2/\sum_{i=1}^{r}\sigma_i^2\}^{1/2}$, where $\sigma_1 \ge \dots \ge \sigma_r$ are the singular values of the rearranged matrix and $r = \min(m^2, n^2)$.
 Likelihood ratio tests of separability are also available [@lu2005likelihood; @mitchell2006likelihood].
 Both measures of separability respond to components $\bm{S}_*\bm{K}\bm{S}_*'$ that do not change the reconciled forecasts, and a departure that does change them may leave the Kronecker error small.
 

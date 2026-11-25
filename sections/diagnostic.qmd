@@ -12,7 +12,7 @@ $$
   \kappa(\bm{W})
   = \left( \frac{\sum_{j \ne k}\|\bm{L}_{jk}\|_F^2}{\|\bm{L}\|_F^2} \right)^{1/2},
 $$ {#eq-kappa}
-where $\bm{L}_{jk}$ is the $(n \times n_a)$ block of $\bm{L}$ relating the errors of variable $j$ to the incoherences of variable $k$.
+where $\|\cdot\|_F$ denotes the Frobenius norm and $\bm{L}_{jk}$ is the $(n \times n_a)$ block of $\bm{L}$ relating the errors of variable $j$ to the incoherences of variable $k$.
 Rescaling variable $k$ by $c_k$ multiplies $\bm{L}_{jk}$ by $c_j/c_k$, so before computing $\kappa$ we standardise each variable by the square root of the mean of the diagonal of $\bm{C}\bm{W}_{jj}\bm{C}'$ (the variances of its incoherences).
 This makes $\kappa$ free of units.
 By @prp-equivalence, $\kappa = 0$ if and only if joint and separate reconciliation coincide.
@@ -23,7 +23,7 @@ If $\bm{W}$ were the true error covariance, the proportional reduction in mean s
 $$
   \gamma(\bm{W})
   = 1
-    - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime})}.
+    - \frac{\operatorname{tr}(\bm{M}\bm{W}\bm{M}')}{\operatorname{tr}(\bm{M}^{\mathrm{sep}}\bm{W}(\bm{M}^{\mathrm{sep}})')}.
 $$ {#eq-gain}
 MinT minimises the trace over all maps of this form, so $\gamma \ge 0$, again with equality if and only if the conditions of @prp-equivalence hold.
 Positive semidefinite components $\bm{S}_*\bm{K}\bm{S}_*'$ pass through both maps unchanged and add the same amount to both traces, so they shrink $\gamma$ towards zero without changing whether it is zero: $\gamma$ is the gain relative to the whole error, including the part that no reconciliation can remove.
@@ -35,7 +35,7 @@ For a combination $\bm{\ell}'\bm{y}$ of interest we therefore also compute
 $$
   \gamma_{\bm{\ell}}(\bm{W})
   = 1
-    - \frac{\bm{\ell}'\bm{M}\bm{W}\bm{M}'\bm{\ell}}{\bm{\ell}'\bm{M}^{\mathrm{sep}}\bm{W}\bm{M}^{\mathrm{sep}\prime}\bm{\ell}},
+    - \frac{\bm{\ell}'\bm{M}\bm{W}\bm{M}'\bm{\ell}}{\bm{\ell}'\bm{M}^{\mathrm{sep}}\bm{W}(\bm{M}^{\mathrm{sep}})'\bm{\ell}},
 $$ {#eq-gain-a}
 which is also non-negative for every $\bm{\ell}$ (@sec-theory).
 
