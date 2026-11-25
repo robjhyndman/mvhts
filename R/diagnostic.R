@@ -95,9 +95,9 @@ sim_errors <- function(T, W, error = "normal", param = NA) {
 }
 
 
-# T x N matrix of lognormal data with unit-variance 
-# exp(sigma*eta_{it} - exp(sigma^2/2)) / sd
-# with n_{it} N(0,1) and sd theoretical standard deviation
+# T x N matrix of centred, unit-variance lognormal errors
+# (exp(sigma * eta_it) - exp(sigma^2 / 2)) / sd, with eta_it ~ N(0, 1) and
+# sd = sqrt(exp(sigma^2) * (exp(sigma^2) - 1)) the theoretical standard deviation
 lognormal_errors <- function(T, N, sigma){
   theoretical_sd <- sqrt(exp(sigma^2) * (exp(sigma^2) - 1))
   eta <- matrix(rnorm(N * T, mean = 0, sd = 1), nrow = T, ncol = N)
@@ -187,8 +187,12 @@ cross_test_boot <- function(e, S, m = 2, B = 499, block = 1) {
 }
 
 # Rejection rates at level alpha of the Wilks test with Rao's F
-# approximation and with the wild bootstrap (cross_test_boot()), for
-# errors from sim_errors()
+# approximation and with the wild bootstrap (cross_test_boot()), and of
+# the CR2/HTZ robust Wald test (cross_test_cr2()), for errors from
+# sim_errors(). CR2/HTZ is computed only when cr2 is TRUE: its cost grows
+# roughly with T^2 (about 2 s per call for the small hierarchy at T = 200,
+# 52 s at T = 1000), and for the Brazilian hierarchy it takes 30 s at
+# T = 100 and fails (162 restrictions, CR2 middle matrix of rank <= T)
 boot_size <- function(
   S,
   hierarchy,
@@ -199,7 +203,8 @@ boot_size <- function(
   param = NA,
   reps = 1000,
   B = 199,
-  alpha = 0.05
+  alpha = 0.05,
+  cr2 = hierarchy == "small" && T <= 200
 ) {
   W <- exp1_covariance(S, family, dial)
   C <- make_C(S)
@@ -207,13 +212,14 @@ boot_size <- function(
     seq_len(reps),
     \(r) {
       e <- sim_errors(T, W, error, param)
-      c(cross_test(e, S)$p_value_rao, 
+      c(
+        cross_test(e, S)$p_value_rao,
         cross_test_boot(e, S, B = B)$p_value_boot,
-        cross_test_cr2(e, S))
+        if (cr2) cross_test_cr2(e, S) else NA_real_
+      )
     },
     numeric(3)
   ))
-  print(res)
   tibble::tibble(
     hierarchy = hierarchy,
     family = family,
@@ -226,13 +232,14 @@ boot_size <- function(
     B = B,
     rejection_rao = mean(res[, 1] <= alpha),
     rejection_boot = mean(res[, 2] <= alpha),
-    rejection_cr2 = mean(res[, 3] <= alpha, na.rm = TRUE)
+    rejection_cr2 = if (cr2) mean(res[, 3] <= alpha, na.rm = TRUE) else NA_real_,
+    cr2_failed = if (cr2) mean(is.na(res[, 3])) else NA_real_
   )
 }
 
 # Scenarios for the bootstrap study: the null designs F0 and F1 under
-# normal, multivariate t and GARCH errors (size), and the departures F2
-# and F3 under normal errors (power)
+# normal, multivariate t, GARCH and lognormal errors (size), and the
+# departures F2 and F3 under normal errors (power)
 boot_size_scenarios <- function() {
   errors <- tibble::tibble(
     error = c("normal", "t", "t", "GARCH", "GARCH", "GARCH", "lognormal", "lognormal"),
@@ -409,15 +416,15 @@ cross_test <- function(e, S, m = 2) {
 
 
 # --------------------------------------------------------------------
-# 2. Your new test: CR2 with the HTZ correction (clubSandwich)
+# CR2 robust Wald test with the HTZ small-sample correction (clubSandwich)
 #
-# For variable j, regress its bottom-level errors Y on X_full = (1, own
-# incoherences, other variable's incoherences) and test that the
-# coefficients of the other variable's incoherences are zero. The data
-# set-up below is the same as in cross_test(). Return the Bonferroni
-# p-value over the m variables, like cross_test().
-# Once it works, add it to boot_size() in R/diagnostic.R as a third
-# p-value next to cross_test() and cross_test_boot().
+# For variable j, regress its bottom-level errors Y on (1, own
+# incoherences, other variables' incoherences) as an mlm, and test that
+# the coefficients of the other variables' incoherences are zero in every
+# equation. Each time point is a cluster, so the variance estimator allows
+# for arbitrary contemporaneous correlation and heteroskedasticity.
+# Returns the Bonferroni p-value over the m variables, like cross_test(),
+# or NA if HTZ cannot be computed.
 # --------------------------------------------------------------------
 cross_test_cr2 <- function(e, S, m = 2) {
   C <- make_C(S)
@@ -431,19 +438,17 @@ cross_test_cr2 <- function(e, S, m = 2) {
       Y <- e[, var_index(j, n)[n_a + seq_len(n_b)], drop = FALSE]
       z_own <- z[[j]]
       z_other <- do.call(cbind, z[-j])
-      colnames(Y) <- paste0("e", 1:n_b)
-      myfit <- lm(Y ~ z_own + z_other)
-      CR2_mat <- clubSandwich::vcovCR(myfit, cluster = factor(seq_len(NROW(Y))), type = "CR2")
-      # clubSandwich::coef_test(myfit, vcov = CR2_mat, test = "Satterthwaite")
-      # tryCatch(expr = {
-      #   test_wald <- clubSandwich::Wald_test(myfit, 
-      #     constraints = clubSandwich::constrain_zero("z_other", reg_ex = TRUE), 
-      #     vcov = CR2_mat, test = "HTZ")
-      #   test_wald$p_val},
-      #   error = function(e){return(NA_real_)})
-      test_wald <- clubSandwich::Wald_test(myfit, constraints = clubSandwich::constrain_zero("z_other", reg_ex = TRUE), 
-                                           vcov = CR2_mat, test = "HTZ")
-      test_wald$p_val
+      colnames(Y) <- paste0("e", seq_len(n_b))
+      fit <- lm(Y ~ z_own + z_other)
+      tryCatch(
+        clubSandwich::Wald_test(
+          fit,
+          constraints = clubSandwich::constrain_zero("z_other", reg_ex = TRUE),
+          vcov = clubSandwich::vcovCR(fit, cluster = factor(seq_len(NROW(Y))), type = "CR2"),
+          test = "HTZ"
+        )$p_val,
+        error = \(err) NA_real_
+      )
     },
     numeric(1)
   )

@@ -87,7 +87,7 @@ Giving the same sign to blocks of consecutive periods allows for it, but with pe
 cat(readLines(tar_read(table_supp_boot)), sep = "\n")
 ```
 
-Experiment 1: rejection rate at the 5% level of the test based on Wilks' $\Lambda$ with Rao's $F$ approximation and with the wild bootstrap, under the null designs F0 and F1 with normal, multivariate $t$ and GARCH(1,1) errors (1000 replications; 199 bootstrap samples).
+Experiment 1: rejection rate at the 5% level of the test based on Wilks' $\Lambda$ with Rao's $F$ approximation and with the wild bootstrap, and of the CR2/HTZ robust Wald test (small hierarchy, $T \le 200$ only), under the null designs F0 and F1 with normal, multivariate $t$, GARCH(1,1) and lognormal errors (1000 replications; 199 bootstrap samples).
 :::
 
 `\clearpage`{=latex}

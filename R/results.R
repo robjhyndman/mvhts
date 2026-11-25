@@ -748,15 +748,19 @@ tab_supp_tests <- function(power, file, T_show = c(100, 200)) {
 }
 
 # Supplement: rejection rates at the 5% level of the Wilks test with
-# Rao's F approximation and with the wild bootstrap, under the null
-# designs F0 and F1 with normal, multivariate t and GARCH errors
+# Rao's F approximation and with the wild bootstrap, and of the CR2/HTZ
+# robust Wald test, under the null designs F0 and F1 with normal,
+# multivariate t, GARCH and lognormal errors. CR2/HTZ is computed only for
+# the small hierarchy at T <= 200 (see boot_size()), so it has columns
+# only for those T and "--" for the Brazilian hierarchy.
 tab_supp_boot <- function(boot_sims, file) {
   x <- boot_sims |> dplyr::filter(family %in% c("F0", "F1"))
   Ts <- sort(unique(x$T))
+  Ts_cr2 <- sort(unique(x$T[!is.na(x$rejection_cr2)]))
   errs <- x |>
     dplyr::distinct(error, param) |>
     dplyr::mutate(
-      ord = match(error, c("normal", "t", "GARCH")),
+      ord = match(error, c("normal", "t", "GARCH", "lognormal")),
       ord2 = ifelse(error == "t", -param, param)
     ) |>
     dplyr::arrange(ord, ord2)
@@ -765,10 +769,12 @@ tab_supp_boot <- function(boot_sims, file) {
       err,
       normal = "Normal",
       t = sprintf("$t$, %g df", par),
-      GARCH = sprintf("GARCH, $\\alpha = %g$", par)
+      GARCH = sprintf("GARCH, $\\alpha = %g$", par),
+      lognormal = sprintf("Lognormal, $\\sigma = %g$", par)
     )
   }
-  n_col <- 2 + 2 * length(Ts)
+  fmt_na <- function(x) ifelse(is.na(x), "--", fmt(x, 3))
+  n_col <- 2 + 2 * length(Ts) + length(Ts_cr2)
   rows <- unlist(lapply(c("small", "brazil"), \(h) {
     body <- unlist(lapply(c("F0", "F1"), \(fam) {
       vapply(
@@ -784,7 +790,12 @@ tab_supp_boot <- function(boot_sims, file) {
             dplyr::arrange(T)
           latex_row(
             if (i == 1) fam else "",
-            c(err_label(errs$error[i], errs$param[i]), fmt(d$rejection_rao, 3), fmt(d$rejection_boot, 3))
+            c(
+              err_label(errs$error[i], errs$param[i]),
+              fmt(d$rejection_rao, 3),
+              fmt(d$rejection_boot, 3),
+              fmt_na(d$rejection_cr2[match(Ts_cr2, d$T)])
+            )
           )
         },
         character(1)
@@ -794,16 +805,17 @@ tab_supp_boot <- function(boot_sims, file) {
   }))
   write_tabular(
     file,
-    paste0("ll", strrep("r", 2 * length(Ts))),
+    paste0("ll", strrep("r", 2 * length(Ts) + length(Ts_cr2))),
     c(
       sprintf(
-        " & & \\multicolumn{%d}{c}{Rao's $F$} & \\multicolumn{%d}{c}{Wild bootstrap} \\\\",
+        " & & \\multicolumn{%d}{c}{Rao's $F$} & \\multicolumn{%d}{c}{Wild bootstrap} & \\multicolumn{%d}{c}{CR2/HTZ} \\\\",
         length(Ts),
-        length(Ts)
+        length(Ts),
+        length(Ts_cr2)
       ),
       paste0(
         "Design & Errors & ",
-        paste(rep(sprintf("$T = %d$", Ts), 2), collapse = " & "),
+        paste(sprintf("$T = %d$", c(Ts, Ts, Ts_cr2)), collapse = " & "),
         " \\\\"
       )
     ),
