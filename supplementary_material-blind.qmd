@@ -1,0 +1,8 @@
+---
+# Anonymised version of the supplementary material for review: no authors or
+# affiliations (see `blind` in partials/before-body.tex)
+blind: true
+author-meta: ""
+---
+
+{{< include supplementary_material.qmd >}}

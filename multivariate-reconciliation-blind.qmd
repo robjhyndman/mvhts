@@ -1,0 +1,8 @@
+---
+# Anonymised version of the paper for review: no authors, affiliations,
+# acknowledgement or repository link (see `blind` in partials/before-body.tex)
+blind: true
+author-meta: ""
+---
+
+{{< include multivariate-reconciliation.qmd >}}

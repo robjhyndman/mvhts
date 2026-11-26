@@ -191,5 +191,21 @@ list(
     supplement,
     "supplementary_material.qmd",
     extra_files = c("_quarto.yml", "preamble.tex", fs::dir_ls("partials"))
+  ),
+  # Anonymised versions for review, and the title page that goes with them
+  tar_quarto(
+    paper_blind,
+    "multivariate-reconciliation-blind.qmd",
+    extra_files = c("_quarto.yml", "preamble.tex", "cas-refs.bib", fs::dir_ls("partials"))
+  ),
+  tar_quarto(
+    supplement_blind,
+    "supplementary_material-blind.qmd",
+    extra_files = c("_quarto.yml", "preamble.tex", fs::dir_ls("partials"))
+  ),
+  tar_quarto(
+    cover_page,
+    "cover-page.qmd",
+    extra_files = c("_quarto.yml", "partials/before-body.tex")
   )
 )

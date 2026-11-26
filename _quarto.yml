@@ -2,13 +2,16 @@ project:
   render:
     - multivariate-reconciliation.qmd
     - supplementary_material.qmd
+    - multivariate-reconciliation-blind.qmd
+    - supplementary_material-blind.qmd
+    - cover-page.qmd
 
 execute:
   echo: false
   warning: false
   message: false
 
-# Metadata shared by the paper and the supplementary material
+# Metadata shared by the paper, the supplementary material and the title page
 title: When does multivariate forecast reconciliation help?
 date: today
 date-format: "D MMMM YYYY"
@@ -27,6 +30,9 @@ author:
     affiliations:
       - ref: ufba
   - name: Paulo Canas Rodrigues
+    email: paulocanas@gmail.com
+    attributes:
+      corresponding: true
     affiliations:
       - ref: ufba
       - ref: pretoria
@@ -55,13 +61,13 @@ affiliations:
     city: Dortmund
     country: Germany
 
-# PDF options shared by both documents (both use the elsevier-pdf format)
+# PDF options shared by all documents (all use the elsevier-pdf format)
 format:
   elsevier-pdf:
     template-partials: [partials/before-body.tex, partials/title.tex]
     fontsize: 11pt
     journal:
-      name: TBD
+      name: International Journal of Forecasting
       formatting: preprint
       cite-style: authoryear
 pdf-engine: pdflatex

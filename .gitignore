@@ -55,6 +55,9 @@ _targets/
 # files copied from _extensions/, and intermediates
 /multivariate-reconciliation.tex
 /supplementary_material.tex
+/multivariate-reconciliation-blind.tex
+/supplementary_material-blind.tex
+/cover-page.tex
 /elsarticle.cls
 /elsarticle-harv.bst
 /.quarto/
