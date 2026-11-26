@@ -63,3 +63,4 @@ _targets/
 *.knit.md
 
 .Rhistory
+/tasks/
